@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Family English</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f7f5;
+  color:#263238;
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+.app{
+  max-width:650px;
+  margin:auto;
+  min-height:100vh;
+  background:#f5f7f5;
+}
+
+/* HEADER */
+
+.header{
+  background:#58CC02;
+  color:white;
+  padding:18px 16px;
+  border-radius:0 0 22px 22px;
+  box-shadow:0 3px 10px rgba(0,0,0,.12);
+}
+
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-size:24px;
+  font-weight:bold;
+}
+
+.stats{
+  display:flex;
+  gap:12px;
+  font-size:14px;
+  font-weight:bold;
+}
+
+/* MENU */
+
+.menu{
+  display:flex;
+  overflow-x:auto;
+  gap:8px;
+  padding:12px;
+  background:white;
+  border-bottom:1px solid #ddd;
+}
+
+.menu button{
+  border:0;
+  background:#f0f2f0;
+  padding:9px 14px;
+  border-radius:20px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.menu button.active{
+  background:#58CC02;
+  color:white;
+}
+
+/* CONTENT */
+
+.content{
+  padding:16px;
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:15px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+h2{
+  margin-top:0;
+}
+
+/* LEVEL */
+
+.level-card{
+  border:2px solid #e7e7e7;
+  border-radius:16px;
+  padding:15px;
+  margin:10px 0;
+  cursor:pointer;
+}
+
+.level-card.selected{
+  border-color:#58CC02;
+  background:#f2fff0;
+}
+
+.level-title{
+  font-weight:bold;
+  font-size:18px;
+}
+
+.progress{
+  height:10px;
+  background:#e4e4e4;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:10px;
+}
+
+.progress-bar{
+  height:100%;
+  background:#58CC02;
+  width:0%;
+}
+
+/* BUTTONS */
+
+.primary{
+  width:100%;
+  border:0;
+  background:#58CC02;
+  color:white;
+  padding:13px;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:8px;
+}
+
+.secondary{
+  width:100%;
+  border:2px solid #58CC02;
+  background:white;
+  color:#4da900;
+  padding:12px;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:8px;
+}
+
+/* LESSON */
+
+.lesson-word{
+  font-size:32px;
+  font-weight:bold;
+  text-align:center;
+  margin:20px 0 5px;
+}
+
+.pronunciation{
+  text-align:center;
+  color:#777;
+}
+
+.translation{
+  text-align:center;
+  font-size:18px;
+  margin:10px;
+}
+
+.exercise{
+  margin-top:20px;
+}
+
+.option{
+  display:block;
+  width:100%;
+  padding:13px;
+  margin:8px 0;
+  border:2px solid #ddd;
+  border-radius:12px;
+  background:white;
+  cursor:pointer;
+  text-align:left;
+}
+
+.option:hover{
+  border-color:#58CC02;
+}
+
+.correct{
+  background:#dff7d2 !important;
+  border-color:#58CC02 !important;
+}
+
+.wrong{
+  background:#ffdede !important;
+  border-color:#e53935 !important;
+}
+
+/* CHAT */
+
+#chat{
+  height:330px;
+  overflow-y:auto;
+  background:#f7f7f7;
+  border-radius:15px;
+  padding:10px;
+}
+
+.msg{
+  margin:8px 0;
+  padding:10px 13px;
+  border-radius:15px;
+  max-width:88%;
+  white-space:pre-wrap;
+}
+
+.user{
+  background:#dcf8c6;
+  margin-left:auto;
+}
+
+.bot{
+  background:#fff;
+  border:1px solid #ddd;
+}
+
+.chat-input{
+  display:flex;
+  gap:7px;
+  margin-top:10px;
+}
+
+.chat-input input{
+  flex:1;
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:12px;
+}
+
+.chat-input button{
+  border:0;
+  background:#58CC02;
+  color:white;
+  padding:12px 16px;
+  border-radius:12px;
+}
+
+/* INPUT */
+
+input[type="text"],
+input[type="password"],
+select{
+  width:100%;
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:10px;
+  margin:5px 0 10px;
+}
+
+/* BADGES */
+
+.badges{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.badge{
+  background:#fafafa;
+  border-radius:14px;
+  padding:15px 5px;
+  text-align:center;
+  border:1px solid #eee;
+}
+
+.badge-icon{
+  font-size:30px;
+}
+
+.small{
+  color:#777;
+  font-size:13px;
+}
+
+/* FOOTER */
+
+.footer{
+  text-align:center;
+  color:#999;
+  padding:20px;
+  font-size:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="header">
+
+  <div class="header-top">
+
+    <div class="logo">🦉 Family English</div>
+
+    <div class="stats">
+      <span>🔥 <span id="streak">0</span></span>
+      <span>⭐ <span id="xp">0</span></span>
+      <span>❤️ <span id="lives">5</span></span>
+    </div>
+
+  </div>
+
+</header>
+
+
+<nav class="menu">
+
+  <button class="active" onclick="mostrarPagina('inicio',this)">
+    🏠 Início
+  </button>
+
+  <button onclick="mostrarPagina('aula',this)">
+    📚 Aula
+  </button>
+
+  <button onclick="mostrarPagina('vocabulario',this)">
+    🧠 Vocabulário
+  </button>
+
+  <button onclick="mostrarPagina('leitura',this)">
+    📖 Leitura
+  </button>
+
+  <button onclick="mostrarPagina('conversa',this)">
+    💬 Conversação
+  </button>
+
+  <button onclick="mostrarPagina('perfil',this)">
+    👤 Perfil
+  </button>
+
+</nav>
+
+
+<main class="content">
+
+
+<!-- ================= INÍCIO ================= -->
+
+<section id="inicio" class="page active">
+
+  <div class="card">
+
+    <h2>Olá! 👋</h2>
+
+    <p>
+      Bem-vindo ao Family English.
+      Vamos aprender inglês de forma simples,
+      prática e progressiva.
+    </p>
+
+    <div class="small">
+      Seu nível atual:
+    </div>
+
+    <h2 id="nivelAtual">A1 - Beginner</h2>
+
+    <div class="progress">
+      <div class="progress-bar" id="progressHome"></div>
+    </div>
+
+    <p id="progressText">
+      0% concluído
+    </p>
+
+    <button class="primary"
+      onclick="irParaAula()">
+      ▶️ Continuar estudando
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>🎯 Sua missão de hoje</h2>
+
+    <p>
+      Complete uma pequena aula,
+      pratique vocabulário e converse em inglês.
+    </p>
+
+    <button class="primary"
+      onclick="irParaAula()">
+      Começar missão
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>🏆 Conquistas</h2>
+
+    <div class="badges">
+
+      <div class="badge">
+        <div class="badge-icon">🌱</div>
+        <div>Primeiro passo</div>
+      </div>
+
+      <div class="badge">
+        <div class="badge-icon">📚</div>
+        <div>Estudante</div>
+      </div>
+
+      <div class="badge">
+        <div class="badge-icon">🔥</div>
+        <div>Sequência</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= AULA ================= -->
+
+<section id="aula" class="page">
+
+  <div class="card">
+
+    <h2 id="lessonTitle">
+      Lesson 1 — Greetings
+    </h2>
+
+    <p>
+      Aprenda palavras e frases básicas.
+    </p>
+
+    <div class="lesson-word" id="lessonWord">
+      Hello
+    </div>
+
+    <div class="pronunciation">
+      /həˈloʊ/
+    </div>
+
+    <div class="translation">
+      Olá
+    </div>
+
+    <div class="exercise">
+
+      <h3>
+        Qual é a tradução de "Hello"?
+      </h3>
+
+      <button class="option"
+        onclick="responder(this,false)">
+        Obrigado
+      </button>
+
+      <button class="option"
+        onclick="responder(this,true)">
+        Olá
+      </button>
+
+      <button class="option"
+        onclick="responder(this,false)">
+        Até amanhã
+      </button>
+
+      <button class="option"
+        onclick="responder(this,false)">
+        Por favor
+      </button>
+
+    </div>
+
+    <p id="feedback"></p>
+
+    <button class="primary"
+      onclick="proximaQuestao()">
+      Próxima questão →
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- ================= VOCABULÁRIO ================= -->
+
+<section id="vocabulario" class="page">
+
+  <div class="card">
+
+    <h2>🧠 Vocabulário</h2>
+
+    <p>
+      Revise palavras importantes para o seu nível.
+    </p>
+
+    <h2>Hello</h2>
+
+    <p>
+      🇺🇸 Hello = Olá
+    </p>
+
+    <p class="small">
+      Exemplo: Hello, my name is Rafael.
+    </p>
+
+    <button class="secondary"
+      onclick="falar('Hello')">
+      🔊 Ouvir
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>Palavras desta aula</h3>
+
+    <p>👋 Hello — Olá</p>
+    <p>😊 Happy — Feliz</p>
+    <p>🙏 Thank you — Obrigado</p>
+    <p>👋 Goodbye — Tchau</p>
+
+  </div>
+
+</section>
+
+
+<!-- ================= LEITURA ================= -->
+
+<section id="leitura" class="page">
+
+  <div class="card">
+
+    <h2>📖 Reading</h2>
+
+    <h3>My Family</h3>
+
+    <p>
+      Hello! My name is Anna.
+      I live with my family.
+      I have a father, a mother and one brother.
+      We are a happy family.
+    </p>
+
+    <hr>
+
+    <h3>🇧🇷 Tradução</h3>
+
+    <p>
+      Olá! Meu nome é Anna.
+      Eu moro com minha família.
+      Eu tenho um pai, uma mãe e um irmão.
+      Nós somos uma família feliz.
+    </p>
+
+    <button class="primary"
+      onclick="ganharXP(10)">
+      ✅ Completei a leitura
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- ================= CONVERSAÇÃO ================= -->
+
+<section id="conversa" class="page">
+
+  <div class="card">
+
+    <h2>💬 Conversação com IA</h2>
+
+    <p class="small">
+      Converse com seu professor virtual de inglês.
+    </p>
+
+    <label>Gemini API Key</label>
+
+    <input
+      id="apiKey"
+      type="password"
+      placeholder="Cole sua API Key aqui">
+
+    <select id="conversationLevel">
+
+      <option value="A1">
+        A1 — Beginner
+      </option>
+
+      <option value="A2">
+        A2 — Elementary
+      </option>
+
+      <option value="B1">
+        B1 — Intermediate
+      </option>
+
+      <option value="B2">
+        B2 — Upper Intermediate
+      </option>
+
+      <option value="C1">
+        C1 — Advanced
+      </option>
+
+    </select>
+
+    <div id="chat">
+
+      <div class="msg bot">
+        Hello! 👋
+        I'm your Family English teacher.
+        Tell me about yourself.
+      </div>
+
+    </div>
+
+    <div class="chat-input">
+
+      <input
+        id="input"
+        placeholder="Digite em inglês...">
+
+      <button onclick="enviar()">
+        Enviar
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= PERFIL ================= -->
+
+<section id="perfil" class="page">
+
+  <div class="card">
+
+    <h2>👤 Meu perfil</h2>
+
+    <label>Nome</label>
+
+    <input
+      id="nome"
+      type="text"
+      placeholder="Digite seu nome">
+
+    <label>Nível</label>
+
+    <select id="levelProfile">
+
+      <option value="A1">A1 — Beginner</option>
+      <option value="A2">A2 — Elementary</option>
+      <option value="B1">B1 — Intermediate</option>
+      <option value="B2">B2 — Upper Intermediate</option>
+      <option value="C1">C1 — Advanced</option>
+
+    </select>
+
+    <button class="primary"
+      onclick="salvarPerfil()">
+      💾 Salvar perfil
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>📊 Meu progresso</h2>
+
+    <p>
+      ⭐ XP:
+      <strong id="profileXP">0</strong>
+    </p>
+
+    <p>
+      🔥 Dias consecutivos:
+      <strong id="profileStreak">0</strong>
+    </p>
+
+    <p>
+      📚 Aulas concluídas:
+      <strong id="lessonsDone">0</strong>
+    </p>
+
+    <p>
+      🎯 Progresso:
+      <strong id="profileProgress">0%</strong>
+    </p>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<div class="footer">
+  Family English © 2026
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   DADOS DO USUÁRIO
+===================================================== */
+
+let dados = JSON.parse(
+  localStorage.getItem("familyEnglish")
+) || {
+
+  nome:"",
+  nivel:"A1",
+  xp:0,
+  streak:0,
+  vidas:5,
+  progresso:0,
+  aulas:0
+
+};
+
+
+/* =====================================================
+   SALVAR
+===================================================== */
+
+function salvarDados(){
+
+  localStorage.setItem(
+    "familyEnglish",
+    JSON.stringify(dados)
+  );
+
+  atualizarTela();
+}
+
+
+/* =====================================================
+   ATUALIZAR TELA
+===================================================== */
+
+function atualizarTela(){
+
+  document.getElementById("xp").innerText =
+    dados.xp;
+
+  document.getElementById("streak").innerText =
+    dados.streak;
+
+  document.getElementById("lives").innerText =
+    dados.vidas;
+
+  document.getElementById("profileXP").innerText =
+    dados.xp;
+
+  document.getElementById("profileStreak").innerText =
+    dados.streak;
+
+  document.getElementById("lessonsDone").innerText =
+    dados.aulas;
+
+  document.getElementById("profileProgress").innerText =
+    dados.progresso + "%";
+
+  document.getElementById("progressHome").style.width =
+    dados.progresso + "%";
+
+  document.getElementById("progressText").innerText =
+    dados.progresso + "% concluído";
+
+  document.getElementById("nivelAtual").innerText =
+    dados.nivel + " — " +
+    nomeNivel(dados.nivel);
+
+  document.getElementById("nome").value =
+    dados.nome;
+
+  document.getElementById("levelProfile").value =
+    dados.nivel;
+
+}
+
+
+/* =====================================================
+   NÍVEL
+===================================================== */
+
+function nomeNivel(nivel){
+
+  const nomes = {
+
+    A1:"Beginner",
+    A2:"Elementary",
+    B1:"Intermediate",
+    B2:"Upper Intermediate",
+    C1:"Advanced"
+
+  };
+
+  return nomes[nivel] || "Beginner";
+}
+
+
+/* =====================================================
+   NAVEGAÇÃO
+===================================================== */
+
+function mostrarPagina(id,botao){
+
+  document.querySelectorAll(".page")
+    .forEach(p => p.classList.remove("active"));
+
+  document.getElementById(id)
+    .classList.add("active");
+
+  document.querySelectorAll(".menu button")
+    .forEach(b => b.classList.remove("active"));
+
+  if(botao){
+    botao.classList.add("active");
+  }
+
+  window.scrollTo(0,0);
+}
+
+
+function irParaAula(){
+
+  const botoes =
+    document.querySelectorAll(".menu button");
+
+  mostrarPagina("aula",botoes[1]);
+
+}
+
+
+/* =====================================================
+   EXERCÍCIO
+===================================================== */
+
+function responder(botao,correto){
+
+  document
+    .querySelectorAll(".option")
+    .forEach(b => b.disabled = true);
+
+  if(correto){
+
+    botao.classList.add("correct");
+
+    document.getElementById("feedback").innerText =
+      "🎉 Excellent! Correct answer!";
+
+    ganharXP(10);
+
+  }else{
+
+    botao.classList.add("wrong");
+
+    dados.vidas--;
+
+    if(dados.vidas < 0){
+      dados.vidas = 0;
+    }
+
+    document.getElementById("feedback").innerText =
+      "❌ Not quite. Try again next time.";
+
+    salvarDados();
+
+  }
+
+}
+
+
+function proximaQuestao(){
+
+  document
+    .querySelectorAll(".option")
+    .forEach(b => {
+
+      b.disabled = false;
+      b.classList.remove("correct","wrong");
+
+    });
+
+  document.getElementById("feedback").innerText = "";
+
+}
+
+
+/* =====================================================
+   XP
+===================================================== */
+
+function ganharXP(valor){
+
+  dados.xp += valor;
+
+  if(dados.xp >= 100){
+
+    dados.progresso =
+      Math.min(100,dados.progresso + 10);
+
+  }
+
+  salvarDados();
+
+}
+
+
+/* =====================================================
+   PERFIL
+===================================================== */
+
+function salvarPerfil(){
+
+  dados.nome =
+    document.getElementById("nome").value;
+
+  dados.nivel =
+    document.getElementById("levelProfile").value;
+
+  salvarDados();
+
+  alert("Perfil salvo com sucesso! 🎉");
+
+}
+
+
+/* =====================================================
+   ÁUDIO
+===================================================== */
+
+function falar(texto){
+
+  if(!("speechSynthesis" in window)){
+
+    alert("Seu navegador não suporta áudio.");
+
+    return;
+
+  }
+
+  const fala =
+    new SpeechSynthesisUtterance(texto);
+
+  fala.lang = "en-US";
+
+  speechSynthesis.speak(fala);
+
+}
+
+
+/* =====================================================
+   GEMINI
+===================================================== */
+
+const GEMINI_URL =
+"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
+
+
+async function enviar(){
+
+  const key =
+    document.getElementById("apiKey").value.trim();
+
+  const text =
+    document.getElementById("input").value.trim();
+
+  const level =
+    document.getElementById("conversationLevel").value;
+
+  if(!key){
+
+    alert("Cole sua API Key do Gemini.");
+
+    return;
+
+  }
+
+  if(!text){
+    return;
+  }
+
+
+  addMsg(text,"user");
+
+  document.getElementById("input").value = "";
+
+
+  const prompt = `
+
+You are the Family English AI teacher.
+
+Teach American English to a Brazilian student.
+
+Student level: ${level}
+
+Rules:
+
+1. Speak at the student's level.
+2. Keep conversations natural.
+3. Correct important grammar mistakes.
+4. Explain corrections in Portuguese.
+5. Encourage the student.
+6. Ask one question at the end.
+7. Do not make the answer unnecessarily long.
+
+Format corrections like:
+
+Correction:
+[PT: explanation in Portuguese]
+
+Student message:
+${text}
+
+`;
+
+
+  try{
+
+    const res =
+      await fetch(GEMINI_URL + encodeURIComponent(key),{
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+          contents:[{
+
+            parts:[{
+
+              text:prompt
+
+            }]
+
+          }]
+
+        })
+
+      });
+
+
+    const data =
+      await res.json();
+
+
+    if(!res.ok){
+
+      throw new Error(
+        data?.error?.message ||
+        "Erro na API"
+      );
+
+    }
+
+
+    const resposta =
+      data.candidates?.[0]
+      ?.content?.parts?.[0]?.text;
+
+
+    if(!resposta){
+
+      throw new Error(
+        "A IA não retornou uma resposta."
+      );
+
+    }
+
+
+    addMsg(resposta,"bot");
+
+    ganharXP(5);
+
+
+  }catch(erro){
+
+    addMsg(
+      "⚠️ Erro: " + erro.message,
+      "bot"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   CHAT
+===================================================== */
+
+function addMsg(texto,classe){
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "msg " + classe;
+
+  div.innerText =
+    texto;
+
+  const chat =
+    document.getElementById("chat");
+
+  chat.appendChild(div);
+
+  chat.scrollTop =
+    chat.scrollHeight;
+
+}
+
+
+/* =====================================================
+   ENTER NO CHAT
+===================================================== */
+
+document
+  .getElementById("input")
+  .addEventListener("keydown",function(event){
+
+    if(event.key === "Enter"){
+
+      enviar();
+
+    }
+
+  });
+
+
+/* =====================================================
+   INICIALIZAÇÃO
+===================================================== */
+
+atualizarTela();
+
+
+/* =====================================================
+   SERVICE WORKER
+===================================================== */
+
+if("serviceWorker" in navigator){
+
+  window.addEventListener("load",function(){
+
+    navigator.serviceWorker
+      .register("sw.js")
+      .catch(function(error){
+
+        console.log(
+          "Service Worker:",
+          error
+        );
+
+      });
+
+  });
+
+}
+
+</script>
+
+</body>
+</html>
