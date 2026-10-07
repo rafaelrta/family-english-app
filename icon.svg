@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect width="512" height="512" rx="90" fill="#0B3D91"/>
+<rect x="55" y="80" width="402" height="48" fill="#D62828"/>
+<rect x="55" y="128" width="402" height="48" fill="#FFFFFF"/>
+<rect x="55" y="176" width="402" height="48" fill="#D62828"/>
+<rect x="55" y="224" width="402" height="48" fill="#FFFFFF"/>
+<rect x="55" y="272" width="402" height="48" fill="#D62828"/>
+<rect x="55" y="80" width="190" height="192" fill="#0B3D91"/>
+<polygon points="150,115 160,140 187,140 165,156 173,182 150,167 127,182 135,156 113,140 140,140" fill="#FFFFFF"/>
+<text x="256" y="390" text-anchor="middle" font-family="Arial" font-size="45" font-weight="bold" fill="#FFFFFF">ENGLISH</text>
+</svg>
