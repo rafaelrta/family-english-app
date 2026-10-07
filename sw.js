@@ -1,17 +1,30 @@
-const CACHE_NAME = "family-english-v2";
+const CACHE_NAME = "family-english-v3";
 
 const FILES = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./icon.svg"
 ];
 
-self.addEventListener("install", event => {
+
+/* =====================================================
+   INSTALAÇÃO
+===================================================== */
+
+self.addEventListener("install", function(event){
 
   event.waitUntil(
 
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(FILES))
+    caches
+      .open(CACHE_NAME)
+      .then(function(cache){
+
+        return cache.addAll(
+          FILES
+        );
+
+      })
 
   );
 
@@ -20,46 +33,115 @@ self.addEventListener("install", event => {
 });
 
 
-self.addEventListener("activate", event => {
+/* =====================================================
+   ATIVAÇÃO
+===================================================== */
 
-  event.waitUntil(
+self.addEventListener(
+  "activate",
+  function(event){
 
-    caches.keys().then(keys =>
+    event.waitUntil(
 
-      Promise.all(
+      caches
+        .keys()
+        .then(function(keys){
 
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
+          return Promise.all(
 
-      )
+            keys
+              .filter(function(key){
 
-    )
+                return key !==
+                  CACHE_NAME;
 
-  );
+              })
 
-  self.clients.claim();
+              .map(function(key){
 
-});
+                return caches.delete(
+                  key
+                );
+
+              })
+
+          );
+
+        })
+
+    );
+
+    self.clients.claim();
+
+  }
+);
 
 
-self.addEventListener("fetch", event => {
+/* =====================================================
+   REQUISIÇÕES
+===================================================== */
 
-  event.respondWith(
+self.addEventListener(
+  "fetch",
+  function(event){
 
-    caches.match(event.request)
-      .then(response => {
+    /*
+      Não interferir em requisições
+      que não sejam GET.
+    */
 
-        return response ||
-          fetch(event.request);
+    if(
+      event.request.method !== "GET"
+    ){
 
-      })
-      .catch(() => {
+      return;
 
-        return caches.match("./index.html");
+    }
 
-      })
 
-  );
+    event.respondWith(
 
-});
+      caches
+        .match(event.request)
+        .then(function(response){
+
+          /*
+            Se estiver no cache,
+            usa o arquivo armazenado.
+          */
+
+          if(response){
+
+            return response;
+
+          }
+
+
+          /*
+            Caso contrário,
+            busca na internet.
+          */
+
+          return fetch(
+            event.request
+          );
+
+        })
+
+        .catch(function(){
+
+          /*
+            Se estiver offline,
+            tenta abrir o aplicativo.
+          */
+
+          return caches.match(
+            "./index.html"
+          );
+
+        })
+
+    );
+
+  }
+);
