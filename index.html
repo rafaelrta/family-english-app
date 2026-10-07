@@ -2,14 +2,27 @@
 <html lang="pt-BR">
 
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
 <title>Family English</title>
 
 <link rel="manifest" href="manifest.json">
 
+<meta name="theme-color" content="#0B3D91">
+
 <style>
+
+/* =====================================================
+   FAMILY ENGLISH
+   IDENTIDADE VISUAL PRÓPRIA
+   AZUL + VERMELHO + BRANCO
+===================================================== */
 
 *{
   box-sizing:border-box;
@@ -17,9 +30,12 @@
 
 body{
   margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f5f7f5;
-  color:#263238;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+  background:#eef3f8;
+  color:#172033;
 }
 
 button,
@@ -28,70 +44,134 @@ select{
   font:inherit;
 }
 
-.app{
-  max-width:650px;
-  margin:auto;
-  min-height:100vh;
-  background:#f5f7f5;
+button{
+  cursor:pointer;
 }
 
-/* HEADER */
+.app{
+  max-width:680px;
+  min-height:100vh;
+  margin:auto;
+  background:#eef3f8;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
 
 .header{
-  background:#58CC02;
+  background:
+    linear-gradient(
+      135deg,
+      #071d49 0%,
+      #0B3D91 60%,
+      #1456bd 100%
+    );
+
   color:white;
-  padding:18px 16px;
-  border-radius:0 0 22px 22px;
-  box-shadow:0 3px 10px rgba(0,0,0,.12);
+
+  padding:18px 16px 20px;
+
+  border-bottom:
+    5px solid #D62828;
+
+  box-shadow:
+    0 3px 12px rgba(0,0,0,.18);
 }
 
 .header-top{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:10px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.flag-symbol{
+  font-size:30px;
 }
 
 .logo{
-  font-size:24px;
-  font-weight:bold;
+  font-size:23px;
+  font-weight:800;
+  letter-spacing:.3px;
+}
+
+.subtitle{
+  font-size:11px;
+  opacity:.85;
+  margin-top:2px;
 }
 
 .stats{
   display:flex;
-  gap:12px;
-  font-size:14px;
+  gap:9px;
+  font-size:13px;
   font-weight:bold;
-}
-
-/* MENU */
-
-.menu{
-  display:flex;
-  overflow-x:auto;
-  gap:8px;
-  padding:12px;
-  background:white;
-  border-bottom:1px solid #ddd;
-}
-
-.menu button{
-  border:0;
-  background:#f0f2f0;
-  padding:9px 14px;
-  border-radius:20px;
-  cursor:pointer;
   white-space:nowrap;
 }
 
+.stat{
+  background:rgba(255,255,255,.14);
+  padding:7px 8px;
+  border-radius:10px;
+}
+
+/* =====================================================
+   MENU
+===================================================== */
+
+.menu{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+
+  padding:10px;
+
+  background:white;
+
+  border-bottom:
+    1px solid #dbe2ea;
+
+  scrollbar-width:none;
+}
+
+.menu::-webkit-scrollbar{
+  display:none;
+}
+
+.menu button{
+  flex:none;
+
+  border:0;
+
+  background:#f0f3f7;
+
+  color:#334155;
+
+  padding:9px 13px;
+
+  border-radius:20px;
+
+  font-size:13px;
+}
+
 .menu button.active{
-  background:#58CC02;
+  background:#0B3D91;
   color:white;
 }
 
-/* CONTENT */
+/* =====================================================
+   CONTEÚDO
+===================================================== */
 
 .content{
-  padding:16px;
+  padding:15px;
 }
 
 .page{
@@ -104,238 +184,645 @@ select{
 
 .card{
   background:white;
+
   border-radius:18px;
+
   padding:18px;
+
   margin-bottom:15px;
-  box-shadow:0 2px 8px rgba(0,0,0,.06);
+
+  box-shadow:
+    0 2px 9px rgba(25,45,75,.07);
 }
 
 h2{
   margin-top:0;
 }
 
-/* LEVEL */
-
-.level-card{
-  border:2px solid #e7e7e7;
-  border-radius:16px;
-  padding:15px;
-  margin:10px 0;
-  cursor:pointer;
+h3{
+  margin-bottom:8px;
 }
 
-.level-card.selected{
-  border-color:#58CC02;
-  background:#f2fff0;
+.small{
+  color:#64748b;
+  font-size:13px;
 }
 
-.level-title{
-  font-weight:bold;
-  font-size:18px;
-}
-
-.progress{
-  height:10px;
-  background:#e4e4e4;
-  border-radius:10px;
-  overflow:hidden;
-  margin-top:10px;
-}
-
-.progress-bar{
-  height:100%;
-  background:#58CC02;
-  width:0%;
-}
-
-/* BUTTONS */
+/* =====================================================
+   BOTÕES
+===================================================== */
 
 .primary{
   width:100%;
+
   border:0;
-  background:#58CC02;
+
+  background:#0B3D91;
+
   color:white;
+
   padding:13px;
+
   border-radius:12px;
+
   font-weight:bold;
-  cursor:pointer;
+
   margin-top:8px;
+}
+
+.primary:hover{
+  background:#082f70;
 }
 
 .secondary{
   width:100%;
-  border:2px solid #58CC02;
+
+  border:2px solid #0B3D91;
+
   background:white;
-  color:#4da900;
-  padding:12px;
+
+  color:#0B3D91;
+
+  padding:11px;
+
   border-radius:12px;
+
   font-weight:bold;
-  cursor:pointer;
+
   margin-top:8px;
 }
 
-/* LESSON */
+.red-button{
+  width:100%;
 
-.lesson-word{
-  font-size:32px;
+  border:0;
+
+  background:#D62828;
+
+  color:white;
+
+  padding:13px;
+
+  border-radius:12px;
+
   font-weight:bold;
-  text-align:center;
-  margin:20px 0 5px;
+
+  margin-top:8px;
 }
 
-.pronunciation{
-  text-align:center;
-  color:#777;
+/* =====================================================
+   PROGRESSO
+===================================================== */
+
+.progress{
+  height:10px;
+
+  background:#e2e8f0;
+
+  border-radius:20px;
+
+  overflow:hidden;
+
+  margin:10px 0;
 }
 
-.translation{
-  text-align:center;
-  font-size:18px;
-  margin:10px;
+.progress-bar{
+  height:100%;
+
+  width:0%;
+
+  background:
+    linear-gradient(
+      90deg,
+      #0B3D91,
+      #2d72d9
+    );
+
+  transition:
+    width .4s ease;
 }
 
-.exercise{
-  margin-top:20px;
+/* =====================================================
+   NÍVEIS
+===================================================== */
+
+.level-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:10px;
+}
+
+.level-card{
+  border:
+    2px solid #e2e8f0;
+
+  border-radius:15px;
+
+  padding:14px;
+
+  background:white;
+
+  cursor:pointer;
+}
+
+.level-card.selected{
+  border-color:#0B3D91;
+
+  background:#eef5ff;
+}
+
+.level-code{
+  font-size:21px;
+
+  font-weight:800;
+
+  color:#0B3D91;
+}
+
+.level-name{
+  font-size:13px;
+
+  margin-top:3px;
+}
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+.dashboard-stats{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:9px;
+}
+
+.dashboard-stat{
+  background:#f8fafc;
+
+  border-radius:14px;
+
+  padding:12px 5px;
+
+  text-align:center;
+
+  border:
+    1px solid #e7edf4;
+}
+
+.dashboard-icon{
+  font-size:23px;
+}
+
+.dashboard-number{
+  font-size:19px;
+
+  font-weight:bold;
+
+  margin-top:3px;
+}
+
+/* =====================================================
+   AULA
+===================================================== */
+
+.lesson-header{
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:10px;
+}
+
+.lesson-level{
+  background:#eaf2ff;
+
+  color:#0B3D91;
+
+  border-radius:20px;
+
+  padding:6px 10px;
+
+  font-size:12px;
+
+  font-weight:bold;
+}
+
+.question-number{
+  color:#64748b;
+
+  font-size:13px;
+}
+
+.question{
+  font-size:21px;
+
+  font-weight:bold;
+
+  line-height:1.4;
+
+  margin:
+    20px 0 16px;
 }
 
 .option{
   display:block;
+
   width:100%;
+
   padding:13px;
-  margin:8px 0;
-  border:2px solid #ddd;
-  border-radius:12px;
+
+  margin:9px 0;
+
+  border:
+    2px solid #dce3eb;
+
+  border-radius:13px;
+
   background:white;
-  cursor:pointer;
+
   text-align:left;
+
+  color:#172033;
 }
 
 .option:hover{
-  border-color:#58CC02;
+  border-color:#0B3D91;
 }
 
-.correct{
-  background:#dff7d2 !important;
-  border-color:#58CC02 !important;
+.option.correct{
+  background:#dcfce7;
+
+  border-color:#16a34a;
 }
 
-.wrong{
-  background:#ffdede !important;
-  border-color:#e53935 !important;
+.option.wrong{
+  background:#fee2e2;
+
+  border-color:#dc2626;
 }
 
-/* CHAT */
+.option:disabled{
+  cursor:default;
+}
+
+.feedback{
+  min-height:25px;
+
+  margin-top:12px;
+
+  font-weight:bold;
+}
+
+/* =====================================================
+   VOCABULÁRIO
+===================================================== */
+
+.word{
+  text-align:center;
+
+  font-size:34px;
+
+  font-weight:800;
+
+  color:#0B3D91;
+
+  margin-top:15px;
+}
+
+.translation{
+  text-align:center;
+
+  font-size:18px;
+
+  margin:7px 0 15px;
+}
+
+.example{
+  background:#f8fafc;
+
+  border-left:
+    4px solid #D62828;
+
+  padding:12px;
+
+  border-radius:8px;
+}
+
+/* =====================================================
+   LEITURA
+===================================================== */
+
+.reading-text{
+  line-height:1.8;
+
+  font-size:17px;
+}
+
+.reading-translation{
+  border-top:
+    1px solid #e2e8f0;
+
+  padding-top:12px;
+
+  margin-top:15px;
+
+  color:#475569;
+}
+
+/* =====================================================
+   CHAT
+===================================================== */
 
 #chat{
   height:330px;
+
   overflow-y:auto;
-  background:#f7f7f7;
+
+  background:#f5f7fa;
+
   border-radius:15px;
+
   padding:10px;
+
+  margin-top:12px;
 }
 
 .msg{
   margin:8px 0;
+
   padding:10px 13px;
+
   border-radius:15px;
-  max-width:88%;
+
+  max-width:90%;
+
   white-space:pre-wrap;
+
+  line-height:1.4;
 }
 
-.user{
-  background:#dcf8c6;
+.msg.user{
+  background:#dbeafe;
+
   margin-left:auto;
+
+  border-bottom-right-radius:4px;
 }
 
-.bot{
-  background:#fff;
-  border:1px solid #ddd;
+.msg.bot{
+  background:white;
+
+  border:
+    1px solid #dce3eb;
+
+  border-bottom-left-radius:4px;
 }
 
 .chat-input{
   display:flex;
+
   gap:7px;
+
   margin-top:10px;
 }
 
 .chat-input input{
   flex:1;
+
+  min-width:0;
+
   padding:12px;
-  border:1px solid #ccc;
+
+  border:
+    1px solid #cbd5e1;
+
   border-radius:12px;
 }
 
-.chat-input button{
+.voice-button{
+  width:48px;
+
   border:0;
-  background:#58CC02;
-  color:white;
-  padding:12px 16px;
+
   border-radius:12px;
+
+  background:#D62828;
+
+  color:white;
+
+  font-size:20px;
 }
 
-/* INPUT */
+.voice-button.listening{
+  background:#7f1d1d;
 
-input[type="text"],
-input[type="password"],
+  animation:
+    pulse 1s infinite;
+}
+
+.send-button{
+  border:0;
+
+  border-radius:12px;
+
+  background:#0B3D91;
+
+  color:white;
+
+  padding:0 15px;
+}
+
+@keyframes pulse{
+
+  0%{
+    transform:scale(1);
+  }
+
+  50%{
+    transform:scale(1.08);
+  }
+
+  100%{
+    transform:scale(1);
+  }
+
+}
+
+/* =====================================================
+   PERFIL
+===================================================== */
+
+input,
 select{
   width:100%;
+
   padding:12px;
-  border:1px solid #ccc;
+
+  border:
+    1px solid #cbd5e1;
+
   border-radius:10px;
-  margin:5px 0 10px;
+
+  background:white;
+
+  margin:
+    5px 0 12px;
 }
 
-/* BADGES */
+/* =====================================================
+   CONQUISTAS
+===================================================== */
 
 .badges{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+
+  grid-template-columns:
+    repeat(3,1fr);
+
   gap:10px;
 }
 
 .badge{
-  background:#fafafa;
+  background:#f8fafc;
+
+  border:
+    1px solid #e2e8f0;
+
   border-radius:14px;
-  padding:15px 5px;
+
+  padding:13px 5px;
+
   text-align:center;
-  border:1px solid #eee;
 }
 
 .badge-icon{
-  font-size:30px;
+  font-size:28px;
 }
 
-.small{
-  color:#777;
-  font-size:13px;
+.badge-title{
+  font-size:12px;
+
+  font-weight:bold;
+
+  margin-top:5px;
 }
 
-/* FOOTER */
+/* =====================================================
+   FOOTER
+===================================================== */
 
 .footer{
   text-align:center;
-  color:#999;
-  padding:20px;
+
+  color:#94a3b8;
+
+  padding:22px;
+
   font-size:12px;
 }
 
+hr{
+  border:0;
+
+  border-top:
+    1px solid #e2e8f0;
+
+  margin:18px 0;
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:430px){
+
+  .logo{
+    font-size:19px;
+  }
+
+  .stats{
+    gap:4px;
+    font-size:11px;
+  }
+
+  .stat{
+    padding:6px 5px;
+  }
+
+  .content{
+    padding:10px;
+  }
+
+  .card{
+    padding:15px;
+  }
+
+  .dashboard-stats{
+    gap:5px;
+  }
+
+}
+
 </style>
+
 </head>
+
 
 <body>
 
 <div class="app">
 
+
+<!-- ===================================================
+     HEADER
+=================================================== -->
+
 <header class="header">
 
   <div class="header-top">
 
-    <div class="logo">🦉 Family English</div>
+    <div class="brand">
+
+      <div class="flag-symbol">
+        🇺🇸
+      </div>
+
+      <div>
+
+        <div class="logo">
+          Family English
+        </div>
+
+        <div class="subtitle">
+          Learn • Practice • Speak
+        </div>
+
+      </div>
+
+    </div>
+
 
     <div class="stats">
-      <span>🔥 <span id="streak">0</span></span>
-      <span>⭐ <span id="xp">0</span></span>
-      <span>❤️ <span id="lives">5</span></span>
+
+      <div class="stat">
+        🔥 <span id="streak">0</span>
+      </div>
+
+      <div class="stat">
+        ⭐ <span id="stars">0</span>
+      </div>
+
+      <div class="stat">
+        ❤️ <span id="lives">30</span>
+      </div>
+
     </div>
 
   </div>
@@ -343,29 +830,46 @@ select{
 </header>
 
 
+<!-- ===================================================
+     MENU
+=================================================== -->
+
 <nav class="menu">
 
-  <button class="active" onclick="mostrarPagina('inicio',this)">
+  <button
+    class="active"
+    onclick="mostrarPagina('inicio',this)"
+  >
     🏠 Início
   </button>
 
-  <button onclick="mostrarPagina('aula',this)">
+  <button
+    onclick="mostrarPagina('aula',this)"
+  >
     📚 Aula
   </button>
 
-  <button onclick="mostrarPagina('vocabulario',this)">
+  <button
+    onclick="mostrarPagina('vocabulario',this)"
+  >
     🧠 Vocabulário
   </button>
 
-  <button onclick="mostrarPagina('leitura',this)">
+  <button
+    onclick="mostrarPagina('leitura',this)"
+  >
     📖 Leitura
   </button>
 
-  <button onclick="mostrarPagina('conversa',this)">
-    💬 Conversação
+  <button
+    onclick="mostrarPagina('conversa',this)"
+  >
+    🎙️ Conversação
   </button>
 
-  <button onclick="mostrarPagina('perfil',this)">
+  <button
+    onclick="mostrarPagina('perfil',this)"
+  >
     👤 Perfil
   </button>
 
@@ -375,36 +879,130 @@ select{
 <main class="content">
 
 
-<!-- ================= INÍCIO ================= -->
+<!-- ===================================================
+     INÍCIO
+=================================================== -->
 
-<section id="inicio" class="page active">
+<section
+  id="inicio"
+  class="page active"
+>
 
   <div class="card">
 
-    <h2>Olá! 👋</h2>
+    <h2>
+      Welcome! 🇺🇸
+    </h2>
+
+    <p id="welcomeText">
+      Bem-vindo ao Family English.
+    </p>
+
+    <div class="dashboard-stats">
+
+      <div class="dashboard-stat">
+
+        <div class="dashboard-icon">
+          🔥
+        </div>
+
+        <div
+          class="dashboard-number"
+          id="homeStreak"
+        >
+          0
+        </div>
+
+        <div class="small">
+          dias seguidos
+        </div>
+
+      </div>
+
+
+      <div class="dashboard-stat">
+
+        <div class="dashboard-icon">
+          ⭐
+        </div>
+
+        <div
+          class="dashboard-number"
+          id="homeStars"
+        >
+          0
+        </div>
+
+        <div class="small">
+          semanas
+        </div>
+
+      </div>
+
+
+      <div class="dashboard-stat">
+
+        <div class="dashboard-icon">
+          ❤️
+        </div>
+
+        <div
+          class="dashboard-number"
+          id="homeLives"
+        >
+          30
+        </div>
+
+        <div class="small">
+          vidas
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>
+      🎯 Sua missão
+    </h2>
 
     <p>
-      Bem-vindo ao Family English.
-      Vamos aprender inglês de forma simples,
-      prática e progressiva.
+      Faça uma aula hoje para continuar
+      construindo sua sequência.
     </p>
 
     <div class="small">
-      Seu nível atual:
+      Nível atual:
     </div>
 
-    <h2 id="nivelAtual">A1 - Beginner</h2>
+    <h3 id="nivelAtual">
+      A1 — Beginner
+    </h3>
 
     <div class="progress">
-      <div class="progress-bar" id="progressHome"></div>
+
+      <div
+        class="progress-bar"
+        id="progressHome"
+      ></div>
+
     </div>
 
-    <p id="progressText">
+    <p
+      class="small"
+      id="progressText"
+    >
       0% concluído
     </p>
 
-    <button class="primary"
-      onclick="irParaAula()">
+    <button
+      class="primary"
+      onclick="irParaAula()"
+    >
       ▶️ Continuar estudando
     </button>
 
@@ -413,107 +1011,107 @@ select{
 
   <div class="card">
 
-    <h2>🎯 Sua missão de hoje</h2>
+    <h2>
+      🏆 Seu progresso
+    </h2>
 
     <p>
-      Complete uma pequena aula,
-      pratique vocabulário e converse em inglês.
+      ⭐ XP:
+      <strong id="homeXP">
+        0
+      </strong>
     </p>
 
-    <button class="primary"
-      onclick="irParaAula()">
-      Começar missão
-    </button>
+    <p>
+      📚 Aulas concluídas:
+      <strong id="homeLessons">
+        0
+      </strong>
+    </p>
 
-  </div>
-
-
-  <div class="card">
-
-    <h2>🏆 Conquistas</h2>
-
-    <div class="badges">
-
-      <div class="badge">
-        <div class="badge-icon">🌱</div>
-        <div>Primeiro passo</div>
-      </div>
-
-      <div class="badge">
-        <div class="badge-icon">📚</div>
-        <div>Estudante</div>
-      </div>
-
-      <div class="badge">
-        <div class="badge-icon">🔥</div>
-        <div>Sequência</div>
-      </div>
-
-    </div>
+    <p>
+      📅 Semanas acumuladas:
+      <strong id="homeWeeks">
+        0
+      </strong>
+    </p>
 
   </div>
 
 </section>
 
 
-<!-- ================= AULA ================= -->
+<!-- ===================================================
+     AULA
+=================================================== -->
 
-<section id="aula" class="page">
+<section
+  id="aula"
+  class="page"
+>
 
   <div class="card">
 
-    <h2 id="lessonTitle">
-      Lesson 1 — Greetings
-    </h2>
+    <div class="lesson-header">
 
-    <p>
-      Aprenda palavras e frases básicas.
-    </p>
+      <div>
 
-    <div class="lesson-word" id="lessonWord">
-      Hello
-    </div>
+        <h2>
+          📚 Lesson
+        </h2>
 
-    <div class="pronunciation">
-      /həˈloʊ/
-    </div>
+        <div
+          class="question-number"
+          id="questionNumber"
+        >
+          Questão 1
+        </div>
 
-    <div class="translation">
-      Olá
-    </div>
+      </div>
 
-    <div class="exercise">
-
-      <h3>
-        Qual é a tradução de "Hello"?
-      </h3>
-
-      <button class="option"
-        onclick="responder(this,false)">
-        Obrigado
-      </button>
-
-      <button class="option"
-        onclick="responder(this,true)">
-        Olá
-      </button>
-
-      <button class="option"
-        onclick="responder(this,false)">
-        Até amanhã
-      </button>
-
-      <button class="option"
-        onclick="responder(this,false)">
-        Por favor
-      </button>
+      <div
+        class="lesson-level"
+        id="lessonLevel"
+      >
+        A1
+      </div>
 
     </div>
 
-    <p id="feedback"></p>
 
-    <button class="primary"
-      onclick="proximaQuestao()">
+    <div
+      class="progress"
+    >
+
+      <div
+        class="progress-bar"
+        id="lessonProgress"
+      ></div>
+
+    </div>
+
+
+    <div
+      class="question"
+      id="question"
+    ></div>
+
+
+    <div id="options"></div>
+
+
+    <div
+      class="feedback"
+      id="feedback"
+    ></div>
+
+
+    <button
+      class="primary"
+      id="nextQuestion"
+      onclick="proximaQuestao()"
+      style="display:none"
+    >
       Próxima questão →
     </button>
 
@@ -522,80 +1120,134 @@ select{
 </section>
 
 
-<!-- ================= VOCABULÁRIO ================= -->
+<!-- ===================================================
+     VOCABULÁRIO
+=================================================== -->
 
-<section id="vocabulario" class="page">
+<section
+  id="vocabulario"
+  class="page"
+>
 
   <div class="card">
 
-    <h2>🧠 Vocabulário</h2>
+    <h2>
+      🧠 Vocabulary
+    </h2>
 
-    <p>
-      Revise palavras importantes para o seu nível.
-    </p>
+    <div
+      class="word"
+      id="vocabWord"
+    >
+      Hello
+    </div>
 
-    <h2>Hello</h2>
+    <div
+      class="translation"
+      id="vocabTranslation"
+    >
+      Olá
+    </div>
 
-    <p>
-      🇺🇸 Hello = Olá
-    </p>
+    <div
+      class="example"
+      id="vocabExample"
+    >
+      Hello, my name is John.
+    </div>
 
-    <p class="small">
-      Exemplo: Hello, my name is Rafael.
-    </p>
-
-    <button class="secondary"
-      onclick="falar('Hello')">
-      🔊 Ouvir
+    <button
+      class="secondary"
+      onclick="ouvirVocabulario()"
+    >
+      🔊 Ouvir em inglês
     </button>
 
-  </div>
-
-
-  <div class="card">
-
-    <h3>Palavras desta aula</h3>
-
-    <p>👋 Hello — Olá</p>
-    <p>😊 Happy — Feliz</p>
-    <p>🙏 Thank you — Obrigado</p>
-    <p>👋 Goodbye — Tchau</p>
+    <button
+      class="primary"
+      onclick="proximoVocabulario()"
+    >
+      Próxima palavra →
+    </button>
 
   </div>
 
 </section>
 
 
-<!-- ================= LEITURA ================= -->
+<!-- ===================================================
+     LEITURA
+=================================================== -->
 
-<section id="leitura" class="page">
+<section
+  id="leitura"
+  class="page"
+>
 
   <div class="card">
 
-    <h2>📖 Reading</h2>
+    <h2>
+      📖 Reading
+    </h2>
 
-    <h3>My Family</h3>
+    <h3>
+      My Family
+    </h3>
 
-    <p>
+    <div class="reading-text">
+
       Hello! My name is Anna.
       I live with my family.
-      I have a father, a mother and one brother.
+      I have a father, a mother and
+      one brother.
+
+      <br><br>
+
       We are a happy family.
-    </p>
+      We like to eat dinner together
+      and talk about our day.
 
-    <hr>
+    </div>
 
-    <h3>🇧🇷 Tradução</h3>
 
-    <p>
-      Olá! Meu nome é Anna.
-      Eu moro com minha família.
-      Eu tenho um pai, uma mãe e um irmão.
-      Nós somos uma família feliz.
-    </p>
+    <button
+      class="secondary"
+      onclick="ouvirTextoLeitura()"
+    >
+      🔊 Ouvir leitura
+    </button>
 
-    <button class="primary"
-      onclick="ganharXP(10)">
+
+    <div class="reading-translation">
+
+      <strong>
+        🇧🇷 Tradução
+      </strong>
+
+      <p>
+
+        Olá! Meu nome é Anna.
+        Eu moro com minha família.
+        Eu tenho um pai, uma mãe e
+        um irmão.
+
+      </p>
+
+      <p>
+
+        Nós somos uma família feliz.
+        Nós gostamos de jantar juntos
+        e conversar sobre nosso dia.
+
+      </p>
+
+    </div>
+
+
+    <button
+      class="primary"
+      onclick="concluirLeitura()"
+    >
       ✅ Completei a leitura
     </button>
 
@@ -604,26 +1256,43 @@ select{
 </section>
 
 
-<!-- ================= CONVERSAÇÃO ================= -->
+<!-- ===================================================
+     CONVERSAÇÃO
+=================================================== -->
 
-<section id="conversa" class="page">
+<section
+  id="conversa"
+  class="page"
+>
 
   <div class="card">
 
-    <h2>💬 Conversação com IA</h2>
+    <h2>
+      🎙️ English Conversation
+    </h2>
 
     <p class="small">
-      Converse com seu professor virtual de inglês.
+
+      Converse com seu professor de inglês.
+      Você pode digitar ou falar.
+
     </p>
 
-    <label>Gemini API Key</label>
+
+    <label>
+      Gemini API Key
+    </label>
 
     <input
       id="apiKey"
       type="password"
-      placeholder="Cole sua API Key aqui">
+      placeholder="Cole sua API Key aqui"
+    >
 
-    <select id="conversationLevel">
+
+    <select
+      id="conversationLevel"
+    >
 
       <option value="A1">
         A1 — Beginner
@@ -647,62 +1316,122 @@ select{
 
     </select>
 
+
     <div id="chat">
 
       <div class="msg bot">
+
         Hello! 👋
+
         I'm your Family English teacher.
+
         Tell me about yourself.
+
       </div>
 
     </div>
+
 
     <div class="chat-input">
 
       <input
         id="input"
-        placeholder="Digite em inglês...">
+        placeholder="Digite ou fale em inglês..."
+      >
 
-      <button onclick="enviar()">
-        Enviar
+      <button
+        id="voiceButton"
+        class="voice-button"
+        onclick="iniciarMicrofone()"
+        title="Falar"
+      >
+        🎙️
+      </button>
+
+      <button
+        class="send-button"
+        onclick="enviar()"
+      >
+        ➤
       </button>
 
     </div>
+
+
+    <p
+      class="small"
+      id="voiceStatus"
+    >
+      🎙️ Toque no microfone para falar.
+    </p>
 
   </div>
 
 </section>
 
 
-<!-- ================= PERFIL ================= -->
+<!-- ===================================================
+     PERFIL
+=================================================== -->
 
-<section id="perfil" class="page">
+<section
+  id="perfil"
+  class="page"
+>
 
   <div class="card">
 
-    <h2>👤 Meu perfil</h2>
+    <h2>
+      👤 Meu perfil
+    </h2>
 
-    <label>Nome</label>
+
+    <label>
+      Nome
+    </label>
 
     <input
       id="nome"
       type="text"
-      placeholder="Digite seu nome">
+      placeholder="Digite seu nome"
+    >
 
-    <label>Nível</label>
 
-    <select id="levelProfile">
+    <label>
+      Nível
+    </label>
 
-      <option value="A1">A1 — Beginner</option>
-      <option value="A2">A2 — Elementary</option>
-      <option value="B1">B1 — Intermediate</option>
-      <option value="B2">B2 — Upper Intermediate</option>
-      <option value="C1">C1 — Advanced</option>
+    <select
+      id="levelProfile"
+    >
+
+      <option value="A1">
+        A1 — Beginner
+      </option>
+
+      <option value="A2">
+        A2 — Elementary
+      </option>
+
+      <option value="B1">
+        B1 — Intermediate
+      </option>
+
+      <option value="B2">
+        B2 — Upper Intermediate
+      </option>
+
+      <option value="C1">
+        C1 — Advanced
+      </option>
 
     </select>
 
-    <button class="primary"
-      onclick="salvarPerfil()">
+
+    <button
+      class="primary"
+      onclick="salvarPerfil()"
+    >
       💾 Salvar perfil
     </button>
 
@@ -711,38 +1440,112 @@ select{
 
   <div class="card">
 
-    <h2>📊 Meu progresso</h2>
+    <h2>
+      📊 Estatísticas
+    </h2>
 
     <p>
       ⭐ XP:
-      <strong id="profileXP">0</strong>
+      <strong id="profileXP">
+        0
+      </strong>
     </p>
 
     <p>
       🔥 Dias consecutivos:
-      <strong id="profileStreak">0</strong>
+      <strong id="profileStreak">
+        0
+      </strong>
+    </p>
+
+    <p>
+      ⭐ Semanas acumuladas:
+      <strong id="profileStars">
+        0
+      </strong>
     </p>
 
     <p>
       📚 Aulas concluídas:
-      <strong id="lessonsDone">0</strong>
+      <strong id="lessonsDone">
+        0
+      </strong>
     </p>
 
     <p>
       🎯 Progresso:
-      <strong id="profileProgress">0%</strong>
+      <strong id="profileProgress">
+        0%
+      </strong>
     </p>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>
+      🏅 Conquistas
+    </h2>
+
+    <div class="badges">
+
+      <div class="badge">
+
+        <div class="badge-icon">
+          🔥
+        </div>
+
+        <div class="badge-title">
+          Primeiro dia
+        </div>
+
+      </div>
+
+
+      <div class="badge">
+
+        <div class="badge-icon">
+          ⭐
+        </div>
+
+        <div class="badge-title">
+          Primeira semana
+        </div>
+
+      </div>
+
+
+      <div class="badge">
+
+        <div class="badge-icon">
+          🗣️
+        </div>
+
+        <div class="badge-title">
+          Speaking
+        </div>
+
+      </div>
+
+    </div>
 
   </div>
 
 </section>
 
+
 </main>
 
 
 <div class="footer">
+
   Family English © 2026
+  <br>
+  Learn English. Speak with confidence.
+
 </div>
+
 
 </div>
 
@@ -750,22 +1553,377 @@ select{
 <script>
 
 /* =====================================================
-   DADOS DO USUÁRIO
+   DADOS
 ===================================================== */
 
-let dados = JSON.parse(
-  localStorage.getItem("familyEnglish")
-) || {
+const dadosPadrao = {
 
   nome:"",
   nivel:"A1",
+
   xp:0,
+
+  vidas:30,
+
   streak:0,
-  vidas:5,
+
+  stars:0,
+
+  aulas:0,
+
   progresso:0,
-  aulas:0
+
+  lastStudyDate:null,
+
+  weekStart:null,
+
+  weekDays:0,
+
+  totalStudyDays:0
 
 };
+
+
+let dados =
+  JSON.parse(
+    localStorage.getItem("familyEnglish")
+  ) || dadosPadrao;
+
+
+/* =====================================================
+   GARANTIR CAMPOS NOVOS
+===================================================== */
+
+Object.keys(dadosPadrao).forEach(function(campo){
+
+  if(
+    dados[campo] === undefined ||
+    dados[campo] === null
+  ){
+
+    dados[campo] =
+      dadosPadrao[campo];
+
+  }
+
+});
+
+
+/* =====================================================
+   QUESTÕES
+===================================================== */
+
+const questoes = [
+
+  {
+    level:"A1",
+    question:"What is the translation of \"Hello\"?",
+    options:[
+      "Obrigado",
+      "Olá",
+      "Até amanhã",
+      "Por favor"
+    ],
+    answer:1
+  },
+
+  {
+    level:"A1",
+    question:"How are you?",
+    options:[
+      "Qual é o seu nome?",
+      "Onde você mora?",
+      "Como você está?",
+      "Até amanhã."
+    ],
+    answer:2
+  },
+
+  {
+    level:"A1",
+    question:"What is your name?",
+    options:[
+      "Quantos anos você tem?",
+      "Qual é o seu nome?",
+      "Onde você trabalha?",
+      "Como você está?"
+    ],
+    answer:1
+  },
+
+  {
+    level:"A1",
+    question:"Choose the correct sentence:",
+    options:[
+      "My name are John.",
+      "My name is John.",
+      "My names John.",
+      "I name is John."
+    ],
+    answer:1
+  },
+
+  {
+    level:"A1",
+    question:"What does \"Thank you\" mean?",
+    options:[
+      "Obrigado",
+      "Desculpe",
+      "Olá",
+      "Tchau"
+    ],
+    answer:0
+  },
+
+  {
+    level:"A1",
+    question:"Choose the correct answer: \"Good morning!\"",
+    options:[
+      "Good night!",
+      "Good morning!",
+      "Goodbye!",
+      "Thank you!"
+    ],
+    answer:1
+  },
+
+  {
+    level:"A1",
+    question:"Complete: \"I ___ Brazilian.\"",
+    options:[
+      "am",
+      "is",
+      "are",
+      "be"
+    ],
+    answer:0
+  },
+
+  {
+    level:"A1",
+    question:"What does \"family\" mean?",
+    options:[
+      "Escola",
+      "Trabalho",
+      "Família",
+      "Casa"
+    ],
+    answer:2
+  },
+
+  {
+    level:"A1",
+    question:"Complete: \"She ___ my sister.\"",
+    options:[
+      "am",
+      "are",
+      "is",
+      "be"
+    ],
+    answer:2
+  },
+
+  {
+    level:"A1",
+    question:"Choose the correct sentence:",
+    options:[
+      "I have two brothers.",
+      "I has two brothers.",
+      "I having two brothers.",
+      "I am have two brothers."
+    ],
+    answer:0
+  },
+
+  {
+    level:"A1",
+    question:"What does \"Goodbye\" mean?",
+    options:[
+      "Bom dia",
+      "Obrigado",
+      "Tchau",
+      "Desculpe"
+    ],
+    answer:2
+  },
+
+  {
+    level:"A1",
+    question:"Complete: \"They ___ happy.\"",
+    options:[
+      "is",
+      "am",
+      "are",
+      "be"
+    ],
+    answer:2
+  },
+
+  {
+    level:"A2",
+    question:"Choose the correct sentence:",
+    options:[
+      "I usually wake up at seven.",
+      "I usually wakes up at seven.",
+      "I usually waking at seven.",
+      "I wake usually up seven."
+    ],
+    answer:0
+  },
+
+  {
+    level:"A2",
+    question:"What does \"I work from Monday to Friday\" mean?",
+    options:[
+      "Eu descanso de segunda a sexta.",
+      "Eu trabalho de segunda a sexta.",
+      "Eu estudo de segunda a sexta.",
+      "Eu viajo de segunda a sexta."
+    ],
+    answer:1
+  },
+
+  {
+    level:"A2",
+    question:"Complete: \"She ___ coffee every morning.\"",
+    options:[
+      "drink",
+      "drinks",
+      "drinking",
+      "drunk"
+    ],
+    answer:1
+  },
+
+  {
+    level:"B1",
+    question:"Choose the best sentence:",
+    options:[
+      "I have been studying English for two years.",
+      "I am study English for two years.",
+      "I studied English since two years.",
+      "I have study English two years."
+    ],
+    answer:0
+  },
+
+  {
+    level:"B1",
+    question:"What is the best response to \"What do you do?\"",
+    options:[
+      "I'm fine, thank you.",
+      "I'm a mechanic.",
+      "I'm at home.",
+      "It's Monday."
+    ],
+    answer:1
+  },
+
+  {
+    level:"B2",
+    question:"Choose the most natural sentence:",
+    options:[
+      "If I had more time, I would travel more.",
+      "If I have more time, I would traveled more.",
+      "If I had more time, I will travel more.",
+      "If I have had time, I travel more."
+    ],
+    answer:0
+  },
+
+  {
+    level:"B2",
+    question:"Which word best completes the sentence? \"She has ___ finished her work.\"",
+    options:[
+      "already",
+      "yet",
+      "still",
+      "ever"
+    ],
+    answer:0
+  },
+
+  {
+    level:"C1",
+    question:"Choose the most appropriate expression:",
+    options:[
+      "Despite of the rain, we went out.",
+      "Despite the rain, we went out.",
+      "Although of the rain, we went out.",
+      "In spite the rain, we went out."
+    ],
+    answer:1
+  }
+
+];
+
+
+/* =====================================================
+   QUESTÃO ATUAL
+===================================================== */
+
+let indiceQuestao = 0;
+
+let respondeu = false;
+
+
+/* =====================================================
+   VOCABULÁRIO
+===================================================== */
+
+const vocabulario = [
+
+  {
+    word:"Hello",
+    translation:"Olá",
+    example:"Hello, my name is John."
+  },
+
+  {
+    word:"Family",
+    translation:"Família",
+    example:"My family is very important to me."
+  },
+
+  {
+    word:"Friend",
+    translation:"Amigo",
+    example:"John is my best friend."
+  },
+
+  {
+    word:"Happy",
+    translation:"Feliz",
+    example:"We are happy today."
+  },
+
+  {
+    word:"Work",
+    translation:"Trabalhar / trabalho",
+    example:"I work from Monday to Friday."
+  },
+
+  {
+    word:"Travel",
+    translation:"Viajar",
+    example:"I love to travel."
+  },
+
+  {
+    word:"Learn",
+    translation:"Aprender",
+    example:"I want to learn English."
+  },
+
+  {
+    word:"Speak",
+    translation:"Falar",
+    example:"I speak English."
+  }
+
+];
+
+let indiceVocabulario = 0;
 
 
 /* =====================================================
@@ -780,57 +1938,335 @@ function salvarDados(){
   );
 
   atualizarTela();
+
 }
 
 
 /* =====================================================
-   ATUALIZAR TELA
+   DATA LOCAL
+===================================================== */
+
+function dataLocal(){
+
+  const agora = new Date();
+
+  const ano =
+    agora.getFullYear();
+
+  const mes =
+    String(
+      agora.getMonth()+1
+    ).padStart(2,"0");
+
+  const dia =
+    String(
+      agora.getDate()
+    ).padStart(2,"0");
+
+  return ano + "-" + mes + "-" + dia;
+
+}
+
+
+/* =====================================================
+   DIFERENÇA DE DIAS
+===================================================== */
+
+function diferencaDias(data1,data2){
+
+  const a =
+    new Date(
+      data1 + "T00:00:00"
+    );
+
+  const b =
+    new Date(
+      data2 + "T00:00:00"
+    );
+
+  return Math.round(
+    (
+      b.getTime() -
+      a.getTime()
+    ) /
+    86400000
+  );
+
+}
+
+
+/* =====================================================
+   REGISTRAR ESTUDO
+===================================================== */
+
+function registrarEstudo(){
+
+  const hoje =
+    dataLocal();
+
+
+  /* Primeiro acesso */
+
+  if(!dados.lastStudyDate){
+
+    dados.lastStudyDate =
+      hoje;
+
+    dados.streak = 1;
+
+    dados.totalStudyDays = 1;
+
+    dados.weekStart = hoje;
+
+    dados.weekDays = 1;
+
+    salvarDados();
+
+    return;
+
+  }
+
+
+  const diferenca =
+    diferencaDias(
+      dados.lastStudyDate,
+      hoje
+    );
+
+
+  /* Mesmo dia */
+
+  if(diferenca === 0){
+
+    return;
+
+  }
+
+
+  /* Dia seguinte */
+
+  if(diferenca === 1){
+
+    dados.streak++;
+
+  }else{
+
+    /*
+      Quebrou a sequência.
+      O fogo volta para 1,
+      mas as estrelas NÃO diminuem.
+    */
+
+    dados.streak = 1;
+
+  }
+
+
+  dados.totalStudyDays++;
+
+
+  /* =================================================
+     CONTROLE DAS SEMANAS
+  ================================================= */
+
+  if(!dados.weekStart){
+
+    dados.weekStart =
+      hoje;
+
+    dados.weekDays = 1;
+
+  }else{
+
+    const diasDesdeInicio =
+      diferencaDias(
+        dados.weekStart,
+        hoje
+      );
+
+
+    if(
+      diasDesdeInicio >= 7
+    ){
+
+      /*
+        Cada bloco de 7 dias
+        de estudo gera uma estrela.
+
+        As estrelas são cumulativas.
+      */
+
+      const semanasCompletas =
+        Math.floor(
+          diasDesdeInicio / 7
+        );
+
+      dados.stars +=
+        semanasCompletas;
+
+      dados.weekStart =
+        hoje;
+
+      dados.weekDays = 1;
+
+    }else{
+
+      dados.weekDays++;
+
+    }
+
+  }
+
+
+  salvarDados();
+
+}
+
+
+/* =====================================================
+   ATUALIZAR INTERFACE
 ===================================================== */
 
 function atualizarTela(){
 
-  document.getElementById("xp").innerText =
-    dados.xp;
-
-  document.getElementById("streak").innerText =
+  document.getElementById(
+    "streak"
+  ).innerText =
     dados.streak;
 
-  document.getElementById("lives").innerText =
+
+  document.getElementById(
+    "stars"
+  ).innerText =
+    dados.stars;
+
+
+  document.getElementById(
+    "lives"
+  ).innerText =
     dados.vidas;
 
-  document.getElementById("profileXP").innerText =
-    dados.xp;
 
-  document.getElementById("profileStreak").innerText =
+  document.getElementById(
+    "homeStreak"
+  ).innerText =
     dados.streak;
 
-  document.getElementById("lessonsDone").innerText =
+
+  document.getElementById(
+    "homeStars"
+  ).innerText =
+    dados.stars;
+
+
+  document.getElementById(
+    "homeLives"
+  ).innerText =
+    dados.vidas;
+
+
+  document.getElementById(
+    "homeXP"
+  ).innerText =
+    dados.xp;
+
+
+  document.getElementById(
+    "homeLessons"
+  ).innerText =
     dados.aulas;
 
-  document.getElementById("profileProgress").innerText =
+
+  document.getElementById(
+    "homeWeeks"
+  ).innerText =
+    dados.stars;
+
+
+  document.getElementById(
+    "profileXP"
+  ).innerText =
+    dados.xp;
+
+
+  document.getElementById(
+    "profileStreak"
+  ).innerText =
+    dados.streak;
+
+
+  document.getElementById(
+    "profileStars"
+  ).innerText =
+    dados.stars;
+
+
+  document.getElementById(
+    "lessonsDone"
+  ).innerText =
+    dados.aulas;
+
+
+  document.getElementById(
+    "profileProgress"
+  ).innerText =
     dados.progresso + "%";
 
-  document.getElementById("progressHome").style.width =
+
+  document.getElementById(
+    "progressHome"
+  ).style.width =
     dados.progresso + "%";
 
-  document.getElementById("progressText").innerText =
+
+  document.getElementById(
+    "progressText"
+  ).innerText =
     dados.progresso + "% concluído";
 
-  document.getElementById("nivelAtual").innerText =
-    dados.nivel + " — " +
+
+  document.getElementById(
+    "nivelAtual"
+  ).innerText =
+    dados.nivel +
+    " — " +
     nomeNivel(dados.nivel);
 
-  document.getElementById("nome").value =
+
+  document.getElementById(
+    "lessonLevel"
+  ).innerText =
+    dados.nivel;
+
+
+  document.getElementById(
+    "nome"
+  ).value =
     dados.nome;
 
-  document.getElementById("levelProfile").value =
+
+  document.getElementById(
+    "levelProfile"
+  ).value =
     dados.nivel;
+
+
+  if(dados.nome){
+
+    document.getElementById(
+      "welcomeText"
+    ).innerText =
+      "Olá, " +
+      dados.nome +
+      "! Vamos continuar aprendendo inglês.";
+
+  }
 
 }
 
 
 /* =====================================================
-   NÍVEL
+   NOME DO NÍVEL
 ===================================================== */
 
 function nomeNivel(nivel){
@@ -838,14 +2274,20 @@ function nomeNivel(nivel){
   const nomes = {
 
     A1:"Beginner",
+
     A2:"Elementary",
+
     B1:"Intermediate",
+
     B2:"Upper Intermediate",
+
     C1:"Advanced"
 
   };
 
-  return nomes[nivel] || "Beginner";
+  return nomes[nivel] ||
+    "Beginner";
+
 }
 
 
@@ -853,86 +2295,381 @@ function nomeNivel(nivel){
    NAVEGAÇÃO
 ===================================================== */
 
-function mostrarPagina(id,botao){
+function mostrarPagina(
+  id,
+  botao
+){
 
-  document.querySelectorAll(".page")
-    .forEach(p => p.classList.remove("active"));
+  document
+    .querySelectorAll(".page")
+    .forEach(function(page){
 
-  document.getElementById(id)
+      page.classList.remove(
+        "active"
+      );
+
+    });
+
+
+  document
+    .getElementById(id)
     .classList.add("active");
 
-  document.querySelectorAll(".menu button")
-    .forEach(b => b.classList.remove("active"));
+
+  document
+    .querySelectorAll(".menu button")
+    .forEach(function(button){
+
+      button.classList.remove(
+        "active"
+      );
+
+    });
+
 
   if(botao){
-    botao.classList.add("active");
+
+    botao.classList.add(
+      "active"
+    );
+
   }
 
-  window.scrollTo(0,0);
+
+  window.scrollTo(
+    0,
+    0
+  );
+
+
+  if(id === "aula"){
+
+    carregarQuestao();
+
+  }
+
 }
 
 
 function irParaAula(){
 
   const botoes =
-    document.querySelectorAll(".menu button");
+    document.querySelectorAll(
+      ".menu button"
+    );
 
-  mostrarPagina("aula",botoes[1]);
+  mostrarPagina(
+    "aula",
+    botoes[1]
+  );
 
 }
 
 
 /* =====================================================
-   EXERCÍCIO
+   FILTRAR QUESTÕES POR NÍVEL
 ===================================================== */
 
-function responder(botao,correto){
+function obterQuestoesDoNivel(){
 
-  document
-    .querySelectorAll(".option")
-    .forEach(b => b.disabled = true);
+  let lista =
+    questoes.filter(
+      function(q){
+
+        return q.level ===
+          dados.nivel;
+
+      }
+    );
+
+
+  /*
+    Se ainda não houver
+    questões suficientes para
+    o nível selecionado,
+    usa A1 como base.
+  */
+
+  if(lista.length === 0){
+
+    lista =
+      questoes.filter(
+        function(q){
+
+          return q.level === "A1";
+
+        }
+      );
+
+  }
+
+
+  return lista;
+
+}
+
+
+/* =====================================================
+   CARREGAR QUESTÃO
+===================================================== */
+
+function carregarQuestao(){
+
+  const lista =
+    obterQuestoesDoNivel();
+
+
+  /*
+    Faz a questão mudar
+    automaticamente.
+  */
+
+  indiceQuestao =
+    indiceQuestao %
+    lista.length;
+
+
+  const q =
+    lista[indiceQuestao];
+
+
+  respondeu = false;
+
+
+  document.getElementById(
+    "questionNumber"
+  ).innerText =
+    "Questão " +
+    (indiceQuestao + 1) +
+    " de " +
+    lista.length;
+
+
+  document.getElementById(
+    "question"
+  ).innerText =
+    q.question;
+
+
+  document.getElementById(
+    "feedback"
+  ).innerText =
+    "";
+
+
+  document.getElementById(
+    "nextQuestion"
+  ).style.display =
+    "none";
+
+
+  const options =
+    document.getElementById(
+      "options"
+    );
+
+
+  options.innerHTML = "";
+
+
+  q.options.forEach(
+    function(optionText,index){
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.className =
+        "option";
+
+      button.innerText =
+        optionText;
+
+      button.onclick =
+        function(){
+
+          responderQuestao(
+            button,
+            index === q.answer
+          );
+
+        };
+
+
+      options.appendChild(
+        button
+      );
+
+    }
+  );
+
+
+  const progresso =
+    (
+      indiceQuestao /
+      lista.length
+    ) * 100;
+
+
+  document.getElementById(
+    "lessonProgress"
+  ).style.width =
+    progresso + "%";
+
+}
+
+
+/* =====================================================
+   RESPONDER QUESTÃO
+===================================================== */
+
+function responderQuestao(
+  button,
+  correto
+){
+
+  if(respondeu){
+
+    return;
+
+  }
+
+
+  respondeu = true;
+
+
+  const botoes =
+    document.querySelectorAll(
+      ".option"
+    );
+
+
+  botoes.forEach(
+    function(b){
+
+      b.disabled = true;
+
+    }
+  );
+
 
   if(correto){
 
-    botao.classList.add("correct");
+    button.classList.add(
+      "correct"
+    );
 
-    document.getElementById("feedback").innerText =
+
+    document.getElementById(
+      "feedback"
+    ).innerText =
       "🎉 Excellent! Correct answer!";
+
 
     ganharXP(10);
 
+
   }else{
 
-    botao.classList.add("wrong");
+    button.classList.add(
+      "wrong"
+    );
 
-    dados.vidas--;
 
-    if(dados.vidas < 0){
-      dados.vidas = 0;
-    }
+    dados.vidas =
+      Math.max(
+        0,
+        dados.vidas - 1
+      );
 
-    document.getElementById("feedback").innerText =
-      "❌ Not quite. Try again next time.";
+
+    document.getElementById(
+      "feedback"
+    ).innerText =
+      "❌ Not quite. You lost 1 life.";
+
+
+    /*
+      Mostra qual era
+      a resposta correta.
+    */
+
+    const lista =
+      obterQuestoesDoNivel();
+
+
+    const q =
+      lista[indiceQuestao];
+
+
+    botoes.forEach(
+      function(b){
+
+        if(
+          b.innerText ===
+          q.options[q.answer]
+        ){
+
+          b.classList.add(
+            "correct"
+          );
+
+        }
+
+      }
+    );
+
 
     salvarDados();
 
   }
 
+
+  document.getElementById(
+    "nextQuestion"
+  ).style.display =
+    "block";
+
 }
 
 
+/* =====================================================
+   PRÓXIMA QUESTÃO
+===================================================== */
+
 function proximaQuestao(){
 
-  document
-    .querySelectorAll(".option")
-    .forEach(b => {
+  const lista =
+    obterQuestoesDoNivel();
 
-      b.disabled = false;
-      b.classList.remove("correct","wrong");
 
-    });
+  indiceQuestao++;
 
-  document.getElementById("feedback").innerText = "";
+
+  if(
+    indiceQuestao >=
+    lista.length
+  ){
+
+    indiceQuestao = 0;
+
+    dados.aulas++;
+
+    dados.progresso =
+      Math.min(
+        100,
+        dados.progresso + 5
+      );
+
+    ganharXP(20);
+
+  }
+
+
+  registrarEstudo();
+
+  carregarQuestao();
 
 }
 
@@ -945,14 +2682,179 @@ function ganharXP(valor){
 
   dados.xp += valor;
 
-  if(dados.xp >= 100){
 
-    dados.progresso =
-      Math.min(100,dados.progresso + 10);
+  /*
+    Progresso baseado em XP.
+  */
+
+  dados.progresso =
+    Math.min(
+      100,
+      Math.floor(
+        dados.xp / 10
+      )
+    );
+
+
+  salvarDados();
+
+}
+
+
+/* =====================================================
+   LEITURA CONCLUÍDA
+===================================================== */
+
+function concluirLeitura(){
+
+  registrarEstudo();
+
+  ganharXP(10);
+
+  alert(
+    "Reading completed! +10 XP 🎉"
+  );
+
+}
+
+
+/* =====================================================
+   VOCABULÁRIO
+===================================================== */
+
+function carregarVocabulario(){
+
+  const item =
+    vocabulario[
+      indiceVocabulario
+    ];
+
+
+  document.getElementById(
+    "vocabWord"
+  ).innerText =
+    item.word;
+
+
+  document.getElementById(
+    "vocabTranslation"
+  ).innerText =
+    item.translation;
+
+
+  document.getElementById(
+    "vocabExample"
+  ).innerText =
+    item.example;
+
+}
+
+
+function proximoVocabulario(){
+
+  indiceVocabulario++;
+
+
+  if(
+    indiceVocabulario >=
+    vocabulario.length
+  ){
+
+    indiceVocabulario = 0;
 
   }
 
-  salvarDados();
+
+  carregarVocabulario();
+
+  registrarEstudo();
+
+  ganharXP(3);
+
+}
+
+
+function ouvirVocabulario(){
+
+  falarTexto(
+    document.getElementById(
+      "vocabWord"
+    ).innerText,
+    "en-US"
+  );
+
+}
+
+
+/* =====================================================
+   ÁUDIO
+===================================================== */
+
+function falarTexto(
+  texto,
+  idioma
+){
+
+  if(
+    !("speechSynthesis" in window)
+  ){
+
+    alert(
+      "Seu navegador não possui suporte para áudio."
+    );
+
+    return;
+
+  }
+
+
+  speechSynthesis.cancel();
+
+
+  const fala =
+    new SpeechSynthesisUtterance(
+      texto
+    );
+
+
+  fala.lang =
+    idioma || "en-US";
+
+
+  fala.rate =
+    0.9;
+
+
+  speechSynthesis.speak(
+    fala
+  );
+
+}
+
+
+function ouvirTextoLeitura(){
+
+  const texto =
+
+    "Hello! My name is Anna. " +
+
+    "I live with my family. " +
+
+    "I have a father, a mother " +
+
+    "and one brother. " +
+
+    "We are a happy family. " +
+
+    "We like to eat dinner together " +
+
+    "and talk about our day.";
+
+
+  falarTexto(
+    texto,
+    "en-US"
+  );
 
 }
 
@@ -964,38 +2866,26 @@ function ganharXP(valor){
 function salvarPerfil(){
 
   dados.nome =
-    document.getElementById("nome").value;
+    document.getElementById(
+      "nome"
+    ).value.trim();
+
 
   dados.nivel =
-    document.getElementById("levelProfile").value;
+    document.getElementById(
+      "levelProfile"
+    ).value;
+
+
+  indiceQuestao = 0;
+
 
   salvarDados();
 
-  alert("Perfil salvo com sucesso! 🎉");
 
-}
-
-
-/* =====================================================
-   ÁUDIO
-===================================================== */
-
-function falar(texto){
-
-  if(!("speechSynthesis" in window)){
-
-    alert("Seu navegador não suporta áudio.");
-
-    return;
-
-  }
-
-  const fala =
-    new SpeechSynthesisUtterance(texto);
-
-  fala.lang = "en-US";
-
-  speechSynthesis.speak(fala);
+  alert(
+    "Profile saved successfully! 🇺🇸"
+  );
 
 }
 
@@ -1011,56 +2901,81 @@ const GEMINI_URL =
 async function enviar(){
 
   const key =
-    document.getElementById("apiKey").value.trim();
+    document.getElementById(
+      "apiKey"
+    ).value.trim();
+
 
   const text =
-    document.getElementById("input").value.trim();
+    document.getElementById(
+      "input"
+    ).value.trim();
+
 
   const level =
-    document.getElementById("conversationLevel").value;
+    document.getElementById(
+      "conversationLevel"
+    ).value;
+
 
   if(!key){
 
-    alert("Cole sua API Key do Gemini.");
+    alert(
+      "Cole sua API Key do Gemini."
+    );
 
     return;
 
   }
+
 
   if(!text){
+
     return;
+
   }
 
 
-  addMsg(text,"user");
+  addMsg(
+    text,
+    "user"
+  );
 
-  document.getElementById("input").value = "";
+
+  document.getElementById(
+    "input"
+  ).value = "";
 
 
   const prompt = `
 
 You are the Family English AI teacher.
 
-Teach American English to a Brazilian student.
+You teach American English to Brazilian students.
 
 Student level: ${level}
 
-Rules:
+Your job is to help the student become fluent.
+
+RULES:
 
 1. Speak at the student's level.
-2. Keep conversations natural.
-3. Correct important grammar mistakes.
-4. Explain corrections in Portuguese.
-5. Encourage the student.
-6. Ask one question at the end.
-7. Do not make the answer unnecessarily long.
+2. Use natural American English.
+3. Keep the conversation practical.
+4. Correct important grammar mistakes.
+5. Explain corrections briefly in Portuguese.
+6. Encourage the student.
+7. Ask ONE question at the end.
+8. If the student uses Portuguese, help them express the idea in English.
+9. Do not make the conversation unnecessarily difficult.
+10. Focus on communication.
 
-Format corrections like:
+When correcting, use:
 
 Correction:
 [PT: explanation in Portuguese]
 
-Student message:
+Student said:
 ${text}
 
 `;
@@ -1068,49 +2983,63 @@ ${text}
 
   try{
 
-    const res =
-      await fetch(GEMINI_URL + encodeURIComponent(key),{
+    const response =
+      await fetch(
+        GEMINI_URL +
+        encodeURIComponent(key),
+        {
 
-        method:"POST",
+          method:"POST",
 
-        headers:{
-          "Content-Type":"application/json"
-        },
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
 
-        body:JSON.stringify({
+          body:
+            JSON.stringify({
 
-          contents:[{
+              contents:[
 
-            parts:[{
+                {
 
-              text:prompt
+                  parts:[
 
-            }]
+                    {
+                      text:prompt
+                    }
 
-          }]
+                  ]
 
-        })
+                }
 
-      });
+              ]
+
+            })
+
+        }
+      );
 
 
     const data =
-      await res.json();
+      await response.json();
 
 
-    if(!res.ok){
+    if(!response.ok){
 
       throw new Error(
         data?.error?.message ||
-        "Erro na API"
+        "Erro na API."
       );
 
     }
 
 
     const resposta =
-      data.candidates?.[0]
-      ?.content?.parts?.[0]?.text;
+      data
+        ?.candidates?.[0]
+        ?.content?.parts?.[0]
+        ?.text;
 
 
     if(!resposta){
@@ -1122,15 +3051,22 @@ ${text}
     }
 
 
-    addMsg(resposta,"bot");
+    addMsg(
+      resposta,
+      "bot"
+    );
+
+
+    registrarEstudo();
 
     ganharXP(5);
 
 
-  }catch(erro){
+  }catch(error){
 
     addMsg(
-      "⚠️ Erro: " + erro.message,
+      "⚠️ " +
+      error.message,
       "bot"
     );
 
@@ -1143,24 +3079,198 @@ ${text}
    CHAT
 ===================================================== */
 
-function addMsg(texto,classe){
+function addMsg(
+  texto,
+  classe
+){
 
   const div =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   div.className =
-    "msg " + classe;
+    "msg " +
+    classe;
+
 
   div.innerText =
     texto;
 
-  const chat =
-    document.getElementById("chat");
 
-  chat.appendChild(div);
+  const chat =
+    document.getElementById(
+      "chat"
+    );
+
+
+  chat.appendChild(
+    div
+  );
+
 
   chat.scrollTop =
     chat.scrollHeight;
+
+}
+
+
+/* =====================================================
+   MICROFONE
+===================================================== */
+
+let reconhecimento = null;
+
+let ouvindo = false;
+
+
+function iniciarMicrofone(){
+
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+  if(!SpeechRecognition){
+
+    alert(
+      "Seu navegador não oferece reconhecimento de voz. Tente usar Google Chrome ou Microsoft Edge."
+    );
+
+    return;
+
+  }
+
+
+  if(ouvindo){
+
+    if(reconhecimento){
+
+      reconhecimento.stop();
+
+    }
+
+    return;
+
+  }
+
+
+  reconhecimento =
+    new SpeechRecognition();
+
+
+  reconhecimento.lang =
+    "en-US";
+
+
+  reconhecimento.continuous =
+    false;
+
+
+  reconhecimento.interimResults =
+    true;
+
+
+  reconhecimento.maxAlternatives =
+    1;
+
+
+  reconhecimento.onstart =
+    function(){
+
+      ouvindo = true;
+
+
+      document
+        .getElementById(
+          "voiceButton"
+        )
+        .classList.add(
+          "listening"
+        );
+
+
+      document.getElementById(
+        "voiceStatus"
+      ).innerText =
+        "🎙️ Listening... speak in English.";
+
+    };
+
+
+  reconhecimento.onresult =
+    function(event){
+
+      let texto = "";
+
+
+      for(
+        let i =
+          event.resultIndex;
+
+        i <
+          event.results.length;
+
+        i++
+      ){
+
+        texto +=
+          event.results[i][0]
+            .transcript;
+
+      }
+
+
+      document.getElementById(
+        "input"
+      ).value =
+        texto;
+
+    };
+
+
+  reconhecimento.onerror =
+    function(event){
+
+      console.log(
+        "Voice error:",
+        event.error
+      );
+
+
+      document.getElementById(
+        "voiceStatus"
+      ).innerText =
+        "⚠️ Não foi possível reconhecer sua fala.";
+
+    };
+
+
+  reconhecimento.onend =
+    function(){
+
+      ouvindo = false;
+
+
+      document
+        .getElementById(
+          "voiceButton"
+        )
+        .classList.remove(
+          "listening"
+        );
+
+
+      document.getElementById(
+        "voiceStatus"
+      ).innerText =
+        "🎙️ Fala reconhecida. Você pode enviar ou editar.";
+
+    };
+
+
+  reconhecimento.start();
 
 }
 
@@ -1170,49 +3280,96 @@ function addMsg(texto,classe){
 ===================================================== */
 
 document
-  .getElementById("input")
-  .addEventListener("keydown",function(event){
+  .getElementById(
+    "input"
+  )
+  .addEventListener(
+    "keydown",
+    function(event){
 
-    if(event.key === "Enter"){
+      if(
+        event.key === "Enter"
+      ){
 
-      enviar();
+        enviar();
+
+      }
 
     }
-
-  });
+  );
 
 
 /* =====================================================
    INICIALIZAÇÃO
 ===================================================== */
 
+carregarVocabulario();
+
 atualizarTela();
+
+
+/*
+  Registra estudo somente
+  quando o usuário realmente
+  começa uma atividade.
+*/
+
+document
+  .querySelectorAll(
+    ".menu button"
+  )
+  .forEach(function(button){
+
+    button.addEventListener(
+      "click",
+      function(){
+
+        /*
+          Não registra apenas
+          por abrir o menu.
+        */
+
+      }
+    );
+
+  });
 
 
 /* =====================================================
    SERVICE WORKER
 ===================================================== */
 
-if("serviceWorker" in navigator){
+if(
+  "serviceWorker" in navigator
+){
 
-  window.addEventListener("load",function(){
+  window.addEventListener(
+    "load",
+    function(){
 
-    navigator.serviceWorker
-      .register("sw.js")
-      .catch(function(error){
+      navigator
+        .serviceWorker
+        .register(
+          "sw.js"
+        )
+        .catch(
+          function(error){
 
-        console.log(
-          "Service Worker:",
-          error
+            console.log(
+              "Service Worker:",
+              error
+            );
+
+          }
         );
 
-      });
-
-  });
+    }
+  );
 
 }
 
 </script>
 
 </body>
+
 </html>
