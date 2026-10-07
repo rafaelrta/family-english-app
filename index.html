@@ -234,6 +234,11 @@ h3{
   background:#082f70;
 }
 
+.primary:disabled{
+  background:#94a3b8;
+  cursor:not-allowed;
+}
+
 .secondary{
   width:100%;
 
@@ -480,6 +485,25 @@ h3{
   font-weight:bold;
 }
 
+.lives-warning{
+  background:#fff1f2;
+
+  color:#be123c;
+
+  border:
+    1px solid #fecdd3;
+
+  padding:12px;
+
+  border-radius:12px;
+
+  margin-top:12px;
+
+  font-weight:bold;
+
+  text-align:center;
+}
+
 /* =====================================================
    VOCABULÁRIO
 ===================================================== */
@@ -513,6 +537,8 @@ h3{
   padding:12px;
 
   border-radius:8px;
+
+  line-height:1.5;
 }
 
 /* =====================================================
@@ -1160,7 +1186,7 @@ hr{
       class="secondary"
       onclick="ouvirVocabulario()"
     >
-      🔊 Ouvir em inglês
+      🔊 Ouvir palavra + exemplo
     </button>
 
     <button
@@ -1565,6 +1591,8 @@ const dadosPadrao = {
 
   vidas:30,
 
+  ultimaRenovacaoVidas:null,
+
   streak:0,
 
   stars:0,
@@ -1587,7 +1615,7 @@ const dadosPadrao = {
 let dados =
   JSON.parse(
     localStorage.getItem("familyEnglish")
-  ) || dadosPadrao;
+  ) || {...dadosPadrao};
 
 
 /* =====================================================
@@ -1996,6 +2024,80 @@ function diferencaDias(data1,data2){
 
 
 /* =====================================================
+   RENOVAÇÃO DAS VIDAS
+   30 VIDAS A CADA 24 HORAS
+===================================================== */
+
+function verificarRenovacaoVidas(){
+
+  const agora =
+    Date.now();
+
+
+  /*
+    Primeiro registro do sistema
+  */
+
+  if(!dados.ultimaRenovacaoVidas){
+
+    dados.ultimaRenovacaoVidas =
+      agora;
+
+    /*
+      Se for a primeira utilização,
+      garante as 30 vidas.
+    */
+
+    dados.vidas = 30;
+
+    localStorage.setItem(
+      "familyEnglish",
+      JSON.stringify(dados)
+    );
+
+    atualizarTela();
+
+    return;
+
+  }
+
+
+  const vinteQuatroHoras =
+    24 * 60 * 60 * 1000;
+
+
+  const tempoPassado =
+    agora -
+    dados.ultimaRenovacaoVidas;
+
+
+  /*
+    Passaram 24 horas.
+  */
+
+  if(
+    tempoPassado >=
+    vinteQuatroHoras
+  ){
+
+    dados.vidas = 30;
+
+    dados.ultimaRenovacaoVidas =
+      agora;
+
+    localStorage.setItem(
+      "familyEnglish",
+      JSON.stringify(dados)
+    );
+
+    atualizarTela();
+
+  }
+
+}
+
+
+/* =====================================================
    REGISTRAR ESTUDO
 ===================================================== */
 
@@ -2005,7 +2107,9 @@ function registrarEstudo(){
     dataLocal();
 
 
-  /* Primeiro acesso */
+  /*
+    Primeiro acesso
+  */
 
   if(!dados.lastStudyDate){
 
@@ -2034,7 +2138,9 @@ function registrarEstudo(){
     );
 
 
-  /* Mesmo dia */
+  /*
+    Mesmo dia
+  */
 
   if(diferenca === 0){
 
@@ -2043,7 +2149,9 @@ function registrarEstudo(){
   }
 
 
-  /* Dia seguinte */
+  /*
+    Dia seguinte
+  */
 
   if(diferenca === 1){
 
@@ -2053,8 +2161,8 @@ function registrarEstudo(){
 
     /*
       Quebrou a sequência.
-      O fogo volta para 1,
-      mas as estrelas NÃO diminuem.
+      O fogo volta para 1.
+      As estrelas nunca diminuem.
     */
 
     dados.streak = 1;
@@ -2078,40 +2186,50 @@ function registrarEstudo(){
 
   }else{
 
-    const diasDesdeInicio =
-      diferencaDias(
-        dados.weekStart,
-        hoje
-      );
+    /*
+      Se estudou no dia seguinte,
+      continua a sequência semanal.
+    */
 
+    if(diferenca === 1){
 
-    if(
-      diasDesdeInicio >= 7
-    ){
+      dados.weekDays++;
+
+    }else{
 
       /*
-        Cada bloco de 7 dias
-        de estudo gera uma estrela.
-
-        As estrelas são cumulativas.
+        Houve uma interrupção.
+        Começa uma nova sequência semanal.
       */
-
-      const semanasCompletas =
-        Math.floor(
-          diasDesdeInicio / 7
-        );
-
-      dados.stars +=
-        semanasCompletas;
 
       dados.weekStart =
         hoje;
 
       dados.weekDays = 1;
 
-    }else{
+    }
 
-      dados.weekDays++;
+
+    /*
+      Completou 7 dias consecutivos.
+      Ganha uma estrela.
+    */
+
+    if(
+      dados.weekDays >= 7
+    ){
+
+      dados.stars++;
+
+      /*
+        Começa um novo bloco
+        de 7 dias.
+      */
+
+      dados.weekStart =
+        hoje;
+
+      dados.weekDays = 1;
 
     }
 
@@ -2250,18 +2368,6 @@ function atualizarTela(){
   ).value =
     dados.nivel;
 
-
-  if(dados.nome){
-
-    document.getElementById(
-      "welcomeText"
-    ).innerText =
-      "Olá, " +
-      dados.nome +
-      "! Vamos continuar aprendendo inglês.";
-
-  }
-
 }
 
 
@@ -2383,13 +2489,6 @@ function obterQuestoesDoNivel(){
     );
 
 
-  /*
-    Se ainda não houver
-    questões suficientes para
-    o nível selecionado,
-    usa A1 como base.
-  */
-
   if(lista.length === 0){
 
     lista =
@@ -2418,11 +2517,6 @@ function carregarQuestao(){
   const lista =
     obterQuestoesDoNivel();
 
-
-  /*
-    Faz a questão mudar
-    automaticamente.
-  */
 
   indiceQuestao =
     indiceQuestao %
@@ -2472,6 +2566,55 @@ function carregarQuestao(){
   options.innerHTML = "";
 
 
+  /*
+    Sem vidas:
+    bloqueia a aula.
+  */
+
+  if(dados.vidas <= 0){
+
+    document.getElementById(
+      "question"
+    ).innerText =
+      "❤️ Você ficou sem vidas.";
+
+
+    document.getElementById(
+      "feedback"
+    ).innerText =
+      "Suas 30 vidas serão renovadas automaticamente após 24 horas.";
+
+
+    const aviso =
+      document.createElement(
+        "div"
+      );
+
+
+    aviso.className =
+      "lives-warning";
+
+
+    aviso.innerText =
+      "⏳ Aguarde a renovação das suas vidas.";
+
+
+    options.appendChild(
+      aviso
+    );
+
+
+    document.getElementById(
+      "lessonProgress"
+    ).style.width =
+      "0%";
+
+
+    return;
+
+  }
+
+
   q.options.forEach(
     function(optionText,index){
 
@@ -2480,11 +2623,14 @@ function carregarQuestao(){
           "button"
         );
 
+
       button.className =
         "option";
 
+
       button.innerText =
         optionText;
+
 
       button.onclick =
         function(){
@@ -2530,6 +2676,20 @@ function responderQuestao(
 ){
 
   if(respondeu){
+
+    return;
+
+  }
+
+
+  /*
+    Não permite responder
+    sem vidas.
+  */
+
+  if(dados.vidas <= 0){
+
+    carregarQuestao();
 
     return;
 
@@ -2590,11 +2750,6 @@ function responderQuestao(
       "❌ Not quite. You lost 1 life.";
 
 
-    /*
-      Mostra qual era
-      a resposta correta.
-    */
-
     const lista =
       obterQuestoesDoNivel();
 
@@ -2623,6 +2778,21 @@ function responderQuestao(
 
     salvarDados();
 
+
+    /*
+      Se chegou a zero,
+      informa o usuário.
+    */
+
+    if(dados.vidas === 0){
+
+      document.getElementById(
+        "feedback"
+      ).innerText =
+        "❤️ Você ficou sem vidas. Elas serão renovadas em 24 horas.";
+
+    }
+
   }
 
 
@@ -2639,6 +2809,20 @@ function responderQuestao(
 ===================================================== */
 
 function proximaQuestao(){
+
+  /*
+    Não avança se estiver
+    sem vidas.
+  */
+
+  if(dados.vidas <= 0){
+
+    carregarQuestao();
+
+    return;
+
+  }
+
 
   const lista =
     obterQuestoesDoNivel();
@@ -2682,10 +2866,6 @@ function ganharXP(valor){
 
   dados.xp += valor;
 
-
-  /*
-    Progresso baseado em XP.
-  */
 
   dados.progresso =
     Math.min(
@@ -2774,13 +2954,28 @@ function proximoVocabulario(){
 }
 
 
+/* =====================================================
+   OUVIR VOCABULÁRIO
+   PALAVRA + FRASE
+===================================================== */
+
 function ouvirVocabulario(){
 
-  falarTexto(
+  const palavra =
     document.getElementById(
       "vocabWord"
-    ).innerText,
-    "en-US"
+    ).innerText;
+
+
+  const exemplo =
+    document.getElementById(
+      "vocabExample"
+    ).innerText;
+
+
+  falarTextoComExemplo(
+    palavra,
+    exemplo
   );
 
 }
@@ -2827,6 +3022,99 @@ function falarTexto(
 
   speechSynthesis.speak(
     fala
+  );
+
+}
+
+
+/* =====================================================
+   ÁUDIO DO VOCABULÁRIO
+   PALAVRA + FRASE DE EXEMPLO
+===================================================== */
+
+function falarTextoComExemplo(
+  palavra,
+  exemplo
+){
+
+  if(
+    !("speechSynthesis" in window)
+  ){
+
+    alert(
+      "Seu navegador não possui suporte para áudio."
+    );
+
+    return;
+
+  }
+
+
+  speechSynthesis.cancel();
+
+
+  /*
+    Primeiro fala a palavra
+    isoladamente.
+  */
+
+  const falaPalavra =
+    new SpeechSynthesisUtterance(
+      palavra
+    );
+
+
+  falaPalavra.lang =
+    "en-US";
+
+
+  falaPalavra.rate =
+    0.82;
+
+
+  /*
+    Depois fala a frase
+    completa.
+  */
+
+  const falaExemplo =
+    new SpeechSynthesisUtterance(
+      exemplo
+    );
+
+
+  falaExemplo.lang =
+    "en-US";
+
+
+  falaExemplo.rate =
+    0.82;
+
+
+  /*
+    Pequena pausa entre
+    palavra e frase.
+  */
+
+  falaPalavra.onend =
+    function(){
+
+      setTimeout(
+        function(){
+
+          speechSynthesis.speak(
+            falaExemplo
+          );
+
+        },
+        500
+      );
+
+    };
+
+
+  speechSynthesis.speak(
+    falaPalavra
   );
 
 }
@@ -3303,36 +3591,22 @@ document
    INICIALIZAÇÃO
 ===================================================== */
 
+verificarRenovacaoVidas();
+
 carregarVocabulario();
 
 atualizarTela();
 
 
 /*
-  Registra estudo somente
-  quando o usuário realmente
-  começa uma atividade.
+  Verifica a renovação das vidas
+  automaticamente a cada minuto.
 */
 
-document
-  .querySelectorAll(
-    ".menu button"
-  )
-  .forEach(function(button){
-
-    button.addEventListener(
-      "click",
-      function(){
-
-        /*
-          Não registra apenas
-          por abrir o menu.
-        */
-
-      }
-    );
-
-  });
+setInterval(
+  verificarRenovacaoVidas,
+  60 * 1000
+);
 
 
 /* =====================================================
