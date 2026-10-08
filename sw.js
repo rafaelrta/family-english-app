@@ -1,7 +1,7 @@
 /* =========================================================
    ENGLISH FAMILY
-   SERVICE WORKER
-   PWA / CACHE / OFFLINE
+   SW.JS
+   Service Worker — PWA
    ========================================================= */
 
 
@@ -9,8 +9,7 @@
    1. CONFIGURAÇÃO
    ========================================================= */
 
-const CACHE_NAME =
-  "english-family-v1.0.0";
+const CACHE_NAME = "english-family-v1.1.0";
 
 
 const APP_SHELL = [
@@ -36,32 +35,36 @@ const APP_SHELL = [
 
 self.addEventListener(
   "install",
-  function(event) {
+  event => {
+
+    console.log(
+      "[English Family] Service Worker: instalação."
+    );
+
 
     event.waitUntil(
 
-      caches
-        .open(
-          CACHE_NAME
-        )
-        .then(
-          function(cache) {
+      caches.open(
+        CACHE_NAME
+      )
+      .then(
+        cache => {
 
-            return cache.addAll(
-              APP_SHELL
-            );
+          return cache.addAll(
+            APP_SHELL
+          );
 
-          }
-        )
+        }
+      )
+      .then(
+        () => {
+
+          return self.skipWaiting();
+
+        }
+      )
 
     );
-
-    /*
-      Faz o novo Service Worker
-      assumir o controle imediatamente.
-    */
-
-    self.skipWaiting();
 
   }
 );
@@ -73,71 +76,70 @@ self.addEventListener(
 
 self.addEventListener(
   "activate",
-  function(event) {
+  event => {
+
+    console.log(
+      "[English Family] Service Worker: ativação."
+    );
+
 
     event.waitUntil(
 
-      caches
-        .keys()
+      caches.keys()
         .then(
-          function(cacheNames) {
+          cacheNames => {
 
             return Promise.all(
 
               cacheNames
                 .filter(
-                  function(cacheName) {
-
-                    return (
-                      cacheName !==
-                      CACHE_NAME
-                    );
-
-                  }
+                  cacheName =>
+                    cacheName !==
+                    CACHE_NAME
                 )
                 .map(
-                  function(cacheName) {
-
-                    return caches.delete(
+                  cacheName =>
+                    caches.delete(
                       cacheName
-                    );
-
-                  }
+                    )
                 )
 
             );
 
           }
         )
+        .then(
+          () => {
+
+            return self.clients.claim();
+
+          }
+        )
 
     );
-
-
-    /*
-      Assume o controle das páginas
-      abertas imediatamente.
-    */
-
-    self.clients.claim();
 
   }
 );
 
 
 /* =========================================================
-   4. REQUISIÇÕES
+   4. INTERCEPTAÇÃO DE REQUISIÇÕES
    ========================================================= */
 
 self.addEventListener(
   "fetch",
-  function(event) {
+  event => {
+
+    const request =
+      event.request;
+
 
     /*
-      Trabalhamos apenas com GET.
+      Trabalhamos apenas com requisições GET.
     */
 
     if (
-      event.request.method !==
+      request.method !==
       "GET"
     ) {
 
@@ -147,21 +149,13 @@ self.addEventListener(
 
 
     /*
-      Não interceptar esquemas
-      que não sejam HTTP/HTTPS.
+      Ignora esquemas que não sejam HTTP/HTTPS.
     */
 
-    const requestURL =
-      new URL(
-        event.request.url
-      );
-
-
     if (
-      requestURL.protocol !==
-        "http:" &&
-      requestURL.protocol !==
-        "https:"
+      !request.url.startsWith(
+        "http"
+      )
     ) {
 
       return;
@@ -171,102 +165,112 @@ self.addEventListener(
 
     event.respondWith(
 
-      caches
-        .match(
-          event.request
-        )
-        .then(
-          function(cachedResponse) {
+      caches.match(
+        request
+      )
+      .then(
+        cachedResponse => {
 
-            /*
-              CACHE FIRST
+          /*
+            Se já estiver no cache,
+            usamos imediatamente.
+          */
 
-              Se o arquivo já estiver
-              armazenado localmente,
-              utiliza o cache.
-            */
+          if (
+            cachedResponse
+          ) {
 
-            if (
-              cachedResponse
-            ) {
+            return cachedResponse;
 
-              return cachedResponse;
-
-            }
+          }
 
 
-            /*
-              Caso não esteja no cache,
-              busca na rede.
-            */
+          /*
+            Caso não esteja no cache,
+            busca na internet.
+          */
 
-            return fetch(
-              event.request
-            )
+          return fetch(
+            request
+          )
+          .then(
+            networkResponse => {
+
+              /*
+                Só armazenamos respostas
+                válidas.
+              */
+
+              if (
+                !networkResponse ||
+                networkResponse.status !== 200 ||
+                networkResponse.type ===
+                  "opaque"
+              ) {
+
+                return networkResponse;
+
+              }
+
+
+              const responseClone =
+                networkResponse.clone();
+
+
+              caches.open(
+                CACHE_NAME
+              )
               .then(
-                function(networkResponse) {
+                cache => {
 
-                  /*
-                    Só armazenamos respostas
-                    válidas.
-                  */
-
-                  if (
-                    networkResponse &&
-                    networkResponse.status ===
-                      200 &&
-                    networkResponse.type !==
-                      "opaque"
-                  ) {
-
-                    const responseClone =
-                      networkResponse.clone();
-
-
-                    caches
-                      .open(
-                        CACHE_NAME
-                      )
-                      .then(
-                        function(cache) {
-
-                          cache.put(
-                            event.request,
-                            responseClone
-                          );
-
-                        }
-                      );
-
-                  }
-
-
-                  return networkResponse;
+                  cache.put(
+                    request,
+                    responseClone
+                  );
 
                 }
               );
 
-          }
-        )
 
-        .catch(
-          function() {
+              return networkResponse;
 
-            /*
-              OFFLINE FALLBACK
+            }
+          )
+          .catch(
+            () => {
 
-              Se a página solicitada não
-              puder ser carregada e o usuário
-              estiver offline, abrimos o
-              index.html.
-            */
+              /*
+                Se estiver offline e não houver
+                conteúdo em cache, tenta retornar
+                a página principal.
+              */
 
-            return caches.match(
-              "./index.html"
-            );
+              if (
+                request.mode ===
+                "navigate"
+              ) {
 
-          }
-        )
+                return caches.match(
+                  "./index.html"
+                );
+
+              }
+
+
+              return new Response(
+                "",
+                {
+                  status: 503,
+                  statusText:
+                    "Offline"
+                }
+              );
+
+            }
+          );
+
+        }
+      )
 
     );
 
@@ -275,20 +279,68 @@ self.addEventListener(
 
 
 /* =========================================================
-   5. MENSAGENS
+   5. MENSAGENS DO APLICATIVO
    ========================================================= */
 
 self.addEventListener(
   "message",
-  function(event) {
+  event => {
 
     if (
-      event.data &&
+      !event.data
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+      Permite que o aplicativo solicite
+      a ativação imediata de uma nova versão.
+    */
+
+    if (
       event.data.type ===
-        "SKIP_WAITING"
+      "SKIP_WAITING"
     ) {
 
       self.skipWaiting();
+
+    }
+
+
+    /*
+      Permite limpar o cache manualmente
+      quando necessário.
+    */
+
+    if (
+      event.data.type ===
+      "CLEAR_CACHE"
+    ) {
+
+      event.waitUntil(
+
+        caches.keys()
+          .then(
+            cacheNames => {
+
+              return Promise.all(
+
+                cacheNames.map(
+                  cacheName =>
+                    caches.delete(
+                      cacheName
+                    )
+                )
+
+              );
+
+            }
+          )
+
+      );
 
     }
 
@@ -297,5 +349,5 @@ self.addEventListener(
 
 
 /* =========================================================
-   6. FIM
+   6. FIM DO SERVICE WORKER
    ========================================================= */
