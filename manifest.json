@@ -1,18 +1,24 @@
 {
-  "name": "Family English",
-  "short_name": "Family English",
-  "description": "Aplicativo familiar para aprender inglês.",
+  "name": "English Family",
+  "short_name": "English Family",
+  "description": "Aplicativo familiar para aprendizagem de inglês, do nível A1 ao C1.",
+  "lang": "pt-BR",
+  "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#eef3f8",
   "theme_color": "#0B3D91",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "categories": [
+    "education"
+  ],
   "icons": [
     {
       "src": "icon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }
