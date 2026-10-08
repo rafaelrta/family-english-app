@@ -1,3129 +1,3004 @@
 /* =========================================================
    ENGLISH FAMILY
+   LESSON-ENGINE.JS
    MOTOR DE AULAS
-   lesson-engine.js
    ========================================================= */
 
-(function () {
 
-  "use strict";
+/* =========================================================
+   1. CONFIGURAÇÃO
+   ========================================================= */
 
+const LESSON_ENGINE_CONFIG = {
 
-  /* =======================================================
-     CONFIGURAÇÃO
-     ======================================================= */
+  version: "1.0.0",
 
-  const ENGINE_CONFIG = {
+  passingScore: 70,
 
-    version: "1.0.0",
+  xpPerCorrectAnswer: 2,
 
-    minimumPassingScore: 70,
+  minimumLessonMinutes: 5,
 
-    xpPerActivity: 2,
+  sections: [
 
-    xpBonusPerfectLesson: 10,
+    "context",
 
-    maxAttemptsPerActivity: 3
+    "reading",
 
-  };
+    "comprehension",
 
+    "vocabulary",
 
-  /* =======================================================
-     TIPOS DE ATIVIDADE
-     ======================================================= */
+    "grammar",
 
-  const ACTIVITY_TYPES = {
+    "translation",
 
-    INTRO: "intro",
+    "recall",
 
-    READING: "reading",
+    "listening",
 
-    COMPREHENSION: "comprehension",
+    "speaking",
 
-    VOCABULARY: "vocabulary",
+    "writing",
 
-    GRAMMAR: "grammar",
+    "fixation",
 
-    TRANSLATION: "translation",
+    "feedback"
 
-    LISTENING: "listening",
+  ]
 
-    SPEAKING: "speaking",
-
-    WRITING: "writing",
-
-    ACTIVE_RECALL: "active-recall",
-
-    MULTIPLE_CHOICE: "multiple-choice",
-
-    TRUE_FALSE: "true-false",
-
-    FILL_BLANK: "fill-blank",
-
-    ORDER_WORDS: "order-words",
-
-    MATCHING: "matching",
-
-    REVIEW: "review",
-
-    COMPLETE: "complete"
-
-  };
+};
 
 
-  /* =======================================================
-     ESTADO INTERNO DO MOTOR
-     ======================================================= */
+/* =========================================================
+   2. ESTADO DO MOTOR
+   ========================================================= */
 
-  let lessonState = {
+const LESSON_ENGINE = {
 
-    active: false,
+  active: false,
 
-    lessonId: null,
+  lesson: null,
 
-    level: null,
+  activities: [],
 
-    module: null,
+  currentIndex: 0,
 
-    lesson: null,
+  answers: [],
 
-    title: "",
+  score: 0,
 
-    description: "",
+  correctAnswers: 0,
 
-    activities: [],
+  wrongAnswers: 0,
 
-    currentActivityIndex: 0,
+  startedAt: null,
 
-    answers: [],
+  completedAt: null,
 
-    errors: [],
+  startTime: null,
 
-    correctAnswers: 0,
+  sessionMinutes: 0
 
-    incorrectAnswers: 0,
+};
 
-    score: 0,
 
-    xpEarned: 0,
+/* =========================================================
+   3. CONTEÚDO REAL DAS AULAS
+   ========================================================= */
 
-    startedAt: null,
-
-    finishedAt: null,
-
-    completed: false
-
-  };
+const LESSON_LIBRARY = {
 
 
   /* =======================================================
-     UTILITÁRIOS
+     A2 — MÓDULO 1 — AULA 1
      ======================================================= */
 
-  function clone(value) {
+  "A2-M1-L1": {
 
-    return JSON.parse(
-      JSON.stringify(value)
-    );
+    id: "A2-M1-L1",
+
+    level: "A2",
+
+    module: 1,
+
+    lesson: 1,
+
+    title: "Daily Routine",
+
+    subtitle:
+      "Talking about everyday routines.",
+
+    objective:
+      "Aprender a falar sobre hábitos e rotina diária em inglês.",
+
+    estimatedMinutes: 15,
+
+
+    context: {
+
+      title:
+        "A normal day",
+
+      text:
+        "Every morning, Anna wakes up at seven o'clock. " +
+        "She gets up, takes a shower and has breakfast. " +
+        "Then she goes to work. She usually works until five o'clock. " +
+        "In the evening, she comes home, has dinner and studies English.",
+
+      translation:
+        "Todas as manhãs, Anna acorda às sete horas. " +
+        "Ela se levanta, toma banho e toma café da manhã. " +
+        "Depois, ela vai para o trabalho. " +
+        "Ela geralmente trabalha até as cinco horas. " +
+        "À noite, ela volta para casa, janta e estuda inglês."
+
+    },
+
+
+    reading: {
+
+      title:
+        "Reading",
+
+      text:
+        "Every morning, Anna wakes up at seven o'clock. " +
+        "She gets up and takes a shower. " +
+        "After that, she has breakfast and goes to work. " +
+        "She usually works until five o'clock. " +
+        "In the evening, she comes home and studies English."
+
+    },
+
+
+    comprehension: [
+
+      {
+
+        id: "A2-M1-L1-C1",
+
+        type: "multiple-choice",
+
+        question:
+          "What time does Anna wake up?",
+
+        options: [
+
+          "At six o'clock.",
+
+          "At seven o'clock.",
+
+          "At eight o'clock.",
+
+          "At nine o'clock."
+
+        ],
+
+        answer: 1,
+
+        explanation:
+          "The text says: Anna wakes up at seven o'clock."
+
+      },
+
+      {
+
+        id: "A2-M1-L1-C2",
+
+        type: "multiple-choice",
+
+        question:
+          "What does Anna do after she gets up?",
+
+        options: [
+
+          "She goes to work.",
+
+          "She studies English.",
+
+          "She takes a shower.",
+
+          "She has dinner."
+
+        ],
+
+        answer: 2,
+
+        explanation:
+          "After she gets up, Anna takes a shower."
+
+      },
+
+      {
+
+        id: "A2-M1-L1-C3",
+
+        type: "multiple-choice",
+
+        question:
+          "What does Anna do in the evening?",
+
+        options: [
+
+          "She goes to school.",
+
+          "She comes home and studies English.",
+
+          "She wakes up.",
+
+          "She goes to work."
+
+        ],
+
+        answer: 1,
+
+        explanation:
+          "In the evening, she comes home and studies English."
+
+      }
+
+    ],
+
+
+    vocabulary: [
+
+      {
+
+        word: "wake up",
+
+        translation:
+          "acordar",
+
+        category:
+          "daily routine",
+
+        example:
+          "I wake up at seven."
+
+      },
+
+      {
+
+        word: "get up",
+
+        translation:
+          "levantar-se",
+
+        category:
+          "daily routine",
+
+        example:
+          "I get up early."
+
+      },
+
+      {
+
+        word: "take a shower",
+
+        translation:
+          "tomar banho",
+
+        category:
+          "daily routine",
+
+        example:
+          "She takes a shower every morning."
+
+      },
+
+      {
+
+        word: "have breakfast",
+
+        translation:
+          "tomar café da manhã",
+
+        category:
+          "food",
+
+        example:
+          "We have breakfast at seven."
+
+      },
+
+      {
+
+        word: "go to work",
+
+        translation:
+          "ir para o trabalho",
+
+        category:
+          "work",
+
+        example:
+          "I go to work at eight."
+
+      },
+
+      {
+
+        word: "come home",
+
+        translation:
+          "voltar para casa",
+
+        category:
+          "daily routine",
+
+        example:
+          "She comes home at six."
+
+      }
+
+    ],
+
+
+    grammar: {
+
+      topic:
+        "Simple Present",
+
+      explanation:
+        "Usamos o Simple Present para falar sobre hábitos, " +
+        "rotinas e fatos que acontecem regularmente.",
+
+      examples: [
+
+        "I wake up at seven.",
+
+        "She works until five.",
+
+        "He studies English.",
+
+        "They go to work every day."
+
+      ],
+
+      rule:
+        "Com he, she e it, normalmente acrescentamos -s ao verbo."
+
+    },
+
+
+    translation: [
+
+      {
+
+        id: "A2-M1-L1-T1",
+
+        question:
+          "Traduza para o inglês: " +
+          "Eu acordo às sete horas.",
+
+        answer:
+          "I wake up at seven o'clock."
+
+      },
+
+      {
+
+        id: "A2-M1-L1-T2",
+
+        question:
+          "Traduza para o inglês: " +
+          "Ela trabalha todos os dias.",
+
+        answer:
+          "She works every day."
+
+      },
+
+      {
+
+        id: "A2-M1-L1-T3",
+
+        question:
+          "Traduza para o inglês: " +
+          "Nós estudamos inglês à noite.",
+
+        answer:
+          "We study English at night."
+
+      }
+
+    ],
+
+
+    recall: [
+
+      {
+
+        id: "A2-M1-L1-R1",
+
+        question:
+          "Complete: Anna ______ up at seven o'clock.",
+
+        answer:
+          "wakes"
+
+      },
+
+      {
+
+        id: "A2-M1-L1-R2",
+
+        question:
+          "Complete: She ______ English in the evening.",
+
+        answer:
+          "studies"
+
+      },
+
+      {
+
+        id: "A2-M1-L1-R3",
+
+        question:
+          "Complete: She ______ a shower every morning.",
+
+        answer:
+          "takes"
+
+      }
+
+    ],
+
+
+    fixation: [
+
+      {
+
+        id: "A2-M1-L1-F1",
+
+        question:
+          "Which sentence is correct?",
+
+        options: [
+
+          "She work every day.",
+
+          "She works every day.",
+
+          "She working every day.",
+
+          "She workes every day."
+
+        ],
+
+        answer: 1
+
+      },
+
+      {
+
+        id: "A2-M1-L1-F2",
+
+        question:
+          "Which sentence means 'Eu estudo inglês à noite'?",
+
+        options: [
+
+          "I study English at night.",
+
+          "I studies English at night.",
+
+          "I studying English at night.",
+
+          "I study English in morning."
+
+        ],
+
+        answer: 0
+
+      }
+
+    ]
 
   }
 
+};
 
-  function getApp() {
 
-    if (
-      window.EnglishFamily
-    ) {
+/* =========================================================
+   4. BUSCAR UMA AULA NA BIBLIOTECA
+   ========================================================= */
 
-      return window.EnglishFamily;
+function getLessonFromLibrary(
+  lessonId
+) {
 
-    }
+  if (!lessonId) {
 
     return null;
 
   }
 
 
-  function createLessonId(
-    level,
-    module,
-    lesson
-  ) {
+  return LESSON_LIBRARY[
+    lessonId
+  ] || null;
 
-    return [
+}
 
-      String(level || "")
-        .toUpperCase(),
 
-      String(module || ""),
+/* =========================================================
+   5. INICIAR MOTOR
+   ========================================================= */
 
-      String(lesson || "")
+function startLessonEngine(
+  lesson
+) {
 
-    ].join("-");
+  if (!lesson) {
 
-  }
-
-
-  function normalizeActivity(
-    activity,
-    index
-  ) {
-
-    const normalized = {
-
-      id:
-        activity.id ||
-        `activity-${index + 1}`,
-
-      type:
-        activity.type ||
-        ACTIVITY_TYPES.MULTIPLE_CHOICE,
-
-      title:
-        activity.title ||
-        "",
-
-      instruction:
-        activity.instruction ||
-        "",
-
-      question:
-        activity.question ||
-        "",
-
-      text:
-        activity.text ||
-        "",
-
-      audio:
-        activity.audio ||
-        null,
-
-      image:
-        activity.image ||
-        null,
-
-      options:
-        Array.isArray(activity.options)
-          ? activity.options
-          : [],
-
-      answer:
-        activity.answer !== undefined
-          ? activity.answer
-          : null,
-
-      answers:
-        Array.isArray(activity.answers)
-          ? activity.answers
-          : [],
-
-      explanation:
-        activity.explanation ||
-        "",
-
-      vocabulary:
-        Array.isArray(activity.vocabulary)
-          ? activity.vocabulary
-          : [],
-
-      grammar:
-        activity.grammar ||
-        null,
-
-      skill:
-        activity.skill ||
-        null,
-
-      points:
-        Number.isFinite(activity.points)
-          ? activity.points
-          : ENGINE_CONFIG.xpPerActivity
-
-    };
-
-    return normalized;
-
-  }
-
-
-  /* =======================================================
-     RESET DO ESTADO
-     ======================================================= */
-
-  function resetState() {
-
-    lessonState = {
-
-      active: false,
-
-      lessonId: null,
-
-      level: null,
-
-      module: null,
-
-      lesson: null,
-
-      title: "",
-
-      description: "",
-
-      activities: [],
-
-      currentActivityIndex: 0,
-
-      answers: [],
-
-      errors: [],
-
-      correctAnswers: 0,
-
-      incorrectAnswers: 0,
-
-      score: 0,
-
-      xpEarned: 0,
-
-      startedAt: null,
-
-      finishedAt: null,
-
-      completed: false
-
-    };
-
-  }
-
-
-  /* =======================================================
-     CARREGAR AULA
-     ======================================================= */
-
-  function loadLesson(
-    lessonData
-  ) {
-
-    if (
-      !lessonData
-    ) {
-
-      console.error(
-        "LessonEngine: aula não encontrada."
-      );
-
-      return false;
-
-    }
-
-
-    const activities =
-      Array.isArray(
-        lessonData.activities
-      )
-        ? lessonData.activities
-        : [];
-
-
-    resetState();
-
-
-    lessonState.lessonId =
-      lessonData.id ||
-      createLessonId(
-        lessonData.level,
-        lessonData.module,
-        lessonData.lesson
-      );
-
-
-    lessonState.level =
-      lessonData.level ||
-      null;
-
-
-    lessonState.module =
-      lessonData.module ||
-      null;
-
-
-    lessonState.lesson =
-      lessonData.lesson ||
-      null;
-
-
-    lessonState.title =
-      lessonData.title ||
-      "Aula";
-
-
-    lessonState.description =
-      lessonData.description ||
-      "";
-
-
-    lessonState.activities =
-      activities.map(
-        normalizeActivity
-      );
-
-
-    return true;
-
-  }
-
-
-  /* =======================================================
-     INICIAR AULA
-     ======================================================= */
-
-  function start(
-    lessonData
-  ) {
-
-    if (
-      !loadLesson(
-        lessonData
-      )
-    ) {
-
-      return false;
-
-    }
-
-
-    lessonState.active = true;
-
-    lessonState.startedAt =
-      new Date().toISOString();
-
-
-    lessonState.currentActivityIndex =
-      0;
-
-
-    render();
-
-
-    return true;
-
-  }
-
-
-  /* =======================================================
-     ATIVIDADE ATUAL
-     ======================================================= */
-
-  function getCurrentActivity() {
-
-    if (
-      !lessonState.active
-    ) {
-
-      return null;
-
-    }
-
-
-    return (
-      lessonState.activities[
-        lessonState.currentActivityIndex
-      ] ||
-      null
+    console.warn(
+      "Motor de aulas: aula inválida."
     );
 
-  }
-
-
-  /* =======================================================
-     PROGRESSO DA AULA
-     ======================================================= */
-
-  function getProgress() {
-
-    const total =
-      lessonState.activities.length;
-
-
-    if (
-      total === 0
-    ) {
-
-      return {
-
-        current: 0,
-
-        total: 0,
-
-        percentage: 0
-
-      };
-
-    }
-
-
-    const current =
-      lessonState.currentActivityIndex + 1;
-
-
-    return {
-
-      current,
-
-      total,
-
-      percentage:
-        Math.round(
-          (
-            lessonState.currentActivityIndex /
-            total
-          ) * 100
-        )
-
-    };
+    return false;
 
   }
 
 
-  /* =======================================================
-     RENDERIZAÇÃO
-     ======================================================= */
-
-  function render() {
-
-    removeLessonScreen();
+  const lessonData =
+    getLessonFromLibrary(
+      lesson.id
+    );
 
 
-    if (
-      !lessonState.active
-    ) {
+  if (!lessonData) {
 
-      return;
+    alert(
+      "Esta aula ainda não possui conteúdo disponível."
+    );
 
-    }
+    return false;
 
-
-    const activity =
-      getCurrentActivity();
+  }
 
 
-    if (
-      !activity
-    ) {
-
-      finishLesson();
-
-      return;
-
-    }
+  resetLessonEngine();
 
 
-    const container =
+  LESSON_ENGINE.active =
+    true;
+
+
+  LESSON_ENGINE.lesson =
+    lessonData;
+
+
+  LESSON_ENGINE.startedAt =
+    new Date().toISOString();
+
+
+  LESSON_ENGINE.startTime =
+    Date.now();
+
+
+  LESSON_ENGINE.activities =
+    buildLessonActivities(
+      lessonData
+    );
+
+
+  LESSON_ENGINE.currentIndex =
+    0;
+
+
+  openLessonInterface();
+
+
+  renderCurrentActivity();
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   6. RESET DO MOTOR
+   ========================================================= */
+
+function resetLessonEngine() {
+
+  LESSON_ENGINE.active =
+    false;
+
+  LESSON_ENGINE.lesson =
+    null;
+
+  LESSON_ENGINE.activities =
+    [];
+
+  LESSON_ENGINE.currentIndex =
+    0;
+
+  LESSON_ENGINE.answers =
+    [];
+
+  LESSON_ENGINE.score =
+    0;
+
+  LESSON_ENGINE.correctAnswers =
+    0;
+
+  LESSON_ENGINE.wrongAnswers =
+    0;
+
+  LESSON_ENGINE.startedAt =
+    null;
+
+  LESSON_ENGINE.completedAt =
+    null;
+
+  LESSON_ENGINE.startTime =
+    null;
+
+  LESSON_ENGINE.sessionMinutes =
+    0;
+
+}
+
+
+/* =========================================================
+   7. CONSTRUIR ATIVIDADES
+   ========================================================= */
+
+function buildLessonActivities(
+  lesson
+) {
+
+  const activities =
+    [];
+
+
+  activities.push({
+
+    id:
+      `${lesson.id}-context`,
+
+    type:
+      "context",
+
+    title:
+      lesson.context.title,
+
+    data:
+      lesson.context
+
+  });
+
+
+  activities.push({
+
+    id:
+      `${lesson.id}-reading`,
+
+    type:
+      "reading",
+
+    title:
+      lesson.reading.title,
+
+    data:
+      lesson.reading
+
+  });
+
+
+  lesson.comprehension
+    .forEach(
+      activity => {
+
+        activities.push({
+
+          id:
+            activity.id,
+
+          type:
+            "comprehension",
+
+          title:
+            "Compreensão",
+
+          data:
+            activity
+
+        });
+
+      }
+    );
+
+
+  activities.push({
+
+    id:
+      `${lesson.id}-vocabulary`,
+
+    type:
+      "vocabulary",
+
+    title:
+      "Vocabulário",
+
+    data:
+      lesson.vocabulary
+
+  });
+
+
+  activities.push({
+
+    id:
+      `${lesson.id}-grammar`,
+
+    type:
+      "grammar",
+
+    title:
+      lesson.grammar.topic,
+
+    data:
+      lesson.grammar
+
+  });
+
+
+  lesson.translation
+    .forEach(
+      activity => {
+
+        activities.push({
+
+          id:
+            activity.id,
+
+          type:
+            "translation",
+
+          title:
+            "Tradução",
+
+          data:
+            activity
+
+        });
+
+      }
+    );
+
+
+  lesson.recall
+    .forEach(
+      activity => {
+
+        activities.push({
+
+          id:
+            activity.id,
+
+          type:
+            "recall",
+
+          title:
+            "Recuperação ativa",
+
+          data:
+            activity
+
+        });
+
+      }
+    );
+
+
+  lesson.fixation
+    .forEach(
+      activity => {
+
+        activities.push({
+
+          id:
+            activity.id,
+
+          type:
+            "fixation",
+
+          title:
+            "Fixação",
+
+          data:
+            activity
+
+        });
+
+      }
+    );
+
+
+  activities.push({
+
+    id:
+      `${lesson.id}-feedback`,
+
+    type:
+      "feedback",
+
+    title:
+      "Resultado",
+
+    data:
+      {}
+
+  });
+
+
+  return activities;
+
+}
+
+
+/* =========================================================
+   8. INTERFACE DO MOTOR
+   ========================================================= */
+
+function openLessonInterface() {
+
+  let container =
+    document.getElementById(
+      "lessonEngine"
+    );
+
+
+  if (!container) {
+
+    container =
       document.createElement(
         "div"
       );
 
-
     container.id =
-      "lessonEngineScreen";
-
-
-    container.className =
-      "lesson-engine-screen";
-
-
-    container.innerHTML =
-      buildLessonHTML(
-        activity
-      );
-
+      "lessonEngine";
 
     document.body.appendChild(
       container
     );
 
-
-    bindLessonEvents();
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
   }
 
 
-  /* =======================================================
-     HTML DA AULA
-     ======================================================= */
+  container.className =
+    "lesson-engine-overlay";
 
-  function buildLessonHTML(
-    activity
-  ) {
 
-    const progress =
-      getProgress();
+  container.setAttribute(
+    "aria-hidden",
+    "false"
+  );
 
 
-    return `
+  container.innerHTML = `
 
-      <div class="lesson-engine-overlay">
+    <div class="lesson-engine">
 
-        <div class="lesson-engine-header">
+      <header class="lesson-engine-header">
 
-          <button
-            id="lessonBackButton"
-            class="lesson-engine-close"
-            type="button"
-            aria-label="Sair da aula"
-          >
-            ×
-          </button>
-
-          <div class="lesson-engine-progress">
-
-            <div
-              class="lesson-engine-progress-bar"
-            >
-
-              <div
-                class="lesson-engine-progress-fill"
-                style="width:${progress.percentage}%"
-              ></div>
-
-            </div>
-
-            <span>
-              ${progress.current}
-              /
-              ${progress.total}
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="lesson-engine-content">
-
-          <div class="lesson-engine-title">
-
-            <span class="small-label">
-              ${escapeHTML(
-                lessonState.level || ""
-              )}
-            </span>
-
-            <h1>
-              ${escapeHTML(
-                lessonState.title
-              )}
-            </h1>
-
-            ${
-              activity.title
-                ? `
-                  <h2>
-                    ${escapeHTML(
-                      activity.title
-                    )}
-                  </h2>
-                `
-                : ""
-            }
-
-          </div>
-
-
-          ${
-            activity.instruction
-              ? `
-                <p class="lesson-engine-instruction">
-                  ${escapeHTML(
-                    activity.instruction
-                  )}
-                </p>
-              `
-              : ""
-          }
-
-
-          <div
-            id="lessonActivity"
-            class="lesson-activity"
-          >
-
-            ${buildActivityHTML(
-              activity
-            )}
-
-          </div>
-
-
-          <div
-            id="lessonFeedback"
-            class="lesson-feedback"
-            hidden
-          ></div>
-
-
-          <button
-            id="lessonAnswerButton"
-            class="primary-button full-width lesson-answer-button"
-            type="button"
-          >
-            Verificar
-          </button>
-
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     CONSTRUÇÃO DA ATIVIDADE
-     ======================================================= */
-
-  function buildActivityHTML(
-    activity
-  ) {
-
-    switch (
-      activity.type
-    ) {
-
-      case ACTIVITY_TYPES.INTRO:
-
-        return buildIntroActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.READING:
-
-        return buildReadingActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.MULTIPLE_CHOICE:
-
-        return buildMultipleChoiceActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.TRUE_FALSE:
-
-        return buildTrueFalseActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.FILL_BLANK:
-
-        return buildFillBlankActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.ORDER_WORDS:
-
-        return buildOrderWordsActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.TRANSLATION:
-
-        return buildTranslationActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.VOCABULARY:
-
-        return buildVocabularyActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.GRAMMAR:
-
-        return buildGrammarActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.LISTENING:
-
-        return buildListeningActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.SPEAKING:
-
-        return buildSpeakingActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.WRITING:
-
-        return buildWritingActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.ACTIVE_RECALL:
-
-        return buildActiveRecallActivity(
-          activity
-        );
-
-
-      case ACTIVITY_TYPES.COMPLETE:
-
-        return buildCompleteActivity(
-          activity
-        );
-
-
-      default:
-
-        return buildMultipleChoiceActivity(
-          activity
-        );
-
-    }
-
-  }
-
-
-  /* =======================================================
-     INTRODUÇÃO
-     ======================================================= */
-
-  function buildIntroActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="lesson-intro">
-
-        ${
-          activity.image
-            ? `
-              <img
-                src="${escapeAttribute(
-                  activity.image
-                )}"
-                alt=""
-                class="lesson-image"
-              >
-            `
-            : ""
-        }
-
-        ${
-          activity.text
-            ? `
-              <div class="lesson-text">
-                ${formatText(
-                  activity.text
-                )}
-              </div>
-            `
-            : ""
-        }
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     LEITURA
-     ======================================================= */
-
-  function buildReadingActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="reading-activity">
-
-        ${
-          activity.text
-            ? `
-              <div class="reading-text">
-                ${formatText(
-                  activity.text
-                )}
-              </div>
-            `
-            : ""
-        }
-
-        ${
-          activity.question
-            ? `
-              <div class="reading-question">
-                <strong>
-                  ${escapeHTML(
-                    activity.question
-                  )}
-                </strong>
-              </div>
-            `
-            : ""
-        }
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     MÚLTIPLA ESCOLHA
-     ======================================================= */
-
-  function buildMultipleChoiceActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="question-block">
-
-        <div class="question-text">
-
-          ${escapeHTML(
-            activity.question
-          )}
-
-        </div>
-
-
-        <div class="answer-options">
-
-          ${
-            activity.options
-              .map(
-                function(option, index) {
-
-                  return `
-
-                    <label
-                      class="answer-option"
-                    >
-
-                      <input
-                        type="radio"
-                        name="lessonAnswer"
-                        value="${escapeAttribute(
-                          option
-                        )}"
-                      >
-
-                      <span>
-                        ${escapeHTML(
-                          option
-                        )}
-                      </span>
-
-                    </label>
-
-                  `;
-
-                }
-              )
-              .join("")
-          }
-
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     VERDADEIRO / FALSO
-     ======================================================= */
-
-  function buildTrueFalseActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="question-block">
-
-        <div class="question-text">
-
-          ${escapeHTML(
-            activity.question
-          )}
-
-        </div>
-
-
-        <div class="answer-options">
-
-          <label
-            class="answer-option"
-          >
-
-            <input
-              type="radio"
-              name="lessonAnswer"
-              value="true"
-            >
-
-            <span>
-              Verdadeiro
-            </span>
-
-          </label>
-
-
-          <label
-            class="answer-option"
-          >
-
-            <input
-              type="radio"
-              name="lessonAnswer"
-              value="false"
-            >
-
-            <span>
-              Falso
-            </span>
-
-          </label>
-
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     PREENCHER LACUNA
-     ======================================================= */
-
-  function buildFillBlankActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="question-block">
-
-        <div class="question-text">
-          ${formatText(
-            activity.question
-          )}
-        </div>
-
-
-        <input
-          id="lessonTextAnswer"
-          class="lesson-text-input"
-          type="text"
-          autocomplete="off"
-          autocapitalize="off"
-          spellcheck="false"
-          placeholder="Digite sua resposta"
+        <button
+          type="button"
+          id="lessonEngineClose"
+          class="lesson-engine-close"
+          aria-label="Fechar aula"
         >
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     ORDENAR PALAVRAS
-     ======================================================= */
-
-  function buildOrderWordsActivity(
-    activity
-  ) {
-
-    const words =
-      Array.isArray(
-        activity.options
-      )
-        ? activity.options
-        : [];
-
-
-    return `
-
-      <div class="question-block">
-
-        <div class="question-text">
-          ${escapeHTML(
-            activity.question
-          )}
-        </div>
-
-
-        <div
-          id="wordBank"
-          class="word-bank"
-        >
-
-          ${
-            words
-              .map(
-                function(word) {
-
-                  return `
-
-                    <button
-                      type="button"
-                      class="word-chip"
-                      data-word="${escapeAttribute(
-                        word
-                      )}"
-                    >
-                      ${escapeHTML(
-                        word
-                      )}
-                    </button>
-
-                  `;
-
-                }
-              )
-              .join("")
-          }
-
-        </div>
-
-
-        <div
-          id="orderedWords"
-          class="ordered-words"
-        ></div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     TRADUÇÃO
-     ======================================================= */
-
-  function buildTranslationActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="question-block">
-
-        <div class="translation-source">
-
-          ${formatText(
-            activity.question
-          )}
-
-        </div>
-
-
-        <textarea
-          id="lessonTextAnswer"
-          class="lesson-text-input lesson-textarea"
-          placeholder="Digite a tradução..."
-          autocomplete="off"
-          spellcheck="false"
-        ></textarea>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     VOCABULÁRIO
-     ======================================================= */
-
-  function buildVocabularyActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="question-block">
-
-        ${
-          activity.text
-            ? `
-              <div class="vocabulary-word">
-                ${escapeHTML(
-                  activity.text
-                )}
-              </div>
-            `
-            : ""
-        }
-
-
-        <div class="question-text">
-
-          ${escapeHTML(
-            activity.question
-          )}
-
-        </div>
-
-
-        <div class="answer-options">
-
-          ${
-            activity.options
-              .map(
-                function(option) {
-
-                  return `
-
-                    <label
-                      class="answer-option"
-                    >
-
-                      <input
-                        type="radio"
-                        name="lessonAnswer"
-                        value="${escapeAttribute(
-                          option
-                        )}"
-                      >
-
-                      <span>
-                        ${escapeHTML(
-                          option
-                        )}
-                      </span>
-
-                    </label>
-
-                  `;
-
-                }
-              )
-              .join("")
-          }
-
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     GRAMÁTICA
-     ======================================================= */
-
-  function buildGrammarActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="question-block">
-
-        ${
-          activity.grammar
-            ? `
-              <div class="grammar-explanation">
-                ${formatText(
-                  activity.grammar
-                )}
-              </div>
-            `
-            : ""
-        }
-
-
-        <div class="question-text">
-
-          ${escapeHTML(
-            activity.question
-          )}
-
-        </div>
-
-
-        <div class="answer-options">
-
-          ${
-            activity.options
-              .map(
-                function(option) {
-
-                  return `
-
-                    <label
-                      class="answer-option"
-                    >
-
-                      <input
-                        type="radio"
-                        name="lessonAnswer"
-                        value="${escapeAttribute(
-                          option
-                        )}"
-                      >
-
-                      <span>
-                        ${escapeHTML(
-                          option
-                        )}
-                      </span>
-
-                    </label>
-
-                  `;
-
-                }
-              )
-              .join("")
-          }
-
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     LISTENING
-     ======================================================= */
-
-  function buildListeningActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="question-block">
-
-        ${
-          activity.audio
-            ? `
-              <audio
-                class="lesson-audio"
-                controls
-                preload="metadata"
-              >
-
-                <source
-                  src="${escapeAttribute(
-                    activity.audio
-                  )}"
-                >
-
-              </audio>
-            `
-            : `
-              <div class="audio-placeholder">
-                🎧
-                <p>
-                  O áudio desta atividade será
-                  disponibilizado aqui.
-                </p>
-              </div>
-            `
-        }
-
-
-        <div class="question-text">
-
-          ${escapeHTML(
-            activity.question
-          )}
-
-        </div>
-
-
-        <div class="answer-options">
-
-          ${
-            activity.options
-              .map(
-                function(option) {
-
-                  return `
-
-                    <label
-                      class="answer-option"
-                    >
-
-                      <input
-                        type="radio"
-                        name="lessonAnswer"
-                        value="${escapeAttribute(
-                          option
-                        )}"
-                      >
-
-                      <span>
-                        ${escapeHTML(
-                          option
-                        )}
-                      </span>
-
-                    </label>
-
-                  `;
-
-                }
-              )
-              .join("")
-          }
-
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     SPEAKING
-     ======================================================= */
-
-  function buildSpeakingActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="speaking-activity">
-
-        <div class="speaking-prompt">
-
-          🗣️
-
-          <p>
-            ${escapeHTML(
-              activity.question ||
-              "Fale em inglês seguindo a orientação."
-            )}
+          ×
+        </button>
+
+        <div class="lesson-engine-heading">
+
+          <span
+            id="lessonEngineLevel"
+            class="lesson-engine-level"
+          >
+          </span>
+
+          <h1
+            id="lessonEngineTitle"
+          >
+          </h1>
+
+          <p
+            id="lessonEngineSubtitle"
+          >
           </p>
 
         </div>
 
+        <div
+          id="lessonEngineProgress"
+          class="lesson-engine-progress"
+        >
+        </div>
+
+      </header>
+
+
+      <main
+        id="lessonEngineContent"
+        class="lesson-engine-content"
+      >
+      </main>
+
+
+      <footer
+        class="lesson-engine-footer"
+      >
 
         <button
-          id="speechButton"
-          class="secondary-button"
           type="button"
+          id="lessonEngineBack"
+          class="lesson-engine-button secondary"
         >
-          🎙️ Iniciar fala
+          Voltar
         </button>
 
-
-        <div
-          id="speechResult"
-          class="speech-result"
-        ></div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     WRITING
-     ======================================================= */
-
-  function buildWritingActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="question-block">
-
-        <div class="question-text">
-
-          ${formatText(
-            activity.question
-          )}
-
-        </div>
-
-
-        <textarea
-          id="lessonTextAnswer"
-          class="lesson-text-input lesson-textarea"
-          placeholder="Escreva sua resposta em inglês..."
-          autocomplete="off"
-          spellcheck="false"
-        ></textarea>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =======================================================
-     RECUPERAÇÃO ATIVA
-     ======================================================= */
-
-  function buildActiveRecallActivity(
-    activity
-  ) {
-
-    return `
-
-      <div class="active-recall">
-
-        <div class="recall-prompt">
-
-          🧠
-
-          <h2>
-            ${escapeHTML(
-              activity.question
-            )}
-          </h2>
-
-        </div>
-
-
-        <input
-          id="lessonTextAnswer"
-          class="lesson-text-input"
-          type="text"
-          placeholder="Digite o que você lembra..."
-          autocomplete="off"
-          spellcheck="false"
+        <button
+          type="button"
+          id="lessonEngineNext"
+          class="lesson-engine-button primary"
         >
+          Continuar
+        </button>
 
-      </div>
+      </footer>
 
-    `;
+    </div>
+
+  `;
+
+
+  document
+    .getElementById(
+      "lessonEngineClose"
+    )
+    ?.addEventListener(
+      "click",
+      closeLessonEngine
+    );
+
+
+  document
+    .getElementById(
+      "lessonEngineBack"
+    )
+    ?.addEventListener(
+      "click",
+      previousLessonActivity
+    );
+
+
+  document
+    .getElementById(
+      "lessonEngineNext"
+    )
+    ?.addEventListener(
+      "click",
+      nextLessonActivity
+    );
+
+
+  document.body.classList.add(
+    "lesson-engine-open"
+  );
+
+}
+
+
+/* =========================================================
+   9. FECHAR MOTOR
+   ========================================================= */
+
+function closeLessonEngine() {
+
+  const confirmation =
+    confirm(
+      "Deseja sair desta aula? Seu progresso das atividades já concluídas será mantido."
+    );
+
+
+  if (!confirmation) {
+
+    return;
 
   }
 
 
-  /* =======================================================
-     CONCLUSÃO
-     ======================================================= */
+  const container =
+    document.getElementById(
+      "lessonEngine"
+    );
 
-  function buildCompleteActivity(
-    activity
+
+  if (container) {
+
+    container.remove();
+
+  }
+
+
+  document.body.classList.remove(
+    "lesson-engine-open"
+  );
+
+
+  LESSON_ENGINE.active =
+    false;
+
+}
+
+
+/* =========================================================
+   10. RENDERIZAR ATIVIDADE
+   ========================================================= */
+
+function renderCurrentActivity() {
+
+  if (
+    !LESSON_ENGINE.active
   ) {
 
-    return `
+    return;
 
-      <div class="lesson-complete-preview">
+  }
 
-        <div class="complete-icon">
-          🎯
-        </div>
 
-        <h2>
-          Muito bem!
-        </h2>
+  const activity =
+    LESSON_ENGINE.activities[
+      LESSON_ENGINE.currentIndex
+    ];
+
+
+  if (!activity) {
+
+    finishLessonEngine();
+
+    return;
+
+  }
+
+
+  const content =
+    document.getElementById(
+      "lessonEngineContent"
+    );
+
+
+  const progress =
+    document.getElementById(
+      "lessonEngineProgress"
+    );
+
+
+  const title =
+    document.getElementById(
+      "lessonEngineTitle"
+    );
+
+
+  const subtitle =
+    document.getElementById(
+      "lessonEngineSubtitle"
+    );
+
+
+  const level =
+    document.getElementById(
+      "lessonEngineLevel"
+    );
+
+
+  if (level) {
+
+    level.textContent =
+      LESSON_ENGINE.lesson.level;
+
+  }
+
+
+  if (title) {
+
+    title.textContent =
+      LESSON_ENGINE.lesson.title;
+
+  }
+
+
+  if (subtitle) {
+
+    subtitle.textContent =
+      LESSON_ENGINE.lesson.subtitle;
+
+  }
+
+
+  if (progress) {
+
+    progress.textContent =
+      `${LESSON_ENGINE.currentIndex + 1} / ` +
+      `${LESSON_ENGINE.activities.length}`;
+
+  }
+
+
+  if (!content) {
+
+    return;
+
+  }
+
+
+  content.innerHTML =
+    "";
+
+
+  switch (
+    activity.type
+  ) {
+
+    case "context":
+
+      renderContext(
+        content,
+        activity
+      );
+
+      break;
+
+
+    case "reading":
+
+      renderReading(
+        content,
+        activity
+      );
+
+      break;
+
+
+    case "comprehension":
+
+      renderMultipleChoice(
+        content,
+        activity
+      );
+
+      break;
+
+
+    case "vocabulary":
+
+      renderVocabulary(
+        content,
+        activity
+      );
+
+      break;
+
+
+    case "grammar":
+
+      renderGrammar(
+        content,
+        activity
+      );
+
+      break;
+
+
+    case "translation":
+
+      renderTranslation(
+        content,
+        activity
+      );
+
+      break;
+
+
+    case "recall":
+
+      renderRecall(
+        content,
+        activity
+      );
+
+      break;
+
+
+    case "fixation":
+
+      renderMultipleChoice(
+        content,
+        activity
+      );
+
+      break;
+
+
+    case "feedback":
+
+      renderFeedback(
+        content
+      );
+
+      break;
+
+
+    default:
+
+      renderUnknownActivity(
+        content
+      );
+
+  }
+
+
+  updateEngineButtons();
+
+}
+
+
+/* =========================================================
+   11. CONTEXTUALIZAÇÃO
+   ========================================================= */
+
+function renderContext(
+  container,
+  activity
+) {
+
+  const data =
+    activity.data;
+
+
+  container.innerHTML = `
+
+    <section class="lesson-card context-card">
+
+      <span class="lesson-card-label">
+        CONTEXT
+      </span>
+
+      <h2>
+        ${escapeHTML(
+          data.title
+        )}
+      </h2>
+
+      <p class="lesson-context-text">
+        ${escapeHTML(
+          data.text
+        )}
+      </p>
+
+      <div class="lesson-translation-box">
+
+        <strong>
+          Tradução
+        </strong>
 
         <p>
-          Você chegou ao final desta etapa.
+          ${escapeHTML(
+            data.translation
+          )}
         </p>
-
-        ${
-          activity.text
-            ? `
-              <div class="lesson-text">
-                ${formatText(
-                  activity.text
-                )}
-              </div>
-            `
-            : ""
-        }
 
       </div>
 
-    `;
+      <div class="lesson-objective">
 
-  }
+        <strong>
+          Objetivo da aula
+        </strong>
 
+        <p>
+          ${escapeHTML(
+            LESSON_ENGINE.lesson.objective
+          )}
+        </p>
 
-  /* =======================================================
-     EVENTOS
-     ======================================================= */
+      </div>
 
-  function bindLessonEvents() {
+    </section>
 
-    const backButton =
-      document.getElementById(
-        "lessonBackButton"
-      );
+  `;
 
-
-    if (
-      backButton
-    ) {
-
-      backButton.addEventListener(
-        "click",
-        exitLesson
-      );
-
-    }
+}
 
 
-    const answerButton =
-      document.getElementById(
-        "lessonAnswerButton"
-      );
+/* =========================================================
+   12. READING
+   ========================================================= */
+
+function renderReading(
+  container,
+  activity
+) {
+
+  const data =
+    activity.data;
 
 
-    if (
-      answerButton
-    ) {
+  container.innerHTML = `
 
-      answerButton.addEventListener(
-        "click",
-        handleAnswer
-      );
+    <section class="lesson-card reading-card">
 
-    }
+      <span class="lesson-card-label">
+        READING
+      </span>
 
+      <h2>
+        ${escapeHTML(
+          data.title
+        )}
+      </h2>
 
-    bindWordOrdering();
+      <div class="reading-text">
 
+        ${escapeHTML(
+          data.text
+        )}
 
-    bindSpeech();
+      </div>
 
-  }
+      <div class="reading-instruction">
 
+        Leia o texto com atenção.
+        Tente compreender primeiro
+        sem consultar a tradução.
 
-  /* =======================================================
-     ORDENAR PALAVRAS
-     ======================================================= */
+      </div>
 
-  function bindWordOrdering() {
+    </section>
 
-    const wordBank =
-      document.getElementById(
-        "wordBank"
-      );
+  `;
 
-
-    const orderedWords =
-      document.getElementById(
-        "orderedWords"
-      );
-
-
-    if (
-      !wordBank ||
-      !orderedWords
-    ) {
-
-      return;
-
-    }
+}
 
 
-    wordBank
-      .querySelectorAll(
-        ".word-chip"
-      )
-      .forEach(
-        function(button) {
+/* =========================================================
+   13. MULTIPLE CHOICE
+   ========================================================= */
 
-          button.addEventListener(
-            "click",
-            function() {
+function renderMultipleChoice(
+  container,
+  activity
+) {
 
-              if (
-                button.disabled
-              ) {
-
-                return;
-
-              }
+  const data =
+    activity.data;
 
 
-              button.disabled =
-                true;
+  const options =
+    data.options || [];
 
 
-              const chip =
-                document.createElement(
-                  "button"
-                );
+  container.innerHTML = `
+
+    <section
+      class="lesson-card question-card"
+      data-question-id="${escapeHTML(
+        data.id
+      )}"
+    >
+
+      <span class="lesson-card-label">
+        ${activity.type === "fixation"
+          ? "FIXAÇÃO"
+          : "COMPREENSÃO"}
+      </span>
+
+      <h2>
+        ${escapeHTML(
+          data.question
+        )}
+      </h2>
+
+      <div class="lesson-options">
+
+        ${options.map(
+          (option, index) => `
+
+            <button
+              type="button"
+              class="lesson-option"
+              data-option-index="${index}"
+            >
+              <span class="option-letter">
+                ${String.fromCharCode(
+                  65 + index
+                )}
+              </span>
+
+              <span>
+                ${escapeHTML(
+                  option
+                )}
+              </span>
+
+            </button>
+
+          `
+        ).join("")}
+
+      </div>
+
+      <div
+        class="lesson-feedback"
+        id="currentQuestionFeedback"
+      >
+      </div>
+
+    </section>
+
+  `;
 
 
-              chip.type =
-                "button";
+  container
+    .querySelectorAll(
+      ".lesson-option"
+    )
+    .forEach(
+      button => {
 
+        button.addEventListener(
+          "click",
+          () => {
 
-              chip.className =
-                "word-chip selected";
-
-
-              chip.textContent =
-                button.dataset.word;
-
-
-              chip.dataset.word =
-                button.dataset.word;
-
-
-              chip.addEventListener(
-                "click",
-                function() {
-
-                  chip.remove();
-
-                  button.disabled =
-                    false;
-
-                }
+            const selected =
+              Number(
+                button.dataset.optionIndex
               );
 
 
-              orderedWords.appendChild(
-                chip
-              );
+            answerMultipleChoice(
+              data,
+              selected,
+              container
+            );
 
-            }
-          );
+          }
+        );
 
-        }
-      );
+      }
+    );
 
-  }
-
-
-  /* =======================================================
-     RECONHECIMENTO DE VOZ
-     ======================================================= */
-
-  function bindSpeech() {
-
-    const button =
-      document.getElementById(
-        "speechButton"
-      );
+}
 
 
-    if (
-      !button
-    ) {
+/* =========================================================
+   14. RESPONDER MULTIPLE CHOICE
+   ========================================================= */
 
-      return;
+function answerMultipleChoice(
+  question,
+  selected,
+  container
+) {
 
-    }
-
-
-    const result =
-      document.getElementById(
-        "speechResult"
-      );
-
-
-    const SpeechRecognition =
-      window.SpeechRecognition ||
-      window.webkitSpeechRecognition;
+  const buttons =
+    container.querySelectorAll(
+      ".lesson-option"
+    );
 
 
-    if (
-      !SpeechRecognition
-    ) {
+  buttons.forEach(
+    button => {
 
       button.disabled =
         true;
 
-
-      button.textContent =
-        "🎙️ Voz não disponível neste navegador";
-
-
-      return;
-
     }
+  );
 
 
-    const recognition =
-      new SpeechRecognition();
+  const correct =
+    selected ===
+    question.answer;
 
 
-    recognition.lang =
-      "en-US";
-
-
-    recognition.interimResults =
-      false;
-
-
-    recognition.continuous =
-      false;
-
-
-    button.addEventListener(
-      "click",
-      function() {
-
-        button.disabled =
-          true;
-
-
-        button.textContent =
-          "🎙️ Ouvindo...";
-
-
-        recognition.start();
-
-      }
+  const feedback =
+    container.querySelector(
+      "#currentQuestionFeedback"
     );
 
 
-    recognition.onresult =
-      function(event) {
+  if (correct) {
 
-        const transcript =
-          event.results[0][0]
-            .transcript;
+    LESSON_ENGINE.correctAnswers++;
 
-
-        if (
-          result
-        ) {
-
-          result.textContent =
-            transcript;
-
-        }
+    LESSON_ENGINE.score +=
+      LESSON_ENGINE_CONFIG.xpPerCorrectAnswer;
 
 
-        lessonState.currentSpeech =
-          transcript;
+    buttons[
+      selected
+    ]?.classList.add(
+      "correct"
+    );
 
 
-        button.disabled =
-          false;
+    if (feedback) {
+
+      feedback.innerHTML = `
+        <strong>
+          Correto! 🎉
+        </strong>
+
+        <p>
+          ${escapeHTML(
+            question.explanation ||
+            "Muito bem!"
+          )}
+        </p>
+      `;
+
+    }
+
+  }
+
+  else {
+
+    LESSON_ENGINE.wrongAnswers++;
 
 
-        button.textContent =
-          "🎙️ Tentar novamente";
-
-      };
-
-
-    recognition.onerror =
-      function() {
-
-        button.disabled =
-          false;
+    buttons[
+      selected
+    ]?.classList.add(
+      "wrong"
+    );
 
 
-        button.textContent =
-          "🎙️ Tentar novamente";
+    buttons[
+      question.answer
+    ]?.classList.add(
+      "correct"
+    );
 
-      };
 
+    if (feedback) {
 
-    recognition.onend =
-      function() {
+      feedback.innerHTML = `
+        <strong>
+          Vamos revisar. 💡
+        </strong>
 
-        button.disabled =
-          false;
+        <p>
+          ${
+            escapeHTML(
+              question.explanation ||
+              "A alternativa correta está destacada."
+            )
+          }
+        </p>
+      `;
 
-      };
+    }
 
   }
 
 
-  /* =======================================================
-     RECEBER RESPOSTA
-     ======================================================= */
+  registerAnswer({
 
-  function handleAnswer() {
+    questionId:
+      question.id,
 
-    const activity =
-      getCurrentActivity();
+    type:
+      "multiple-choice",
 
+    selected:
+      selected,
 
-    if (
-      !activity
-    ) {
-
-      return;
-
-    }
-
-
-    const answer =
-      collectAnswer(
-        activity
-      );
-
-
-    if (
-      answer === null
-    ) {
-
-      showFeedback(
-        false,
-        "Escolha ou escreva uma resposta antes de continuar."
-      );
-
-      return;
-
-    }
-
-
-    const correct =
-      evaluateAnswer(
-        activity,
-        answer
-      );
-
-
-    registerAnswer(
-      activity,
-      answer,
-      correct
-    );
-
-
-    showFeedback(
+    correct:
       correct,
-      getFeedbackMessage(
-        activity,
-        correct
-      )
-    );
+
+    expected:
+      question.answer
+
+  });
 
 
-    const button =
-      document.getElementById(
-        "lessonAnswerButton"
-      );
+  updateEngineButtons();
+
+}
 
 
-    if (
-      button
-    ) {
+/* =========================================================
+   15. VOCABULÁRIO
+   ========================================================= */
 
-      button.textContent =
-        "Continuar";
+function renderVocabulary(
+  container,
+  activity
+) {
 
-
-      button.onclick =
-        function() {
-
-          nextActivity();
-
-        };
-
-    }
-
-  }
+  const words =
+    activity.data || [];
 
 
-  /* =======================================================
-     COLETAR RESPOSTA
-     ======================================================= */
+  container.innerHTML = `
 
-  function collectAnswer(
-    activity
-  ) {
+    <section class="lesson-card vocabulary-card">
 
-    switch (
-      activity.type
-    ) {
+      <span class="lesson-card-label">
+        VOCABULARY
+      </span>
 
-      case ACTIVITY_TYPES.MULTIPLE_CHOICE:
+      <h2>
+        Palavras essenciais
+      </h2>
 
-      case ACTIVITY_TYPES.VOCABULARY:
+      <div class="vocabulary-list">
 
-      case ACTIVITY_TYPES.GRAMMAR:
+        ${words.map(
+          word => `
 
-      case ACTIVITY_TYPES.LISTENING:
+            <article
+              class="vocabulary-item"
+            >
 
-      case ACTIVITY_TYPES.TRUE_FALSE: {
+              <div>
 
-        const selected =
-          document.querySelector(
-            'input[name="lessonAnswer"]:checked'
-          );
+                <strong>
+                  ${escapeHTML(
+                    word.word
+                  )}
+                </strong>
 
+                <span>
+                  ${escapeHTML(
+                    word.translation
+                  )}
+                </span>
 
-        return selected
-          ? selected.value
-          : null;
+              </div>
 
-      }
+              <p>
+                ${escapeHTML(
+                  word.example
+                )}
+              </p>
 
+            </article>
 
-      case ACTIVITY_TYPES.FILL_BLANK:
+          `
+        ).join("")}
 
-      case ACTIVITY_TYPES.TRANSLATION:
+      </div>
 
-      case ACTIVITY_TYPES.WRITING:
+      <div class="lesson-instruction">
 
-      case ACTIVITY_TYPES.ACTIVE_RECALL: {
+        Leia cada palavra em voz alta
+        e tente criar uma frase própria.
 
-        const input =
-          document.getElementById(
-            "lessonTextAnswer"
-          );
+      </div>
 
+    </section>
 
-        if (
-          !input
-        ) {
-
-          return null;
-
-        }
-
-
-        const value =
-          input.value.trim();
-
-
-        return value
-          ? value
-          : null;
-
-      }
+  `;
 
 
-      case ACTIVITY_TYPES.ORDER_WORDS: {
+  words.forEach(
+    word => {
 
-        const container =
-          document.getElementById(
-            "orderedWords"
-          );
+      if (
+        window.EnglishFamily &&
+        typeof window.EnglishFamily
+          .registerVocabulary ===
+          "function"
+      ) {
 
+        window.EnglishFamily
+          .registerVocabulary(
+            word.word,
+            {
 
-        if (
-          !container
-        ) {
+              word:
+                word.word,
 
-          return null;
+              translation:
+                word.translation,
 
-        }
+              category:
+                word.category,
 
+              examples:
+                [
+                  word.example
+                ],
 
-        const words =
-          Array.from(
-            container.children
-          ).map(
-            function(element) {
-
-              return element.dataset.word ||
-                element.textContent.trim();
+              level:
+                LESSON_ENGINE.lesson.level
 
             }
           );
 
-
-        return words.length
-          ? words
-          : null;
-
       }
 
-
-      case ACTIVITY_TYPES.SPEAKING:
-
-        return (
-          lessonState.currentSpeech ||
-          null
-        );
-
-
-      case ACTIVITY_TYPES.INTRO:
-
-      case ACTIVITY_TYPES.COMPLETE:
-
-        return true;
-
-
-      default:
-
-        return null;
-
     }
+  );
 
-  }
+}
 
 
-  /* =======================================================
-     AVALIAR RESPOSTA
-     ======================================================= */
+/* =========================================================
+   16. GRAMÁTICA
+   ========================================================= */
 
-  function evaluateAnswer(
-    activity,
-    answer
+function renderGrammar(
+  container,
+  activity
+) {
+
+  const data =
+    activity.data;
+
+
+  container.innerHTML = `
+
+    <section class="lesson-card grammar-card">
+
+      <span class="lesson-card-label">
+        GRAMMAR
+      </span>
+
+      <h2>
+        ${escapeHTML(
+          data.topic
+        )}
+      </h2>
+
+      <p class="grammar-explanation">
+        ${escapeHTML(
+          data.explanation
+        )}
+      </p>
+
+      <div class="grammar-rule">
+
+        <strong>
+          Regra principal
+        </strong>
+
+        <p>
+          ${escapeHTML(
+            data.rule
+          )}
+        </p>
+
+      </div>
+
+      <div class="grammar-examples">
+
+        <strong>
+          Exemplos
+        </strong>
+
+        ${data.examples.map(
+          example => `
+            <div class="grammar-example">
+              ${escapeHTML(
+                example
+              )}
+            </div>
+          `
+        ).join("")}
+
+      </div>
+
+    </section>
+
+  `;
+
+
+  if (
+    window.EnglishFamily &&
+    typeof window.EnglishFamily
+      .registerGrammar ===
+      "function"
   ) {
 
-    /*
-      Atividades introdutórias não
-      exigem correção.
-    */
+    window.EnglishFamily
+      .registerGrammar(
+        data.topic,
+        {
 
-    if (
-      activity.type ===
-        ACTIVITY_TYPES.INTRO ||
-      activity.type ===
-        ACTIVITY_TYPES.COMPLETE
-    ) {
-
-      return true;
-
-    }
-
-
-    /*
-      Speaking inicialmente registra
-      a tentativa. A avaliação
-      avançada de pronúncia será
-      incorporada posteriormente.
-    */
-
-    if (
-      activity.type ===
-        ACTIVITY_TYPES.SPEAKING
-    ) {
-
-      return true;
-
-    }
-
-
-    const expected =
-      activity.answer !== null
-        ? activity.answer
-        : activity.answers;
-
-
-    if (
-      Array.isArray(expected)
-    ) {
-
-      if (
-        activity.type ===
-          ACTIVITY_TYPES.ORDER_WORDS
-      ) {
-
-        return compareWordArrays(
-          answer,
-          expected
-        );
-
-      }
-
-
-      return expected.some(
-        function(value) {
-
-          return normalizeAnswer(
-            answer
-          ) ===
-          normalizeAnswer(
-            value
-          );
+          level:
+            LESSON_ENGINE.lesson.level
 
         }
       );
 
-    }
+  }
+
+}
 
 
-    if (
-      expected === null ||
-      expected === undefined
-    ) {
+/* =========================================================
+   17. TRADUÇÃO
+   ========================================================= */
 
-      /*
-        Atividades sem resposta
-        definida serão consideradas
-        concluídas, mas não serão
-        contabilizadas como erro.
-      */
+function renderTranslation(
+  container,
+  activity
+) {
 
-      return true;
-
-    }
+  const data =
+    activity.data;
 
 
-    return (
-      normalizeAnswer(
-        answer
-      ) ===
-      normalizeAnswer(
-        expected
-      )
+  container.innerHTML = `
+
+    <section
+      class="lesson-card question-card translation-card"
+    >
+
+      <span class="lesson-card-label">
+        TRANSLATION
+      </span>
+
+      <h2>
+        ${escapeHTML(
+          data.question
+        )}
+      </h2>
+
+      <textarea
+        id="translationAnswer"
+        class="lesson-textarea"
+        rows="4"
+        placeholder="Digite sua resposta em inglês..."
+        autocomplete="off"
+      ></textarea>
+
+      <div
+        id="translationFeedback"
+        class="lesson-feedback"
+      >
+      </div>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================================================
+   18. RECUPERAÇÃO ATIVA
+   ========================================================= */
+
+function renderRecall(
+  container,
+  activity
+) {
+
+  const data =
+    activity.data;
+
+
+  container.innerHTML = `
+
+    <section
+      class="lesson-card question-card recall-card"
+    >
+
+      <span class="lesson-card-label">
+        ACTIVE RECALL
+      </span>
+
+      <h2>
+        ${escapeHTML(
+          data.question
+        )}
+      </h2>
+
+      <input
+        id="recallAnswer"
+        class="lesson-input"
+        type="text"
+        placeholder="Digite sua resposta..."
+        autocomplete="off"
+      >
+
+      <div
+        id="recallFeedback"
+        class="lesson-feedback"
+      >
+      </div>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================================================
+   19. FEEDBACK FINAL
+   ========================================================= */
+
+function renderFeedback(
+  container
+) {
+
+  const total =
+    LESSON_ENGINE.correctAnswers +
+    LESSON_ENGINE.wrongAnswers;
+
+
+  const percentage =
+    total > 0
+      ? Math.round(
+          (
+            LESSON_ENGINE.correctAnswers /
+            total
+          ) *
+          100
+        )
+      : 100;
+
+
+  container.innerHTML = `
+
+    <section class="lesson-card final-result">
+
+      <span class="lesson-card-label">
+        LESSON COMPLETE
+      </span>
+
+      <div class="lesson-result-icon">
+        ${percentage >= 70
+          ? "🎉"
+          : "📚"}
+      </div>
+
+      <h2>
+        ${percentage >= 70
+          ? "Excelente trabalho!"
+          : "Boa tentativa!"}
+      </h2>
+
+      <p>
+        Você concluiu a aula
+        <strong>
+          ${escapeHTML(
+            LESSON_ENGINE.lesson.title
+          )}
+        </strong>.
+      </p>
+
+      <div class="lesson-score">
+
+        <strong>
+          ${percentage}%
+        </strong>
+
+        <span>
+          aproveitamento
+        </span>
+
+      </div>
+
+      <div class="lesson-result-stats">
+
+        <div>
+          <strong>
+            ${LESSON_ENGINE.correctAnswers}
+          </strong>
+          <span>
+            acertos
+          </span>
+        </div>
+
+        <div>
+          <strong>
+            ${LESSON_ENGINE.wrongAnswers}
+          </strong>
+          <span>
+            para revisar
+          </span>
+        </div>
+
+      </div>
+
+      <p class="lesson-final-message">
+
+        ${percentage >= 70
+          ? "Seu desempenho foi suficiente para avançar. Continue praticando para consolidar o conteúdo."
+          : "O conteúdo ficará registrado para reforço e revisão. Não desanime — aprender é um processo."}
+
+      </p>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================================================
+   20. ATIVIDADE DESCONHECIDA
+   ========================================================= */
+
+function renderUnknownActivity(
+  container
+) {
+
+  container.innerHTML = `
+
+    <section class="lesson-card">
+
+      <h2>
+        Atividade indisponível
+      </h2>
+
+      <p>
+        Esta atividade ainda não foi configurada.
+      </p>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================================================
+   21. REGISTRAR RESPOSTA
+   ========================================================= */
+
+function registerAnswer(
+  answer
+) {
+
+  LESSON_ENGINE.answers.push({
+
+    ...answer,
+
+    timestamp:
+      new Date().toISOString()
+
+  });
+
+}
+
+
+/* =========================================================
+   22. BOTÕES
+   ========================================================= */
+
+function updateEngineButtons() {
+
+  const back =
+    document.getElementById(
+      "lessonEngineBack"
     );
+
+
+  const next =
+    document.getElementById(
+      "lessonEngineNext"
+    );
+
+
+  if (back) {
+
+    back.disabled =
+      LESSON_ENGINE.currentIndex ===
+      0;
 
   }
 
 
-  /* =======================================================
-     NORMALIZAÇÃO
-     ======================================================= */
+  if (!next) {
 
-  function normalizeAnswer(
-    value
+    return;
+
+  }
+
+
+  const activity =
+    LESSON_ENGINE.activities[
+      LESSON_ENGINE.currentIndex
+    ];
+
+
+  if (!activity) {
+
+    return;
+
+  }
+
+
+  if (
+    activity.type ===
+      "comprehension" ||
+    activity.type ===
+      "fixation"
+  ) {
+
+    const answered =
+      LESSON_ENGINE.answers.some(
+        answer =>
+          answer.questionId ===
+          activity.data.id
+      );
+
+
+    next.disabled =
+      !answered;
+
+  }
+
+  else {
+
+    next.disabled =
+      false;
+
+  }
+
+
+  next.textContent =
+
+    LESSON_ENGINE.currentIndex ===
+      LESSON_ENGINE.activities.length - 1
+
+      ? "Concluir aula"
+
+      : "Continuar";
+
+}
+
+
+/* =========================================================
+   23. PRÓXIMA ATIVIDADE
+   ========================================================= */
+
+function nextLessonActivity() {
+
+  const activity =
+    LESSON_ENGINE.activities[
+      LESSON_ENGINE.currentIndex
+    ];
+
+
+  if (!activity) {
+
+    return;
+
+  }
+
+
+  if (
+    activity.type ===
+      "translation"
   ) {
 
     if (
-      value === null ||
-      value === undefined
+      !processTranslationAnswer(
+        activity
+      )
     ) {
 
-      return "";
+      return;
+
+    }
+
+  }
+
+
+  if (
+    activity.type ===
+      "recall"
+  ) {
+
+    if (
+      !processRecallAnswer(
+        activity
+      )
+    ) {
+
+      return;
+
+    }
+
+  }
+
+
+  if (
+    LESSON_ENGINE.currentIndex >=
+    LESSON_ENGINE.activities.length - 1
+  ) {
+
+    finishLessonEngine();
+
+    return;
+
+  }
+
+
+  LESSON_ENGINE.currentIndex +=
+    1;
+
+
+  renderCurrentActivity();
+
+}
+
+
+/* =========================================================
+   24. ATIVIDADE ANTERIOR
+   ========================================================= */
+
+function previousLessonActivity() {
+
+  if (
+    LESSON_ENGINE.currentIndex <=
+    0
+  ) {
+
+    return;
+
+  }
+
+
+  LESSON_ENGINE.currentIndex -=
+    1;
+
+
+  renderCurrentActivity();
+
+}
+
+
+/* =========================================================
+   25. PROCESSAR TRADUÇÃO
+   ========================================================= */
+
+function processTranslationAnswer(
+  activity
+) {
+
+  const input =
+    document.getElementById(
+      "translationAnswer"
+    );
+
+
+  const feedback =
+    document.getElementById(
+      "translationFeedback"
+    );
+
+
+  if (!input) {
+
+    return false;
+
+  }
+
+
+  const answer =
+    normalizeAnswer(
+      input.value
+    );
+
+
+  if (!answer) {
+
+    if (feedback) {
+
+      feedback.innerHTML =
+        "<p>Digite uma resposta antes de continuar.</p>";
+
+    }
+
+    return false;
+
+  }
+
+
+  const expected =
+    normalizeAnswer(
+      activity.data.answer
+    );
+
+
+  const correct =
+    answersAreSimilar(
+      answer,
+      expected
+    );
+
+
+  if (correct) {
+
+    LESSON_ENGINE.correctAnswers++;
+
+    LESSON_ENGINE.score +=
+      LESSON_ENGINE_CONFIG.xpPerCorrectAnswer;
+
+
+    if (feedback) {
+
+      feedback.innerHTML = `
+
+        <strong>
+          Correto! 🎉
+        </strong>
+
+        <p>
+          ${escapeHTML(
+            activity.data.answer
+          )}
+        </p>
+
+      `;
+
+    }
+
+  }
+
+  else {
+
+    LESSON_ENGINE.wrongAnswers++;
+
+
+    if (feedback) {
+
+      feedback.innerHTML = `
+
+        <strong>
+          Vamos revisar. 💡
+        </strong>
+
+        <p>
+          Resposta esperada:
+          <strong>
+            ${escapeHTML(
+              activity.data.answer
+            )}
+          </strong>
+        </p>
+
+      `;
 
     }
 
 
-    return String(value)
-      .trim()
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(
-        /[\u0300-\u036f]/g,
-        ""
+    registerLessonError({
+
+      id:
+        activity.data.id,
+
+      type:
+        "translation",
+
+      question:
+        activity.data.question,
+
+      expected:
+        activity.data.answer,
+
+      answer:
+        input.value
+
+    });
+
+  }
+
+
+  registerAnswer({
+
+    questionId:
+      activity.data.id,
+
+    type:
+      "translation",
+
+    answer:
+      input.value,
+
+    expected:
+      activity.data.answer,
+
+    correct:
+      correct
+
+  });
+
+
+  input.disabled =
+    true;
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   26. PROCESSAR ACTIVE RECALL
+   ========================================================= */
+
+function processRecallAnswer(
+  activity
+) {
+
+  const input =
+    document.getElementById(
+      "recallAnswer"
+    );
+
+
+  const feedback =
+    document.getElementById(
+      "recallFeedback"
+    );
+
+
+  if (!input) {
+
+    return false;
+
+  }
+
+
+  const answer =
+    normalizeAnswer(
+      input.value
+    );
+
+
+  if (!answer) {
+
+    if (feedback) {
+
+      feedback.innerHTML =
+        "<p>Digite uma resposta antes de continuar.</p>";
+
+    }
+
+    return false;
+
+  }
+
+
+  const expected =
+    normalizeAnswer(
+      activity.data.answer
+    );
+
+
+  const correct =
+    answersAreSimilar(
+      answer,
+      expected
+    );
+
+
+  if (correct) {
+
+    LESSON_ENGINE.correctAnswers++;
+
+    LESSON_ENGINE.score +=
+      LESSON_ENGINE_CONFIG.xpPerCorrectAnswer;
+
+
+    if (feedback) {
+
+      feedback.innerHTML = `
+
+        <strong>
+          Muito bem! 🎯
+        </strong>
+
+      `;
+
+    }
+
+  }
+
+  else {
+
+    LESSON_ENGINE.wrongAnswers++;
+
+
+    if (feedback) {
+
+      feedback.innerHTML = `
+
+        <strong>
+          Quase!
+        </strong>
+
+        <p>
+          Resposta:
+          <strong>
+            ${escapeHTML(
+              activity.data.answer
+            )}
+          </strong>
+        </p>
+
+      `;
+
+    }
+
+
+    registerLessonError({
+
+      id:
+        activity.data.id,
+
+      type:
+        "recall",
+
+      question:
+        activity.data.question,
+
+      expected:
+        activity.data.answer,
+
+      answer:
+        input.value
+
+    });
+
+  }
+
+
+  registerAnswer({
+
+    questionId:
+      activity.data.id,
+
+    type:
+      "recall",
+
+    answer:
+      input.value,
+
+    expected:
+      activity.data.answer,
+
+    correct:
+      correct
+
+  });
+
+
+  input.disabled =
+    true;
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   27. REGISTRAR ERRO NO SISTEMA PRINCIPAL
+   ========================================================= */
+
+function registerLessonError(
+  errorData
+) {
+
+  if (
+    window.EnglishFamily &&
+    typeof window.EnglishFamily
+      .registerError ===
+      "function"
+  ) {
+
+    window.EnglishFamily
+      .registerError(
+        errorData
+      );
+
+  }
+
+}
+
+
+/* =========================================================
+   28. FINALIZAR AULA
+   ========================================================= */
+
+function finishLessonEngine() {
+
+  LESSON_ENGINE.completedAt =
+    new Date().toISOString();
+
+
+  const elapsed =
+    LESSON_ENGINE.startTime
+      ? (
+          Date.now() -
+          LESSON_ENGINE.startTime
+        ) / 60000
+      : 0;
+
+
+  LESSON_ENGINE.sessionMinutes =
+    Math.max(
+      1,
+      Math.round(
+        elapsed
       )
-      .replace(
-        /[.!?,;:]+$/g,
-        ""
-      )
-      .replace(
-        /\s+/g,
-        " "
+    );
+
+
+  const total =
+    LESSON_ENGINE.correctAnswers +
+    LESSON_ENGINE.wrongAnswers;
+
+
+  const percentage =
+    total > 0
+      ? Math.round(
+          (
+            LESSON_ENGINE.correctAnswers /
+            total
+          ) *
+          100
+        )
+      : 100;
+
+
+  const lesson =
+    LESSON_ENGINE.lesson;
+
+
+  if (
+    lesson &&
+    window.EnglishFamily
+  ) {
+
+    const user =
+      window.EnglishFamily
+        .getUser();
+
+
+    if (
+      user &&
+      !user.completedLessons
+        .includes(
+          lesson.id
+        )
+    ) {
+
+      window.EnglishFamily
+        .completeLesson(
+          lesson.id
+        );
+
+    }
+
+
+    window.EnglishFamily
+      .addStudyMinutes(
+        LESSON_ENGINE.sessionMinutes
       );
 
   }
 
 
-  function compareWordArrays(
-    first,
-    second
+  saveLessonSession(
+    percentage
+  );
+
+
+  renderFeedback(
+    document.getElementById(
+      "lessonEngineContent"
+    )
+  );
+
+
+  LESSON_ENGINE.currentIndex =
+    LESSON_ENGINE.activities.length - 1;
+
+
+  updateEngineButtons();
+
+}
+
+
+/* =========================================================
+   29. SALVAR SESSÃO
+   ========================================================= */
+
+function saveLessonSession(
+  percentage
+) {
+
+  if (
+    !window.EnglishFamily
   ) {
 
-    if (
-      !Array.isArray(first) ||
-      !Array.isArray(second)
-    ) {
+    return;
 
-      return false;
-
-    }
+  }
 
 
-    if (
-      first.length !==
-      second.length
-    ) {
-
-      return false;
-
-    }
+  const user =
+    window.EnglishFamily
+      .getUser();
 
 
-    for (
-      let index = 0;
-      index < first.length;
-      index++
-    ) {
+  if (!user) {
 
-      if (
-        normalizeAnswer(
-          first[index]
-        ) !==
-        normalizeAnswer(
-          second[index]
-        )
-      ) {
+    return;
 
-        return false;
+  }
 
-      }
 
-    }
+  if (
+    !Array.isArray(
+      user.studySessions
+    )
+  ) {
 
+    user.studySessions =
+      [];
+
+  }
+
+
+  /*
+    A sessão detalhada fica em
+    studySessions para permitir,
+    no futuro, análises de desempenho.
+  */
+
+  user.studySessions.push({
+
+    type:
+      "lesson",
+
+    lessonId:
+      LESSON_ENGINE.lesson.id,
+
+    level:
+      LESSON_ENGINE.lesson.level,
+
+    module:
+      LESSON_ENGINE.lesson.module,
+
+    lesson:
+      LESSON_ENGINE.lesson.lesson,
+
+    percentage:
+      percentage,
+
+    correct:
+      LESSON_ENGINE.correctAnswers,
+
+    wrong:
+      LESSON_ENGINE.wrongAnswers,
+
+    minutes:
+      LESSON_ENGINE.sessionMinutes,
+
+    startedAt:
+      LESSON_ENGINE.startedAt,
+
+    completedAt:
+      LESSON_ENGINE.completedAt,
+
+    timestamp:
+      new Date().toISOString()
+
+  });
+
+
+  if (
+    user.studySessions.length >
+    500
+  ) {
+
+    user.studySessions =
+      user.studySessions.slice(
+        -500
+      );
+
+  }
+
+
+  if (
+    typeof window.EnglishFamily
+      .save ===
+      "function"
+  ) {
+
+    window.EnglishFamily
+      .save();
+
+  }
+
+}
+
+
+/* =========================================================
+   30. NORMALIZAÇÃO DE RESPOSTA
+   ========================================================= */
+
+function normalizeAnswer(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+    .toLowerCase()
+    .trim()
+    .replace(
+      /[.,!?;:]/g,
+      ""
+    )
+    .replace(
+      /\s+/g,
+      " "
+    );
+
+}
+
+
+/* =========================================================
+   31. COMPARAÇÃO DE RESPOSTAS
+   ========================================================= */
+
+function answersAreSimilar(
+  answer,
+  expected
+) {
+
+  if (
+    answer ===
+    expected
+  ) {
 
     return true;
 
   }
 
 
-  /* =======================================================
-     REGISTRAR RESPOSTA
-     ======================================================= */
+  /*
+    Aceita pequenas diferenças de
+    pontuação e espaços.
+  */
 
-  function registerAnswer(
-    activity,
-    answer,
-    correct
-  ) {
-
-    lessonState.answers.push({
-
-      activityId:
-        activity.id,
-
-      type:
-        activity.type,
-
-      answer:
-        clone(answer),
-
-      correct,
-
-      timestamp:
-        new Date().toISOString()
-
-    });
-
-
-    if (
-      correct
-    ) {
-
-      lessonState.correctAnswers++;
-
-      lessonState.score++;
-
-      lessonState.xpEarned +=
-        activity.points ||
-        ENGINE_CONFIG.xpPerActivity;
-
-    }
-    else {
-
-      lessonState.incorrectAnswers++;
-
-      registerActivityError(
-        activity,
-        answer
-      );
-
-    }
-
-  }
-
-
-  /* =======================================================
-     ERROS
-     ======================================================= */
-
-  function registerActivityError(
-    activity,
-    answer
-  ) {
-
-    const error = {
-
-      activityId:
-        activity.id,
-
-      lessonId:
-        lessonState.lessonId,
-
-      type:
-        activity.type,
-
-      question:
-        activity.question,
-
-      answer:
-        clone(answer),
-
-      expected:
-        clone(activity.answer),
-
-      timestamp:
-        new Date().toISOString()
-
-    };
-
-
-    lessonState.errors.push(
-      error
+  const compactAnswer =
+    answer.replace(
+      /['"]/g,
+      ""
     );
 
 
-    const app =
-      getApp();
-
-
-    if (
-      app &&
-      typeof app.registerError ===
-        "function"
-    ) {
-
-      try {
-
-        app.registerError(
-          error
-        );
-
-      }
-      catch (error) {
-
-        console.warn(
-          "Não foi possível registrar o erro no app.",
-          error
-        );
-
-      }
-
-    }
-
-  }
-
-
-  /* =======================================================
-     FEEDBACK
-     ======================================================= */
-
-  function showFeedback(
-    correct,
-    message
-  ) {
-
-    const feedback =
-      document.getElementById(
-        "lessonFeedback"
-      );
-
-
-    if (
-      !feedback
-    ) {
-
-      return;
-
-    }
-
-
-    feedback.hidden =
-      false;
-
-
-    feedback.className =
-      correct
-        ? "lesson-feedback correct"
-        : "lesson-feedback incorrect";
-
-
-    feedback.innerHTML = `
-
-      <strong>
-        ${
-          correct
-            ? "Muito bem! 🎉"
-            : "Vamos reforçar isso. 💪"
-        }
-      </strong>
-
-      <p>
-        ${escapeHTML(
-          message
-        )}
-      </p>
-
-    `;
-
-  }
-
-
-  function getFeedbackMessage(
-    activity,
-    correct
-  ) {
-
-    if (
-      correct
-    ) {
-
-      return (
-        activity.explanation ||
-        "Resposta correta."
-      );
-
-    }
-
-
-    if (
-      activity.explanation
-    ) {
-
-      return activity.explanation;
-
-    }
-
-
-    if (
-      activity.answer !== null &&
-      activity.answer !== undefined
-    ) {
-
-      return (
-        "A resposta esperada é: " +
-        formatExpectedAnswer(
-          activity.answer
-        )
-      );
-
-    }
-
-
-    return "Revise este ponto e tente novamente.";
-
-  }
-
-
-  function formatExpectedAnswer(
-    answer
-  ) {
-
-    if (
-      Array.isArray(answer)
-    ) {
-
-      return answer.join(
-        " "
-      );
-
-    }
-
-
-    return String(
-      answer
-    );
-
-  }
-
-
-  /* =======================================================
-     PRÓXIMA ATIVIDADE
-     ======================================================= */
-
-  function nextActivity() {
-
-    const feedback =
-      document.getElementById(
-        "lessonFeedback"
-      );
-
-
-    if (
-      feedback
-    ) {
-
-      feedback.hidden =
-        true;
-
-    }
-
-
-    lessonState.currentSpeech =
-      null;
-
-
-    lessonState.currentActivityIndex++;
-
-
-    if (
-      lessonState.currentActivityIndex >=
-      lessonState.activities.length
-    ) {
-
-      finishLesson();
-
-      return;
-
-    }
-
-
-    render();
-
-  }
-
-
-  /* =======================================================
-     FINALIZAR AULA
-     ======================================================= */
-
-  function finishLesson() {
-
-    lessonState.active =
-      false;
-
-
-    lessonState.completed =
-      true;
-
-
-    lessonState.finishedAt =
-      new Date().toISOString();
-
-
-    const total =
-      lessonState.correctAnswers +
-      lessonState.incorrectAnswers;
-
-
-    const percentage =
-      total > 0
-        ? Math.round(
-            (
-              lessonState.correctAnswers /
-              total
-            ) * 100
-          )
-        : 100;
-
-
-    if (
-      percentage === 100
-    ) {
-
-      lessonState.xpEarned +=
-        ENGINE_CONFIG.xpBonusPerfectLesson;
-
-    }
-
-
-    const app =
-      getApp();
-
-
-    /*
-      Entrega XP ao aplicativo.
-    */
-
-    if (
-      app &&
-      typeof app.addXP ===
-        "function"
-    ) {
-
-      try {
-
-        app.addXP(
-          lessonState.xpEarned
-        );
-
-      }
-      catch (error) {
-
-        console.warn(
-          "Erro ao adicionar XP.",
-          error
-        );
-
-      }
-
-    }
-
-
-    /*
-      Registra conclusão da aula.
-    */
-
-    if (
-      app &&
-      typeof app.completeLesson ===
-        "function"
-    ) {
-
-      try {
-
-        app.completeLesson(
-          {
-            lessonId:
-              lessonState.lessonId,
-
-            level:
-              lessonState.level,
-
-            module:
-              lessonState.module,
-
-            lesson:
-              lessonState.lesson,
-
-            score:
-              percentage,
-
-            correctAnswers:
-              lessonState.correctAnswers,
-
-            incorrectAnswers:
-              lessonState.incorrectAnswers,
-
-            xpEarned:
-              lessonState.xpEarned,
-
-            errors:
-              lessonState.errors,
-
-            startedAt:
-              lessonState.startedAt,
-
-            finishedAt:
-              lessonState.finishedAt
-
-          }
-        );
-
-      }
-      catch (error) {
-
-        console.warn(
-          "Erro ao registrar conclusão da aula.",
-          error
-        );
-
-      }
-
-    }
-
-
-    renderLessonResult(
-      percentage
-    );
-
-  }
-
-
-  /* =======================================================
-     RESULTADO
-     ======================================================= */
-
-  function renderLessonResult(
-    percentage
-  ) {
-
-    removeLessonScreen();
-
-
-    const container =
-      document.createElement(
-        "div"
-      );
-
-
-    container.id =
-      "lessonEngineScreen";
-
-
-    container.className =
-      "lesson-engine-screen";
-
-
-    const passed =
-      percentage >=
-      ENGINE_CONFIG.minimumPassingScore;
-
-
-    container.innerHTML = `
-
-      <div class="lesson-engine-overlay">
-
-        <div class="lesson-result">
-
-          <div class="lesson-result-icon">
-
-            ${
-              passed
-                ? "🎉"
-                : "💪"
-            }
-
-          </div>
-
-
-          <span class="small-label">
-            AULA CONCLUÍDA
-          </span>
-
-
-          <h1>
-            ${
-              passed
-                ? "Parabéns!"
-                : "Continue praticando!"
-            }
-          </h1>
-
-
-          <div class="lesson-score">
-
-            <strong>
-              ${percentage}%
-            </strong>
-
-            <span>
-              aproveitamento
-            </span>
-
-          </div>
-
-
-          <div class="lesson-result-stats">
-
-            <div>
-              <strong>
-                ${lessonState.correctAnswers}
-              </strong>
-              <span>
-                acertos
-              </span>
-            </div>
-
-
-            <div>
-              <strong>
-                ${lessonState.incorrectAnswers}
-              </strong>
-              <span>
-                erros
-              </span>
-            </div>
-
-
-            <div>
-              <strong>
-                +${lessonState.xpEarned}
-              </strong>
-              <span>
-                XP
-              </span>
-            </div>
-
-          </div>
-
-
-          ${
-            lessonState.errors.length
-              ? `
-                <div class="lesson-result-attention">
-
-                  <strong>
-                    Pontos para reforçar
-                  </strong>
-
-                  <p>
-                    ${lessonState.errors.length}
-                    ${
-                      lessonState.errors.length === 1
-                        ? "atividade precisa"
-                        : "atividades precisam"
-                    }
-                    de revisão.
-                  </p>
-
-                </div>
-              `
-              : `
-                <div class="lesson-result-perfect">
-
-                  ⭐ Excelente!
-                  Você não teve erros nesta aula.
-
-                </div>
-              `
-          }
-
-
-          <button
-            id="lessonFinishButton"
-            class="primary-button full-width"
-            type="button"
-          >
-            Continuar
-          </button>
-
-        </div>
-
-      </div>
-
-    `;
-
-
-    document.body.appendChild(
-      container
+  const compactExpected =
+    expected.replace(
+      /['"]/g,
+      ""
     );
 
 
-    const finishButton =
-      document.getElementById(
-        "lessonFinishButton"
-      );
-
-
-    if (
-      finishButton
-    ) {
-
-      finishButton.addEventListener(
-        "click",
-        function() {
-
-          removeLessonScreen();
-
-
-          if (
-            window.EnglishFamily &&
-            typeof window.EnglishFamily.refresh ===
-              "function"
-          ) {
-
-            window.EnglishFamily.refresh();
-
-          }
-
-        }
-      );
-
-    }
-
-  }
-
-
-  /* =======================================================
-     SAIR DA AULA
-     ======================================================= */
-
-  function exitLesson() {
-
-    const confirmed =
-      window.confirm(
-        "Deseja sair da aula? Seu progresso desta sessão será perdido."
-      );
-
-
-    if (
-      !confirmed
-    ) {
-
-      return;
-
-    }
-
-
-    resetState();
-
-    removeLessonScreen();
-
-  }
-
-
-  /* =======================================================
-     REMOVER TELA
-     ======================================================= */
-
-  function removeLessonScreen() {
-
-    const screen =
-      document.getElementById(
-        "lessonEngineScreen"
-      );
-
-
-    if (
-      screen
-    ) {
-
-      screen.remove();
-
-    }
-
-  }
-
-
-  /* =======================================================
-     SEGURANÇA HTML
-     ======================================================= */
-
-  function escapeHTML(
-    value
-  ) {
-
-    if (
-      value === null ||
-      value === undefined
-    ) {
-
-      return "";
-
-    }
-
-
-    return String(value)
-      .replace(
-        /&/g,
-        "&amp;"
-      )
-      .replace(
-        /</g,
-        "&lt;"
-      )
-      .replace(
-        />/g,
-        "&gt;"
-      )
-      .replace(
-        /"/g,
-        "&quot;"
-      )
-      .replace(
-        /'/g,
-        "&#039;"
-      );
-
-  }
-
-
-  function escapeAttribute(
-    value
-  ) {
-
-    return escapeHTML(
-      value
-    );
-
-  }
-
-
-  function formatText(
-    value
-  ) {
-
-    return escapeHTML(
-      value
-    )
-      .replace(
-        /\n\n/g,
-        "</p><p>"
-      )
-      .replace(
-        /\n/g,
-        "<br>"
-      );
-
-  }
-
-
-  /* =======================================================
-     API PÚBLICA
-     ======================================================= */
-
-  window.LessonEngine = {
-
-    version:
-      ENGINE_CONFIG.version,
-
-    config:
-      ENGINE_CONFIG,
-
-    activityTypes:
-      ACTIVITY_TYPES,
-
-    start:
-      start,
-
-    loadLesson:
-      loadLesson,
-
-    getState:
-      function () {
-
-        return clone(
-          lessonState
-        );
-
-      },
-
-    getCurrentActivity:
-      getCurrentActivity,
-
-    getProgress:
-      getProgress,
-
-    nextActivity:
-      nextActivity,
-
-    finishLesson:
-      finishLesson,
-
-    exitLesson:
-      exitLesson,
-
-    reset:
-      resetState,
-
-    render:
-      render
-
-  };
-
-
-  /* =======================================================
-     INICIALIZAÇÃO
-     ======================================================= */
-
-  console.log(
-    "English Family — Lesson Engine " +
-    ENGINE_CONFIG.version +
-    " carregado."
+  return (
+    compactAnswer ===
+    compactExpected
   );
 
-})();
+}
+
+
+/* =========================================================
+   32. ESCAPE HTML
+   ========================================================= */
+
+function escapeHTML(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   33. API PÚBLICA DO MOTOR
+   ========================================================= */
+
+window.EnglishFamilyLessonEngine = {
+
+  start(
+    lesson
+  ) {
+
+    return startLessonEngine(
+      lesson
+    );
+
+  },
+
+
+  close() {
+
+    closeLessonEngine();
+
+  },
+
+
+  reset() {
+
+    resetLessonEngine();
+
+  },
+
+
+  getState() {
+
+    return LESSON_ENGINE;
+
+  },
+
+
+  getLibrary() {
+
+    return LESSON_LIBRARY;
+
+  },
+
+
+  getLesson(
+    id
+  ) {
+
+    return getLessonFromLibrary(
+      id
+    );
+
+  }
+
+};
+
+
+/* =========================================================
+   34. FIM DO MOTOR DE AULAS
+   ========================================================= */
