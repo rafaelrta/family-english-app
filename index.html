@@ -3,8 +3,6 @@
 
 <head>
 
-  <base target="_top">
-
   <meta charset="UTF-8">
 
   <meta
@@ -14,3389 +12,1039 @@
 
   <meta
     name="theme-color"
-    content="#0B3D91"
+    content="#58cc02"
   >
 
   <meta
     name="description"
-    content="Family English - Aprenda inglês em família."
+    content="Aplicativo familiar de aprendizagem de idiomas"
   >
+
+  <meta
+    name="mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="English Family"
+  >
+
+  <title>English Family</title>
 
   <link
     rel="manifest"
-    href="./manifest.json"
+    href="manifest.json"
   >
 
-  <title>Family English</title>
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-      background: #eef3f8;
-      color: #1f2937;
-    }
-
-    body {
-      padding-bottom: 80px;
-    }
-
-    button,
-    input,
-    textarea {
-      font-family: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    /* ==========================================
-       CABEÇALHO
-       ========================================== */
-
-    header {
-      background: #0B3D91;
-      color: white;
-      padding: 16px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .header-content {
-      max-width: 1000px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .logo {
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    .header-status {
-      display: flex;
-      gap: 12px;
-      font-size: 14px;
-      align-items: center;
-      white-space: nowrap;
-    }
-
-    /* ==========================================
-       NAVEGAÇÃO
-       ========================================== */
-
-    nav {
-      background: white;
-      border-bottom: 1px solid #d9e0e8;
-      position: sticky;
-      top: 64px;
-      z-index: 999;
-    }
-
-    .nav-content {
-      max-width: 1000px;
-      margin: auto;
-      display: flex;
-      overflow-x: auto;
-    }
-
-    nav button {
-      border: none;
-      background: transparent;
-      padding: 14px 12px;
-      color: #475569;
-      font-weight: bold;
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    nav button.active {
-      color: #0B3D91;
-      border-bottom: 3px solid #D62828;
-    }
-
-    /* ==========================================
-       CONTAINER
-       ========================================== */
-
-    .container {
-      width: 100%;
-      max-width: 1000px;
-      margin: auto;
-      padding: 18px;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    h1,
-    h2,
-    h3 {
-      margin-top: 0;
-    }
-
-    /* ==========================================
-       CARDS
-       ========================================== */
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow:
-        0 3px 12px rgba(15,23,42,0.07);
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-
-    /* ==========================================
-       DASHBOARD
-       ========================================== */
-
-    .welcome {
-      background:
-        linear-gradient(
-          135deg,
-          #0B3D91,
-          #174ea6
-        );
-      color: white;
-      border-radius: 18px;
-      padding: 22px;
-      margin-bottom: 18px;
-      box-shadow:
-        0 5px 15px rgba(11,61,145,0.2);
-    }
-
-    .welcome h1 {
-      margin-bottom: 6px;
-    }
-
-    .welcome p {
-      margin: 0;
-      opacity: 0.92;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns:
-        repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .stat {
-      background: white;
-      border-radius: 14px;
-      padding: 15px 10px;
-      text-align: center;
-      box-shadow:
-        0 3px 10px rgba(15,23,42,0.06);
-    }
-
-    .stat-icon {
-      font-size: 23px;
-      margin-bottom: 5px;
-    }
-
-    .stat-value {
-      font-size: 22px;
-      font-weight: bold;
-      color: #0B3D91;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 3px;
-    }
-
-    /* ==========================================
-       BOTÕES
-       ========================================== */
-
-    .btn {
-      border: none;
-      border-radius: 12px;
-      padding: 13px 18px;
-      font-weight: bold;
-      font-size: 15px;
-      transition: 0.2s;
-    }
-
-    .btn:active {
-      transform: scale(0.97);
-    }
-
-    .btn-primary {
-      background: #0B3D91;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #082f70;
-    }
-
-    .btn-danger {
-      background: #D62828;
-      color: white;
-    }
-
-    .btn-light {
-      background: #eef3f8;
-      color: #0B3D91;
-    }
-
-    .btn-success {
-      background: #198754;
-      color: white;
-    }
-
-    .btn-block {
-      width: 100%;
-    }
-
-    /* ==========================================
-       LIÇÃO
-       ========================================== */
-
-    .lesson-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .lesson-progress {
-      height: 9px;
-      background: #e2e8f0;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-
-    .lesson-progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #D62828;
-      transition: width 0.3s;
-    }
-
-    .question-box {
-      background: #f8fafc;
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    .question {
-      font-size: 23px;
-      font-weight: bold;
-      color: #0B3D91;
-      margin-bottom: 10px;
-    }
-
-    .question-hint {
-      color: #64748b;
-      font-size: 14px;
-    }
-
-    .options {
-      display: grid;
-      gap: 10px;
-    }
-
-    .option {
-      border: 2px solid #dbe3ec;
-      background: white;
-      border-radius: 12px;
-      padding: 14px;
-      font-size: 16px;
-      text-align: left;
-      transition: 0.2s;
-    }
-
-    .option:hover {
-      border-color: #0B3D91;
-    }
-
-    .option.correct {
-      border-color: #198754;
-      background: #eaf8f0;
-    }
-
-    .option.wrong {
-      border-color: #D62828;
-      background: #fff0f0;
-    }
-
-    .feedback {
-      margin-top: 15px;
-      padding: 14px;
-      border-radius: 12px;
-      display: none;
-      font-weight: bold;
-    }
-
-    .feedback.correct {
-      display: block;
-      background: #eaf8f0;
-      color: #146c43;
-    }
-
-    .feedback.wrong {
-      display: block;
-      background: #fff0f0;
-      color: #b42318;
-    }
-
-    /* ==========================================
-       VOCABULÁRIO
-       ========================================== */
-
-    .vocab-word {
-      font-size: 34px;
-      font-weight: bold;
-      color: #0B3D91;
-      text-align: center;
-      margin: 10px 0;
-    }
-
-    .vocab-translation {
-      text-align: center;
-      font-size: 18px;
-      color: #64748b;
-      margin-bottom: 18px;
-    }
-
-    .vocab-example {
-      background: #f1f5f9;
-      padding: 15px;
-      border-radius: 12px;
-      font-size: 17px;
-      line-height: 1.5;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .vocab-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .vocab-actions button {
-      flex: 1;
-    }
-
-    /* ==========================================
-       LEITURA
-       ========================================== */
-
-    .reading-text {
-      font-size: 18px;
-      line-height: 1.8;
-      background: #f8fafc;
-      border-radius: 14px;
-      padding: 18px;
-    }
-
-    .reading-question {
-      margin-top: 18px;
-      font-weight: bold;
-    }
-
-    /* ==========================================
-       CONVERSAÇÃO
-       ========================================== */
-
-    .conversation-box {
-      min-height: 280px;
-      background: #f8fafc;
-      border-radius: 14px;
-      padding: 15px;
-      margin-bottom: 15px;
-      overflow-y: auto;
-    }
-
-    .message {
-      padding: 11px 14px;
-      border-radius: 14px;
-      margin-bottom: 10px;
-      max-width: 85%;
-      line-height: 1.45;
-    }
-
-    .message.ai {
-      background: #e7eef9;
-      color: #17345f;
-      margin-right: auto;
-    }
-
-    .message.user {
-      background: #0B3D91;
-      color: white;
-      margin-left: auto;
-    }
-
-    .conversation-input-area {
-      display: flex;
-      gap: 8px;
-    }
-
-    .conversation-input-area textarea {
-      flex: 1;
-      resize: none;
-      min-height: 50px;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 15px;
-    }
-
-    .api-box {
-      background: #fff8e6;
-      border: 1px solid #f0d98c;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 15px;
-    }
-
-    .api-box input {
-      width: 100%;
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
-      padding: 11px;
-      margin-top: 8px;
-    }
-
-    .microphone {
-      min-width: 52px;
-      padding: 0;
-      font-size: 20px;
-    }
-
-    /* ==========================================
-       PERFIL
-       ========================================== */
-
-    .profile-item {
-      padding: 12px 0;
-      border-bottom: 1px solid #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .profile-item:last-child {
-      border-bottom: none;
-    }
-
-    .profile-label {
-      color: #64748b;
-    }
-
-    .profile-value {
-      font-weight: bold;
-      color: #0B3D91;
-    }
-
-    /* ==========================================
-       ALERTAS
-       ========================================== */
-
-    .alert {
-      border-radius: 12px;
-      padding: 13px;
-      margin-bottom: 15px;
-      font-size: 14px;
-    }
-
-    .alert-info {
-      background: #e8f1ff;
-      color: #174ea6;
-    }
-
-    .alert-warning {
-      background: #fff4db;
-      color: #8a5a00;
-    }
-
-    .alert-danger {
-      background: #fff0f0;
-      color: #b42318;
-    }
-
-    /* ==========================================
-       RODAPÉ
-       ========================================== */
-
-    footer {
-      text-align: center;
-      color: #64748b;
-      font-size: 12px;
-      padding: 20px;
-    }
-
-    /* ==========================================
-       RESPONSIVO
-       ========================================== */
-
-    @media(max-width:700px){
-
-      .header-status {
-        gap: 7px;
-        font-size: 12px;
-      }
-
-      .stats {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-      .container {
-        padding: 13px;
-      }
-
-      .question {
-        font-size: 20px;
-      }
-
-      .vocab-word {
-        font-size: 30px;
-      }
-
-    }
-
-  </style>
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
 </head>
 
 
 <body>
 
+  <!-- ==================================================
+       APP
+       ================================================== -->
 
-  <!-- ==========================================
-       CABEÇALHO
-       ========================================== -->
+  <div id="app">
 
-  <header>
 
-    <div class="header-content">
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
 
-      <div class="logo">
-        🇺🇸 Family English
-      </div>
+    <header class="app-header">
 
-      <div class="header-status">
-
-        <span id="headerLives">
-          ❤️ 10
-        </span>
-
-        <span id="headerStreak">
-          🔥 0
-        </span>
-
-        <span id="headerStars">
-          ⭐ 0
-        </span>
-
-      </div>
-
-    </div>
-
-  </header>
-
-
-  <!-- ==========================================
-       NAVEGAÇÃO
-       ========================================== -->
-
-  <nav>
-
-    <div class="nav-content">
-
-      <button
-        class="active"
-        onclick="mostrarPagina('home', this)"
-      >
-        🏠 Início
-      </button>
-
-      <button
-        onclick="mostrarPagina('lesson', this)"
-      >
-        📚 Aula
-      </button>
-
-      <button
-        onclick="mostrarPagina('vocabulary', this)"
-      >
-        🧠 Vocabulário
-      </button>
-
-      <button
-        onclick="mostrarPagina('reading', this)"
-      >
-        📖 Leitura
-      </button>
-
-      <button
-        onclick="mostrarPagina('conversation', this)"
-      >
-        🎤 Conversação
-      </button>
-
-      <button
-        onclick="mostrarPagina('profile', this)"
-      >
-        👤 Perfil
-      </button>
-
-    </div>
-
-  </nav>
-
-
-  <!-- ==========================================
-       CONTEÚDO
-       ========================================== -->
-
-  <main class="container">
-
-
-    <!-- ==========================================
-         INÍCIO
-         ========================================== -->
-
-    <section
-      id="home"
-      class="page active"
-    >
-
-      <div class="welcome">
-
-        <h1>
-          🇺🇸 Welcome to Family English!
-        </h1>
-
-        <p id="welcomeText">
-          Aprenda inglês de forma simples, prática e divertida.
-        </p>
-
-      </div>
-
-
-      <div class="stats">
-
-        <div class="stat">
-
-          <div class="stat-icon">
-            ❤️
-          </div>
-
-          <div
-            class="stat-value"
-            id="homeLives"
-          >
-            10
-          </div>
-
-          <div class="stat-label">
-            Vidas
-          </div>
-
-        </div>
-
-
-        <div class="stat">
-
-          <div class="stat-icon">
-            🔥
-          </div>
-
-          <div
-            class="stat-value"
-            id="homeStreak"
-          >
-            0
-          </div>
-
-          <div class="stat-label">
-            Dias seguidos
-          </div>
-
-        </div>
-
-
-        <div class="stat">
-
-          <div class="stat-icon">
-            ⭐
-          </div>
-
-          <div
-            class="stat-value"
-            id="homeStars"
-          >
-            0
-          </div>
-
-          <div class="stat-label">
-            Estrelas
-          </div>
-
-        </div>
-
-
-        <div class="stat">
-
-          <div class="stat-icon">
-            ⚡
-          </div>
-
-          <div
-            class="stat-value"
-            id="homeXP"
-          >
-            0
-          </div>
-
-          <div class="stat-label">
-            XP
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div
-        id="homeAlert"
-        class="alert alert-info"
-      >
-        Complete uma atividade hoje para começar sua sequência!
-      </div>
-
-
-      <div class="card">
-
-        <div class="card-title">
-          Seu progresso
-        </div>
-
-        <p>
-          Nível atual:
-          <strong id="homeLevel">
-            A1
-          </strong>
-        </p>
-
-        <div class="lesson-progress">
-
-          <div
-            id="homeProgressBar"
-            class="lesson-progress-bar"
-          ></div>
-
-        </div>
-
-        <p>
-          Progresso:
-          <strong id="homeProgress">
-            0%
-          </strong>
-        </p>
-
-      </div>
-
-
-      <div class="card">
-
-        <div class="card-title">
-          🚀 Continue aprendendo
-        </div>
-
-        <p>
-          Faça uma aula para ganhar XP e manter sua sequência de estudos.
-        </p>
+      <div class="header-left">
 
         <button
-          class="btn btn-primary btn-block"
-          onclick="abrirAula()"
+          id="menuButton"
+          class="icon-button"
+          type="button"
+          aria-label="Abrir menu"
         >
-          Começar aula
+          ☰
+        </button>
+
+        <div class="app-brand">
+
+          <div class="brand-icon">
+            🇬🇧
+          </div>
+
+          <div>
+
+            <div class="brand-name">
+              English Family
+            </div>
+
+            <div class="brand-subtitle">
+              Aprenda. Pratique. Fale.
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="header-right">
+
+        <div
+          id="streakDisplay"
+          class="header-stat"
+          title="Sequência"
+        >
+          🔥 <span>0</span>
+        </div>
+
+        <div
+          id="xpDisplay"
+          class="header-stat"
+          title="XP"
+        >
+          ⭐ <span>0</span>
+        </div>
+
+        <button
+          id="profileButton"
+          class="profile-button"
+          type="button"
+          aria-label="Perfil"
+        >
+          👤
         </button>
 
       </div>
 
-    </section>
+    </header>
 
 
-    <!-- ==========================================
-         AULA
-         ========================================== -->
+    <!-- ==================================================
+         MENU LATERAL
+         ================================================== -->
 
-    <section
-      id="lesson"
-      class="page"
+    <aside
+      id="sideMenu"
+      class="side-menu"
+      aria-hidden="true"
     >
 
-      <div class="card">
+      <div class="side-menu-header">
 
-        <div class="lesson-header">
-
-          <h2>
-            📚 Aula
-          </h2>
-
-          <strong id="lessonCounter">
-            1/5
-          </strong>
-
+        <div class="side-menu-title">
+          Menu
         </div>
-
-
-        <div class="lesson-progress">
-
-          <div
-            id="lessonProgressBar"
-            class="lesson-progress-bar"
-          ></div>
-
-        </div>
-
-
-        <div
-          id="questionContainer"
-          class="question-box"
-        >
-
-          <div
-            id="question"
-            class="question"
-          >
-            Carregando...
-          </div>
-
-          <div
-            id="questionHint"
-            class="question-hint"
-          ></div>
-
-        </div>
-
-
-        <div
-          id="options"
-          class="options"
-        ></div>
-
-
-        <div
-          id="feedback"
-          class="feedback"
-        ></div>
-
 
         <button
-          id="nextQuestionButton"
-          class="btn btn-primary btn-block"
-          style="display:none;margin-top:15px;"
-          onclick="proximaQuestao()"
+          id="closeMenuButton"
+          class="icon-button"
+          type="button"
+          aria-label="Fechar menu"
         >
-          Próxima questão
+          ×
         </button>
 
       </div>
 
-    </section>
+
+      <nav class="main-navigation">
+
+        <button
+          class="nav-item active"
+          data-section="home"
+          type="button"
+        >
+          🏠
+          <span>Início</span>
+        </button>
+
+        <button
+          class="nav-item"
+          data-section="learn"
+          type="button"
+        >
+          📚
+          <span>Aprender</span>
+        </button>
+
+        <button
+          class="nav-item"
+          data-section="review"
+          type="button"
+        >
+          🧠
+          <span>Revisar</span>
+        </button>
+
+        <button
+          class="nav-item"
+          data-section="conversation"
+          type="button"
+        >
+          🗣️
+          <span>Conversação</span>
+        </button>
+
+        <button
+          class="nav-item"
+          data-section="progress"
+          type="button"
+        >
+          📊
+          <span>Meu progresso</span>
+        </button>
+
+        <button
+          class="nav-item"
+          data-section="achievements"
+          type="button"
+        >
+          🏆
+          <span>Conquistas</span>
+        </button>
+
+      </nav>
 
 
-    <!-- ==========================================
-         VOCABULÁRIO
-         ========================================== -->
+      <div class="side-menu-footer">
 
-    <section
-      id="vocabulary"
-      class="page"
-    >
-
-      <div class="card">
-
-        <h2>
-          🧠 Vocabulário
-        </h2>
-
-        <p>
-          Aprenda palavras novas e veja como elas são usadas em frases.
-        </p>
+        <button
+          class="nav-item"
+          data-section="settings"
+          type="button"
+        >
+          ⚙️
+          <span>Configurações</span>
+        </button>
 
       </div>
 
+    </aside>
 
-      <div class="card">
 
-        <div
-          id="vocabWord"
-          class="vocab-word"
-        >
-          Hello
+    <!-- ==================================================
+         OVERLAY
+         ================================================== -->
+
+    <div
+      id="menuOverlay"
+      class="menu-overlay"
+      aria-hidden="true"
+    ></div>
+
+
+    <!-- ==================================================
+         CONTEÚDO PRINCIPAL
+         ================================================== -->
+
+    <main id="mainContent">
+
+
+      <!-- ==================================================
+           HOME
+           ================================================== -->
+
+      <section
+        id="section-home"
+        class="app-section active"
+      >
+
+        <div class="welcome-area">
+
+          <div>
+
+            <div class="small-label">
+              BOM DIA!
+            </div>
+
+            <h1 id="welcomeName">
+              Olá! 👋
+            </h1>
+
+            <p>
+              Vamos continuar seu aprendizado?
+            </p>
+
+          </div>
+
         </div>
 
-        <div
-          id="vocabTranslation"
-          class="vocab-translation"
-        >
-          Olá
-        </div>
 
-        <div
-          id="vocabExample"
-          class="vocab-example"
-        >
-          Hello, my name is John.
-        </div>
+        <!-- PROGRESSO DO NÍVEL -->
+
+        <article class="level-card">
+
+          <div class="level-card-header">
+
+            <div>
+
+              <span class="small-label">
+                SEU NÍVEL
+              </span>
+
+              <h2 id="currentLevel">
+                A2
+              </h2>
+
+            </div>
+
+            <div class="level-percentage">
+              <span id="levelProgressText">
+                0%
+              </span>
+            </div>
+
+          </div>
 
 
-        <div class="vocab-actions">
+          <div class="progress-bar">
+
+            <div
+              id="levelProgressBar"
+              class="progress-bar-fill"
+              style="width: 0%"
+            ></div>
+
+          </div>
+
+
+          <div class="level-card-footer">
+
+            <span>
+              Módulo <strong id="currentModule">1</strong>
+            </span>
+
+            <span>
+              Aula <strong id="currentLesson">1</strong>
+            </span>
+
+          </div>
+
+        </article>
+
+
+        <!-- CONTINUAR -->
+
+        <article class="continue-card">
+
+          <div class="continue-icon">
+            📖
+          </div>
+
+          <div class="continue-content">
+
+            <span class="small-label">
+              CONTINUE DE ONDE PAROU
+            </span>
+
+            <h2 id="continueLessonTitle">
+              Daily Routine
+            </h2>
+
+            <p id="continueLessonDescription">
+              Aula 1 · Módulo 1
+            </p>
+
+          </div>
 
           <button
-            class="btn btn-primary"
-            onclick="ouvirVocabulario()"
+            id="continueButton"
+            class="primary-button"
+            type="button"
           >
-            🔊 Ouvir
+            Continuar
           </button>
 
+        </article>
+
+
+        <!-- META DIÁRIA -->
+
+        <article class="daily-goal-card">
+
+          <div class="card-title-row">
+
+            <div>
+
+              <span class="small-label">
+                META DE HOJE
+              </span>
+
+              <h2>
+                Continue avançando
+              </h2>
+
+            </div>
+
+            <div class="goal-icon">
+              🎯
+            </div>
+
+          </div>
+
+
+          <div class="goal-progress">
+
+            <div class="goal-progress-text">
+
+              <span id="dailyGoalText">
+                0 / 15 min
+              </span>
+
+              <span id="dailyGoalPercent">
+                0%
+              </span>
+
+            </div>
+
+            <div class="progress-bar">
+
+              <div
+                id="dailyGoalBar"
+                class="progress-bar-fill"
+                style="width: 0%"
+              ></div>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <!-- ATALHOS -->
+
+        <div class="quick-actions">
+
           <button
-            class="btn btn-light"
-            onclick="proximoVocabulario()"
+            class="quick-action"
+            data-section="review"
+            type="button"
           >
-            Próxima
+
+            <span class="quick-action-icon">
+              🧠
+            </span>
+
+            <span>
+              Revisar
+            </span>
+
+          </button>
+
+
+          <button
+            class="quick-action"
+            data-section="conversation"
+            type="button"
+          >
+
+            <span class="quick-action-icon">
+              🗣️
+            </span>
+
+            <span>
+              Conversar
+            </span>
+
+          </button>
+
+
+          <button
+            class="quick-action"
+            data-section="progress"
+            type="button"
+          >
+
+            <span class="quick-action-icon">
+              📊
+            </span>
+
+            <span>
+              Progresso
+            </span>
+
           </button>
 
         </div>
 
-      </div>
 
-    </section>
-
-
-    <!-- ==========================================
-         LEITURA
-         ========================================== -->
-
-    <section
-      id="reading"
-      class="page"
-    >
-
-      <div class="card">
-
-        <h2>
-          📖 Reading
-        </h2>
-
-        <div class="reading-text">
-
-          <strong>
-            My Family
-          </strong>
-
-          <br><br>
-
-          My name is John.
-          I live with my family.
-          My family is very important to me.
-          We like to have dinner together.
-          On weekends, we usually go to the park.
-
-        </div>
+      </section>
 
 
-        <div class="reading-question">
+      <!-- ==================================================
+           APRENDER
+           ================================================== -->
 
-          What does John like to do with his family?
+      <section
+        id="section-learn"
+        class="app-section"
+      >
 
-        </div>
+        <div class="section-heading">
 
+          <span class="small-label">
+            APRENDER
+          </span>
 
-        <div
-          class="options"
-          style="margin-top:12px;"
-        >
+          <h1>
+            Seu curso
+          </h1>
 
-          <button
-            class="option"
-            onclick="responderLeitura(this, false)"
-          >
-            Go to school
-          </button>
-
-          <button
-            class="option"
-            onclick="responderLeitura(this, true)"
-          >
-            Have dinner together
-          </button>
-
-          <button
-            class="option"
-            onclick="responderLeitura(this, false)"
-          >
-            Play video games
-          </button>
-
-        </div>
-
-        <div
-          id="readingFeedback"
-          class="feedback"
-        ></div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ==========================================
-         CONVERSAÇÃO
-         ========================================== -->
-
-    <section
-      id="conversation"
-      class="page"
-    >
-
-      <div class="card">
-
-        <h2>
-          🎤 Conversação
-        </h2>
-
-        <p>
-          Pratique inglês conversando com o Family English.
-        </p>
-
-
-        <div class="api-box">
-
-          <strong>
-            🤖 Gemini
-          </strong>
-
-          <p style="margin-bottom:5px;">
-            Digite sua API Key do Gemini para ativar a conversa com IA.
+          <p>
+            Avance pelas aulas e desenvolva suas habilidades.
           </p>
 
-          <input
-            id="geminiApiKey"
-            type="password"
-            placeholder="Cole sua API Key aqui"
-          >
+        </div>
 
-          <button
-            class="btn btn-light"
-            style="margin-top:8px;"
-            onclick="salvarApiKey()"
-          >
-            Salvar API Key
-          </button>
+
+        <div
+          id="coursePath"
+          class="course-path"
+        >
+
+          <!--
+            Os níveis, módulos e aulas serão
+            carregados dinamicamente pelo app.js.
+          -->
+
+        </div>
+
+      </section>
+
+
+      <!-- ==================================================
+           REVISÃO
+           ================================================== -->
+
+      <section
+        id="section-review"
+        class="app-section"
+      >
+
+        <div class="section-heading">
+
+          <span class="small-label">
+            REVISÃO INTELIGENTE
+          </span>
+
+          <h1>
+            Revisar agora
+          </h1>
+
+          <p>
+            Vamos reforçar aquilo que precisa de mais atenção.
+          </p>
 
         </div>
 
 
         <div
-          id="conversationBox"
-          class="conversation-box"
+          id="reviewSummary"
+          class="review-summary"
         >
 
-          <div class="message ai">
+          <div class="review-stat">
 
-            Hello! 👋
-            Let's practice English together.
+            <strong id="reviewDueCount">
+              0
+            </strong>
+
+            <span>
+              para revisar
+            </span>
+
+          </div>
+
+
+          <div class="review-stat">
+
+            <strong id="reviewWeakCount">
+              0
+            </strong>
+
+            <span>
+              pontos de atenção
+            </span>
 
           </div>
 
         </div>
 
 
-        <div class="conversation-input-area">
-
-          <textarea
-            id="input"
-            placeholder="Digite ou fale em inglês..."
-          ></textarea>
-
-          <button
-            class="btn btn-primary microphone"
-            onclick="iniciarMicrofone()"
-            title="Falar"
-          >
-            🎤
-          </button>
-
-          <button
-            class="btn btn-danger microphone"
-            onclick="enviarMensagem()"
-            title="Enviar"
-          >
-            ➤
-          </button>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ==========================================
-         PERFIL
-         ========================================== -->
-
-    <section
-      id="profile"
-      class="page"
-    >
-
-      <div class="card">
-
-        <h2>
-          👤 Meu Perfil
-        </h2>
-
-
-        <div class="profile-item">
-
-          <span class="profile-label">
-            Nome
-          </span>
-
-          <span
-            id="profileName"
-            class="profile-value"
-          >
-            —
-          </span>
-
-        </div>
-
-
-        <div class="profile-item">
-
-          <span class="profile-label">
-            Nível
-          </span>
-
-          <span
-            id="profileLevel"
-            class="profile-value"
-          >
-            A1
-          </span>
-
-        </div>
-
-
-        <div class="profile-item">
-
-          <span class="profile-label">
-            XP
-          </span>
-
-          <span
-            id="profileXP"
-            class="profile-value"
-          >
-            0
-          </span>
-
-        </div>
-
-
-        <div class="profile-item">
-
-          <span class="profile-label">
-            Dias consecutivos
-          </span>
-
-          <span
-            id="profileStreak"
-            class="profile-value"
-          >
-            0
-          </span>
-
-        </div>
-
-
-        <div class="profile-item">
-
-          <span class="profile-label">
-            Estrelas
-          </span>
-
-          <span
-            id="profileStars"
-            class="profile-value"
-          >
-            0
-          </span>
-
-        </div>
-
-
-        <div class="profile-item">
-
-          <span class="profile-label">
-            Dias estudados
-          </span>
-
-          <span
-            id="profileStudyDays"
-            class="profile-value"
-          >
-            0
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>
-          ✏️ Identificação
-        </h3>
-
-        <input
-          id="nameInput"
-          type="text"
-          placeholder="Digite seu nome"
-          style="
-            width:100%;
-            padding:12px;
-            border:1px solid #cbd5e1;
-            border-radius:10px;
-            margin-bottom:10px;
-          "
-        >
-
         <button
-          class="btn btn-primary btn-block"
-          onclick="salvarNome()"
+          id="startReviewButton"
+          class="primary-button full-width"
+          type="button"
         >
-          Salvar nome
+          Começar revisão
         </button>
 
-      </div>
+      </section>
 
-    </section>
 
+      <!-- ==================================================
+           CONVERSAÇÃO
+           ================================================== -->
 
-  </main>
+      <section
+        id="section-conversation"
+        class="app-section"
+      >
 
+        <div class="section-heading">
 
-  <footer>
-    Family English 🇺🇸 — Aprenda. Pratique. Evolua.
-  </footer>
+          <span class="small-label">
+            SPEAKING
+          </span>
 
+          <h1>
+            Vamos conversar
+          </h1>
 
-<script>
+          <p>
+            Pratique inglês em situações reais.
+          </p>
 
+        </div>
 
-/* ==========================================
-   DADOS PADRÃO
-   ========================================== */
 
-const dadosPadrao = {
+        <div class="conversation-modes">
 
-  nome: "",
+          <button
+            class="conversation-mode"
+            data-mode="guided"
+            type="button"
+          >
 
-  nivel: "A1",
+            <span class="mode-icon">
+              🎓
+            </span>
 
-  xp: 0,
+            <strong>
+              Conversação guiada
+            </strong>
 
-  vidas: 10,
+            <span>
+              Pratique com ajuda e correções.
+            </span>
 
-  ultimaRenovacaoVidas: null,
+          </button>
 
-  streak: 0,
 
-  stars: 0,
+          <button
+            class="conversation-mode"
+            data-mode="practice"
+            type="button"
+          >
 
-  aulas: 0,
+            <span class="mode-icon">
+              💬
+            </span>
 
-  progresso: 0,
+            <strong>
+              Prática livre
+            </strong>
 
-  lastStudyDate: null,
+            <span>
+              Converse sobre situações do dia a dia.
+            </span>
 
-  weekStart: null,
+          </button>
 
-  weekDays: 0,
 
-  totalStudyDays: 0
+          <button
+            class="conversation-mode"
+            data-mode="challenge"
+            type="button"
+          >
 
-};
+            <span class="mode-icon">
+              🎯
+            </span>
 
+            <strong>
+              Desafio
+            </strong>
 
-let dados =
-  JSON.parse(
-    localStorage.getItem("familyEnglishData")
-  ) || {
-    ...dadosPadrao
-  };
+            <span>
+              Teste sua capacidade de comunicação.
+            </span>
 
+          </button>
 
-/* ==========================================
-   MIGRAÇÃO / GARANTIA DAS VIDAS
-   ========================================== */
+        </div>
 
-if(
-  typeof dados.vidas !== "number"
-){
+      </section>
 
-  dados.vidas = 10;
 
-}
+      <!-- ==================================================
+           PROGRESSO
+           ================================================== -->
 
+      <section
+        id="section-progress"
+        class="app-section"
+      >
 
-/*
-  Caso uma versão anterior do aplicativo
-  tenha salvo 30 vidas, reduz para 10.
-*/
+        <div class="section-heading">
 
-if(
-  dados.vidas > 10
-){
+          <span class="small-label">
+            SEU DESEMPENHO
+          </span>
 
-  dados.vidas = 10;
+          <h1>
+            Meu progresso
+          </h1>
 
-}
+          <p>
+            Veja como suas habilidades estão evoluindo.
+          </p>
 
+        </div>
 
-/* ==========================================
-   SALVAR DADOS
-   ========================================== */
 
-function salvarDados(){
+        <div class="skills-grid">
 
-  localStorage.setItem(
-    "familyEnglishData",
-    JSON.stringify(dados)
-  );
+          <div class="skill-card">
+            <span>📖</span>
+            <strong id="skillReading">0%</strong>
+            <small>Reading</small>
+          </div>
 
-  atualizarInterface();
+          <div class="skill-card">
+            <span>🎧</span>
+            <strong id="skillListening">0%</strong>
+            <small>Listening</small>
+          </div>
 
-}
+          <div class="skill-card">
+            <span>🗣️</span>
+            <strong id="skillSpeaking">0%</strong>
+            <small>Speaking</small>
+          </div>
 
+          <div class="skill-card">
+            <span>✍️</span>
+            <strong id="skillWriting">0%</strong>
+            <small>Writing</small>
+          </div>
 
-/* ==========================================
-   DATA LOCAL
-   ========================================== */
+          <div class="skill-card">
+            <span>📚</span>
+            <strong id="skillVocabulary">0%</strong>
+            <small>Vocabulary</small>
+          </div>
 
-function dataLocal(){
+          <div class="skill-card">
+            <span>🔤</span>
+            <strong id="skillGrammar">0%</strong>
+            <small>Grammar</small>
+          </div>
 
-  const agora =
-    new Date();
+        </div>
 
-  const ano =
-    agora.getFullYear();
 
-  const mes =
-    String(
-      agora.getMonth() + 1
-    ).padStart(2,"0");
+        <article class="attention-card">
 
-  const dia =
-    String(
-      agora.getDate()
-    ).padStart(2,"0");
+          <span class="attention-icon">
+            🎯
+          </span>
 
-  return (
-    ano +
-    "-" +
-    mes +
-    "-" +
-    dia
-  );
+          <div>
 
-}
+            <span class="small-label">
+              PONTO DE ATENÇÃO
+            </span>
 
+            <h2 id="mainWeakPoint">
+              Ainda estamos conhecendo seu desempenho.
+            </h2>
 
-/* ==========================================
-   DIFERENÇA DE DIAS
-   ========================================== */
+            <p id="mainWeakPointDescription">
+              Continue estudando para que o sistema possa
+              identificar suas principais dificuldades.
+            </p>
 
-function diferencaDias(
-  data1,
-  data2
-){
+          </div>
 
-  const d1 =
-    new Date(
-      data1 + "T00:00:00"
-    );
+        </article>
 
-  const d2 =
-    new Date(
-      data2 + "T00:00:00"
-    );
+      </section>
 
-  const diferenca =
-    d2 - d1;
 
-  return Math.round(
-    diferenca /
-    (1000 * 60 * 60 * 24)
-  );
+      <!-- ==================================================
+           CONQUISTAS
+           ================================================== -->
 
-}
+      <section
+        id="section-achievements"
+        class="app-section"
+      >
 
+        <div class="section-heading">
 
-/* ==========================================
-   RENOVAÇÃO DAS VIDAS
-   ========================================== */
+          <span class="small-label">
+            GAMIFICAÇÃO
+          </span>
 
-function verificarRenovacaoVidas(){
+          <h1>
+            Conquistas
+          </h1>
 
-  const agora =
-    Date.now();
+          <p>
+            Cada pequena evolução conta.
+          </p>
 
+        </div>
 
-  /*
-    Primeira utilização
-  */
 
-  if(
-    !dados.ultimaRenovacaoVidas
-  ){
+        <div
+          id="achievementsGrid"
+          class="achievements-grid"
+        >
 
-    dados.vidas = 10;
+          <div class="achievement-card locked">
 
-    dados.ultimaRenovacaoVidas =
-      agora;
+            <div class="achievement-icon">
+              🔒
+            </div>
 
-    salvarDados();
+            <strong>
+              Primeira aula
+            </strong>
 
-    return;
+            <span>
+              Complete sua primeira aula.
+            </span>
 
-  }
+          </div>
 
 
-  const vinteQuatroHoras =
-    24 *
-    60 *
-    60 *
-    1000;
+          <div class="achievement-card locked">
 
+            <div class="achievement-icon">
+              🔒
+            </div>
 
-  const tempoPassado =
-    agora -
-    dados.ultimaRenovacaoVidas;
+            <strong>
+              7 dias
+            </strong>
 
+            <span>
+              Estude por 7 dias consecutivos.
+            </span>
 
-  if(
-    tempoPassado >=
-    vinteQuatroHoras
-  ){
+          </div>
 
-    dados.vidas = 10;
 
-    dados.ultimaRenovacaoVidas =
-      agora;
+          <div class="achievement-card locked">
 
-    salvarDados();
+            <div class="achievement-icon">
+              🔒
+            </div>
 
-  }
+            <strong>
+              Primeira conversa
+            </strong>
 
-}
+            <span>
+              Complete sua primeira conversa.
+            </span>
 
+          </div>
 
-/* ==========================================
-   REGISTRAR ESTUDO
-   ========================================== */
+        </div>
 
-function registrarEstudo(){
+      </section>
 
-  const hoje =
-    dataLocal();
 
+      <!-- ==================================================
+           CONFIGURAÇÕES
+           ================================================== -->
 
-  /*
-    Primeiro dia
-  */
+      <section
+        id="section-settings"
+        class="app-section"
+      >
 
-  if(
-    !dados.lastStudyDate
-  ){
+        <div class="section-heading">
 
-    dados.lastStudyDate =
-      hoje;
+          <span class="small-label">
+            CONFIGURAÇÕES
+          </span>
 
-    dados.streak =
-      1;
+          <h1>
+            Configurações
+          </h1>
 
-    dados.totalStudyDays =
-      1;
+        </div>
 
-    dados.weekStart =
-      hoje;
 
-    dados.weekDays =
-      1;
+        <div class="settings-list">
 
-    salvarDados();
+          <button
+            class="setting-item"
+            type="button"
+          >
+            👤
+            <span>
+              Meu perfil
+            </span>
+          </button>
 
-    return;
 
-  }
+          <button
+            class="setting-item"
+            type="button"
+          >
+            👨‍👩‍👧‍👦
+            <span>
+              Família
+            </span>
+          </button>
 
 
-  const diferenca =
-    diferencaDias(
-      dados.lastStudyDate,
-      hoje
-    );
+          <button
+            class="setting-item"
+            type="button"
+          >
+            🔔
+            <span>
+              Notificações
+            </span>
+          </button>
 
 
-  /*
-    Já estudou hoje
-  */
+          <button
+            class="setting-item"
+            type="button"
+          >
+            🌙
+            <span>
+              Aparência
+            </span>
+          </button>
 
-  if(
-    diferenca === 0
-  ){
+        </div>
 
-    return;
+      </section>
 
-  }
 
+    </main>
 
-  /*
-    Dia seguinte
-  */
 
-  if(
-    diferenca === 1
-  ){
+    <!-- ==================================================
+         BARRA DE NAVEGAÇÃO MOBILE
+         ================================================== -->
 
-    dados.streak++;
+    <nav class="bottom-navigation">
 
-  }
-  else{
+      <button
+        class="bottom-nav-item active"
+        data-section="home"
+        type="button"
+      >
+        <span>🏠</span>
+        <small>Início</small>
+      </button>
 
-    dados.streak = 1;
 
-  }
+      <button
+        class="bottom-nav-item"
+        data-section="learn"
+        type="button"
+      >
+        <span>📚</span>
+        <small>Aprender</small>
+      </button>
 
 
-  dados.totalStudyDays++;
+      <button
+        class="bottom-nav-item"
+        data-section="review"
+        type="button"
+      >
+        <span>🧠</span>
+        <small>Revisar</small>
+      </button>
 
 
-  /*
-    Controle das semanas
-  */
+      <button
+        class="bottom-nav-item"
+        data-section="conversation"
+        type="button"
+      >
+        <span>🗣️</span>
+        <small>Falar</small>
+      </button>
 
-  if(
-    !dados.weekStart
-  ){
 
-    dados.weekStart =
-      hoje;
+      <button
+        class="bottom-nav-item"
+        data-section="progress"
+        type="button"
+      >
+        <span>📊</span>
+        <small>Progresso</small>
+      </button>
 
-    dados.weekDays =
-      1;
+    </nav>
 
-  }
-  else{
 
-    if(
-      diferenca === 1
-    ){
+  </div>
 
-      dados.weekDays++;
 
-    }
-    else{
+  <!-- ==================================================
+       JAVASCRIPT
+       ================================================== -->
 
-      dados.weekStart =
-        hoje;
+  <script src="app.js"></script>
 
-      dados.weekDays =
-        1;
 
-    }
+  <!-- ==================================================
+       SERVICE WORKER
+       ================================================== -->
 
+  <script>
 
-    /*
-      A cada 7 dias consecutivos
-      ganha uma estrela.
+    if ("serviceWorker" in navigator) {
 
-      As estrelas nunca diminuem.
-    */
+      window.addEventListener("load", function () {
 
-    if(
-      dados.weekDays >= 7
-    ){
+        navigator.serviceWorker
+          .register("sw.js")
+          .catch(function (error) {
 
-      dados.stars++;
-
-      dados.weekStart =
-        hoje;
-
-      dados.weekDays =
-        1;
-
-    }
-
-  }
-
-
-  dados.lastStudyDate =
-    hoje;
-
-
-  salvarDados();
-
-}
-
-
-/* ==========================================
-   INTERFACE
-   ========================================== */
-
-function atualizarInterface(){
-
-  document.getElementById(
-    "headerLives"
-  ).innerText =
-    "❤️ " +
-    dados.vidas;
-
-
-  document.getElementById(
-    "headerStreak"
-  ).innerText =
-    "🔥 " +
-    dados.streak;
-
-
-  document.getElementById(
-    "headerStars"
-  ).innerText =
-    "⭐ " +
-    dados.stars;
-
-
-  document.getElementById(
-    "homeLives"
-  ).innerText =
-    dados.vidas;
-
-
-  document.getElementById(
-    "homeStreak"
-  ).innerText =
-    dados.streak;
-
-
-  document.getElementById(
-    "homeStars"
-  ).innerText =
-    dados.stars;
-
-
-  document.getElementById(
-    "homeXP"
-  ).innerText =
-    dados.xp;
-
-
-  document.getElementById(
-    "homeLevel"
-  ).innerText =
-    dados.nivel;
-
-
-  document.getElementById(
-    "homeProgress"
-  ).innerText =
-    dados.progresso +
-    "%";
-
-
-  document.getElementById(
-    "homeProgressBar"
-  ).style.width =
-    dados.progresso +
-    "%";
-
-
-  document.getElementById(
-    "profileName"
-  ).innerText =
-    dados.nome ||
-    "Não informado";
-
-
-  document.getElementById(
-    "profileLevel"
-  ).innerText =
-    dados.nivel;
-
-
-  document.getElementById(
-    "profileXP"
-  ).innerText =
-    dados.xp;
-
-
-  document.getElementById(
-    "profileStreak"
-  ).innerText =
-    dados.streak;
-
-
-  document.getElementById(
-    "profileStars"
-  ).innerText =
-    dados.stars;
-
-
-  document.getElementById(
-    "profileStudyDays"
-  ).innerText =
-    dados.totalStudyDays;
-
-
-  const welcome =
-    document.getElementById(
-      "welcomeText"
-    );
-
-
-  if(
-    dados.nome
-  ){
-
-    welcome.innerText =
-      "Olá, " +
-      dados.nome +
-      "! Continue sua jornada no inglês.";
-
-  }
-  else{
-
-    welcome.innerText =
-      "Aprenda inglês de forma simples, prática e divertida.";
-
-  }
-
-
-  const homeAlert =
-    document.getElementById(
-      "homeAlert"
-    );
-
-
-  if(
-    dados.vidas <= 0
-  ){
-
-    homeAlert.className =
-      "alert alert-danger";
-
-    homeAlert.innerText =
-      "❤️ Você está sem vidas. Elas serão renovadas automaticamente a cada 24 horas.";
-
-  }
-  else if(
-    dados.streak >= 7
-  ){
-
-    homeAlert.className =
-      "alert alert-info";
-
-    homeAlert.innerText =
-      "🔥 Excelente! Você já está mantendo uma sequência de " +
-      dados.streak +
-      " dias!";
-
-  }
-  else{
-
-    homeAlert.className =
-      "alert alert-info";
-
-    homeAlert.innerText =
-      "Continue estudando todos os dias para aumentar sua sequência!";
-
-  }
-
-}
-
-
-/* ==========================================
-   NAVEGAÇÃO
-   ========================================== */
-
-function mostrarPagina(
-  pagina,
-  botao
-){
-
-  document
-    .querySelectorAll(".page")
-    .forEach(
-      function(item){
-
-        item.classList.remove(
-          "active"
-        );
-
-      }
-    );
-
-
-  document.getElementById(
-    pagina
-  ).classList.add(
-    "active"
-  );
-
-
-  document
-    .querySelectorAll("nav button")
-    .forEach(
-      function(item){
-
-        item.classList.remove(
-          "active"
-        );
-
-      }
-    );
-
-
-  if(botao){
-
-    botao.classList.add(
-      "active"
-    );
-
-  }
-
-
-  if(
-    pagina === "lesson"
-  ){
-
-    carregarQuestao();
-
-  }
-
-
-  if(
-    pagina === "vocabulary"
-  ){
-
-    carregarVocabulario();
-
-  }
-
-}
-
-
-/* ==========================================
-   ABRIR AULA
-   ========================================== */
-
-function abrirAula(){
-
-  const botao =
-    document.querySelector(
-      'nav button:nth-child(2)'
-    );
-
-  mostrarPagina(
-    "lesson",
-    botao
-  );
-
-}
-
-
-/* ==========================================
-   QUESTÕES
-   ========================================== */
-
-const questoes = [
-
-  {
-    pergunta:
-      "How are you?",
-
-    dica:
-      "Escolha a tradução correta.",
-
-    opcoes:[
-      "Como você está?",
-      "Onde você mora?",
-      "Qual é seu nome?",
-      "O que você faz?"
-    ],
-
-    correta:0
-  },
-
-
-  {
-    pergunta:
-      "I am happy.",
-
-    dica:
-      "O que essa frase significa?",
-
-    opcoes:[
-      "Eu estou cansado.",
-      "Eu estou feliz.",
-      "Eu estou trabalhando.",
-      "Eu estou estudando."
-    ],
-
-    correta:1
-  },
-
-
-  {
-    pergunta:
-      "She is my sister.",
-
-    dica:
-      "Escolha a tradução correta.",
-
-    opcoes:[
-      "Ela é minha mãe.",
-      "Ela é minha amiga.",
-      "Ela é minha irmã.",
-      "Ela é minha filha."
-    ],
-
-    correta:2
-  },
-
-
-  {
-    pergunta:
-      "I work every day.",
-
-    dica:
-      "Escolha a tradução correta.",
-
-    opcoes:[
-      "Eu trabalho todos os dias.",
-      "Eu estudo todos os dias.",
-      "Eu viajo todos os dias.",
-      "Eu descanso todos os dias."
-    ],
-
-    correta:0
-  },
-
-
-  {
-    pergunta:
-      "I want to learn English.",
-
-    dica:
-      "Escolha a tradução correta.",
-
-    opcoes:[
-      "Eu quero ensinar inglês.",
-      "Eu quero aprender inglês.",
-      "Eu quero falar português.",
-      "Eu quero estudar espanhol."
-    ],
-
-    correta:1
-  }
-
-];
-
-
-let questaoAtual = 0;
-
-let questaoRespondida = false;
-
-
-/* ==========================================
-   CARREGAR QUESTÃO
-   ========================================== */
-
-function carregarQuestao(){
-
-  verificarRenovacaoVidas();
-
-
-  const question =
-    document.getElementById(
-      "question"
-    );
-
-
-  const hint =
-    document.getElementById(
-      "questionHint"
-    );
-
-
-  const options =
-    document.getElementById(
-      "options"
-    );
-
-
-  const feedback =
-    document.getElementById(
-      "feedback"
-    );
-
-
-  const nextButton =
-    document.getElementById(
-      "nextQuestionButton"
-    );
-
-
-  if(
-    dados.vidas <= 0
-  ){
-
-    question.innerText =
-      "❤️ Você ficou sem vidas.";
-
-    hint.innerText =
-      "Suas vidas serão renovadas automaticamente a cada 24 horas.";
-
-    options.innerHTML = "";
-
-    feedback.className =
-      "feedback wrong";
-
-    feedback.innerText =
-      "Você não pode responder novas questões enquanto estiver sem vidas.";
-
-    nextButton.style.display =
-      "none";
-
-    return;
-
-  }
-
-
-  const q =
-    questoes[questaoAtual];
-
-
-  question.innerText =
-    q.pergunta;
-
-
-  hint.innerText =
-    q.dica;
-
-
-  options.innerHTML = "";
-
-
-  feedback.className =
-    "feedback";
-
-  feedback.innerText =
-    "";
-
-
-  nextButton.style.display =
-    "none";
-
-
-  questaoRespondida =
-    false;
-
-
-  document.getElementById(
-    "lessonCounter"
-  ).innerText =
-    (questaoAtual + 1) +
-    "/" +
-    questoes.length;
-
-
-  document.getElementById(
-    "lessonProgressBar"
-  ).style.width =
-    (
-      (
-        questaoAtual
-        /
-        questoes.length
-      ) *
-      100
-    ) +
-    "%";
-
-
-  q.opcoes.forEach(
-    function(
-      opcao,
-      indice
-    ){
-
-      const button =
-        document.createElement(
-          "button"
-        );
-
-
-      button.className =
-        "option";
-
-
-      button.innerText =
-        opcao;
-
-
-      button.onclick =
-        function(){
-
-          responderQuestao(
-            indice,
-            button
-          );
-
-        };
-
-
-      options.appendChild(
-        button
-      );
-
-    }
-  );
-
-}
-
-
-/* ==========================================
-   RESPONDER QUESTÃO
-   ========================================== */
-
-function responderQuestao(
-  indice,
-  botao
-){
-
-  if(
-    questaoRespondida
-  ){
-
-    return;
-
-  }
-
-
-  if(
-    dados.vidas <= 0
-  ){
-
-    return;
-
-  }
-
-
-  questaoRespondida =
-    true;
-
-
-  const q =
-    questoes[questaoAtual];
-
-
-  const feedback =
-    document.getElementById(
-      "feedback"
-    );
-
-
-  const botoes =
-    document.querySelectorAll(
-      "#options .option"
-    );
-
-
-  botoes.forEach(
-    function(item){
-
-      item.disabled =
-        true;
-
-    }
-  );
-
-
-  if(
-    indice === q.correta
-  ){
-
-    botao.classList.add(
-      "correct"
-    );
-
-
-    feedback.className =
-      "feedback correct";
-
-
-    feedback.innerText =
-      "✅ Correct! Muito bem!";
-
-
-    dados.xp += 10;
-
-    dados.aulas++;
-
-    dados.progresso =
-      Math.min(
-        100,
-        dados.progresso + 5
-      );
-
-
-    registrarEstudo();
-
-
-    document.getElementById(
-      "nextQuestionButton"
-    ).style.display =
-      "block";
-
-  }
-  else{
-
-    botao.classList.add(
-      "wrong"
-    );
-
-
-    botoes[
-      q.correta
-    ].classList.add(
-      "correct"
-    );
-
-
-    dados.vidas =
-      Math.max(
-        0,
-        dados.vidas - 1
-      );
-
-
-    feedback.className =
-      "feedback wrong";
-
-
-    feedback.innerText =
-      "❌ Incorreto. Você perdeu 1 vida. Resposta correta: " +
-      q.opcoes[q.correta];
-
-
-    salvarDados();
-
-
-    if(
-      dados.vidas <= 0
-    ){
-
-      feedback.innerText +=
-        " ❤️ Você ficou sem vidas.";
-
-    }
-
-
-    document.getElementById(
-      "nextQuestionButton"
-    ).style.display =
-      "block";
-
-  }
-
-
-  atualizarInterface();
-
-}
-
-
-/* ==========================================
-   PRÓXIMA QUESTÃO
-   ========================================== */
-
-function proximaQuestao(){
-
-  if(
-    dados.vidas <= 0
-  ){
-
-    carregarQuestao();
-
-    return;
-
-  }
-
-
-  questaoAtual++;
-
-
-  if(
-    questaoAtual >=
-    questoes.length
-  ){
-
-    questaoAtual = 0;
-
-    alert(
-      "🎉 Aula concluída! Você ganhou XP."
-    );
-
-    registrarEstudo();
-
-  }
-
-
-  carregarQuestao();
-
-}
-
-
-/* ==========================================
-   VOCABULÁRIO
-   ========================================== */
-
-const vocabulario = [
-
-  {
-    word:
-      "Hello",
-
-    translation:
-      "Olá",
-
-    example:
-      "Hello, my name is John."
-  },
-
-
-  {
-    word:
-      "Family",
-
-    translation:
-      "Família",
-
-    example:
-      "My family is very important to me."
-  },
-
-
-  {
-    word:
-      "Friend",
-
-    translation:
-      "Amigo",
-
-    example:
-      "John is my best friend."
-  },
-
-
-  {
-    word:
-      "Happy",
-
-    translation:
-      "Feliz",
-
-    example:
-      "We are happy today."
-  },
-
-
-  {
-    word:
-      "Work",
-
-    translation:
-      "Trabalhar / trabalho",
-
-    example:
-      "I work from Monday to Friday."
-  },
-
-
-  {
-    word:
-      "Travel",
-
-    translation:
-      "Viajar",
-
-    example:
-      "I love to travel."
-  },
-
-
-  {
-    word:
-      "Learn",
-
-    translation:
-      "Aprender",
-
-    example:
-      "I want to learn English."
-  },
-
-
-  {
-    word:
-      "Speak",
-
-    translation:
-      "Falar",
-
-    example:
-      "I speak English."
-  }
-
-];
-
-
-let vocabAtual =
-  0;
-
-
-/* ==========================================
-   CARREGAR VOCABULÁRIO
-   ========================================== */
-
-function carregarVocabulario(){
-
-  const item =
-    vocabulario[
-      vocabAtual
-    ];
-
-
-  document.getElementById(
-    "vocabWord"
-  ).innerText =
-    item.word;
-
-
-  document.getElementById(
-    "vocabTranslation"
-  ).innerText =
-    item.translation;
-
-
-  document.getElementById(
-    "vocabExample"
-  ).innerText =
-    item.example;
-
-}
-
-
-/* ==========================================
-   PRÓXIMO VOCABULÁRIO
-   ========================================== */
-
-function proximoVocabulario(){
-
-  vocabAtual++;
-
-
-  if(
-    vocabAtual >=
-    vocabulario.length
-  ){
-
-    vocabAtual = 0;
-
-  }
-
-
-  carregarVocabulario();
-
-}
-
-
-/* ==========================================
-   ÁUDIO GENÉRICO
-   ========================================== */
-
-function falarTexto(
-  texto,
-  idioma
-){
-
-  if(
-    !(
-      "speechSynthesis"
-      in
-      window
-    )
-  ){
-
-    alert(
-      "Seu navegador não possui suporte para áudio."
-    );
-
-    return;
-
-  }
-
-
-  speechSynthesis.cancel();
-
-
-  setTimeout(
-    function(){
-
-      const fala =
-        new SpeechSynthesisUtterance(
-          texto
-        );
-
-
-      fala.lang =
-        idioma ||
-        "en-US";
-
-
-      fala.rate =
-        0.9;
-
-
-      fala.pitch =
-        1;
-
-
-      fala.volume =
-        1;
-
-
-      speechSynthesis.speak(
-        fala
-      );
-
-    },
-    100
-  );
-
-}
-
-
-/* ==========================================
-   ÁUDIO DO VOCABULÁRIO
-   PALAVRA + EXEMPLO
-   ========================================== */
-
-function falarTextoComExemplo(
-  palavra,
-  exemplo
-){
-
-  if(
-    !(
-      "speechSynthesis"
-      in
-      window
-    )
-  ){
-
-    alert(
-      "Seu navegador não possui suporte para áudio."
-    );
-
-    return;
-
-  }
-
-
-  /*
-    Cancelamos qualquer áudio anterior.
-  */
-
-  speechSynthesis.cancel();
-
-
-  /*
-    Uma única fala.
-    Isso evita o problema de o navegador
-    interromper a segunda frase.
-  */
-
-  const textoCompleto =
-    palavra +
-    ". " +
-    exemplo;
-
-
-  setTimeout(
-    function(){
-
-      const fala =
-        new SpeechSynthesisUtterance(
-          textoCompleto
-        );
-
-
-      fala.lang =
-        "en-US";
-
-
-      fala.rate =
-        0.82;
-
-
-      fala.pitch =
-        1;
-
-
-      fala.volume =
-        1;
-
-
-      speechSynthesis.speak(
-        fala
-      );
-
-    },
-    150
-  );
-
-}
-
-
-/* ==========================================
-   OUVIR VOCABULÁRIO
-   ========================================== */
-
-function ouvirVocabulario(){
-
-  const palavra =
-    document.getElementById(
-      "vocabWord"
-    ).innerText;
-
-
-  const exemplo =
-    document.getElementById(
-      "vocabExample"
-    ).innerText;
-
-
-  falarTextoComExemplo(
-    palavra,
-    exemplo
-  );
-
-}
-
-
-/* ==========================================
-   LEITURA
-   ========================================== */
-
-function responderLeitura(
-  botao,
-  correta
-){
-
-  const botoes =
-    document.querySelectorAll(
-      "#reading .option"
-    );
-
-
-  botoes.forEach(
-    function(item){
-
-      item.disabled =
-        true;
-
-    }
-  );
-
-
-  const feedback =
-    document.getElementById(
-      "readingFeedback"
-    );
-
-
-  if(
-    correta
-  ){
-
-    botao.classList.add(
-      "correct"
-    );
-
-
-    feedback.className =
-      "feedback correct";
-
-
-    feedback.innerText =
-      "✅ Correct! Muito bem!";
-
-
-    dados.xp += 10;
-
-    registrarEstudo();
-
-    salvarDados();
-
-  }
-  else{
-
-    botao.classList.add(
-      "wrong"
-    );
-
-
-    feedback.className =
-      "feedback wrong";
-
-
-    feedback.innerText =
-      "❌ Tente novamente na próxima leitura.";
-
-  }
-
-}
-
-
-/* ==========================================
-   NOME
-   ========================================== */
-
-function salvarNome(){
-
-  const input =
-    document.getElementById(
-      "nameInput"
-    );
-
-
-  const nome =
-    input.value.trim();
-
-
-  if(
-    !nome
-  ){
-
-    alert(
-      "Digite seu nome."
-    );
-
-    return;
-
-  }
-
-
-  dados.nome =
-    nome;
-
-
-  salvarDados();
-
-
-  alert(
-    "Nome salvo com sucesso!"
-  );
-
-}
-
-
-/* ==========================================
-   GEMINI
-   ========================================== */
-
-function salvarApiKey(){
-
-  const input =
-    document.getElementById(
-      "geminiApiKey"
-    );
-
-
-  const chave =
-    input.value.trim();
-
-
-  if(
-    !chave
-  ){
-
-    alert(
-      "Digite sua API Key."
-    );
-
-    return;
-
-  }
-
-
-  localStorage.setItem(
-    "familyEnglishGeminiKey",
-    chave
-  );
-
-
-  alert(
-    "API Key salva neste dispositivo."
-  );
-
-}
-
-
-/* ==========================================
-   CARREGAR API KEY
-   ========================================== */
-
-function carregarApiKey(){
-
-  const chave =
-    localStorage.getItem(
-      "familyEnglishGeminiKey"
-    );
-
-
-  if(
-    chave
-  ){
-
-    document.getElementById(
-      "geminiApiKey"
-    ).value =
-      chave;
-
-  }
-
-}
-
-
-/* ==========================================
-   ADICIONAR MENSAGEM
-   ========================================== */
-
-function adicionarMensagem(
-  texto,
-  tipo
-){
-
-  const box =
-    document.getElementById(
-      "conversationBox"
-    );
-
-
-  const div =
-    document.createElement(
-      "div"
-    );
-
-
-  div.className =
-    "message " +
-    tipo;
-
-
-  div.innerText =
-    texto;
-
-
-  box.appendChild(
-    div
-  );
-
-
-  box.scrollTop =
-    box.scrollHeight;
-
-}
-
-
-/* ==========================================
-   ENVIAR MENSAGEM PARA GEMINI
-   ========================================== */
-
-async function enviarMensagem(){
-
-  const input =
-    document.getElementById(
-      "input"
-    );
-
-
-  const texto =
-    input.value.trim();
-
-
-  if(
-    !texto
-  ){
-
-    return;
-
-  }
-
-
-  const apiKey =
-    localStorage.getItem(
-      "familyEnglishGeminiKey"
-    );
-
-
-  if(
-    !apiKey
-  ){
-
-    alert(
-      "Primeiro informe e salve sua API Key do Gemini."
-    );
-
-    return;
-
-  }
-
-
-  adicionarMensagem(
-    texto,
-    "user"
-  );
-
-
-  input.value =
-    "";
-
-
-  adicionarMensagem(
-    "Thinking...",
-    "ai"
-  );
-
-
-  const box =
-    document.getElementById(
-      "conversationBox"
-    );
-
-
-  try{
-
-    const resposta =
-      await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
-        encodeURIComponent(apiKey),
-        {
-          method:
-            "POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify({
-
-              contents:[
-
-                {
-                  parts:[
-
-                    {
-                      text:
-                        "You are an English teacher for a Brazilian student. " +
-                        "Use American English. " +
-                        "Help the student practice conversation. " +
-                        "Correct important mistakes gently. " +
-                        "Keep answers appropriate for the student's level. " +
-                        "Answer mainly in English, but use Portuguese when necessary to explain. " +
-                        "Student message: " +
-                        texto
-                    }
-
-                  ]
-                }
-
-              ]
-
-            })
-
-        }
-      );
-
-
-    if(
-      !resposta.ok
-    ){
-
-      throw new Error(
-        "Erro na API."
-      );
-
-    }
-
-
-    const resultado =
-      await resposta.json();
-
-
-    let respostaTexto =
-      "Sorry, I couldn't understand.";
-
-
-    if(
-      resultado &&
-      resultado.candidates &&
-      resultado.candidates[0] &&
-      resultado.candidates[0].content &&
-      resultado.candidates[0].content.parts &&
-      resultado.candidates[0].content.parts[0]
-    ){
-
-      respostaTexto =
-        resultado
-          .candidates[0]
-          .content
-          .parts[0]
-          .text;
-
-    }
-
-
-    /*
-      Remove o "Thinking..."
-    */
-
-    const mensagens =
-      box.querySelectorAll(
-        ".message.ai"
-      );
-
-
-    if(
-      mensagens.length > 0
-    ){
-
-      const ultima =
-        mensagens[
-          mensagens.length - 1
-        ];
-
-
-      if(
-        ultima.innerText ===
-        "Thinking..."
-      ){
-
-        ultima.remove();
-
-      }
-
-    }
-
-
-    adicionarMensagem(
-      respostaTexto,
-      "ai"
-    );
-
-
-    falarTexto(
-      respostaTexto,
-      "en-US"
-    );
-
-
-    registrarEstudo();
-
-  }
-  catch(erro){
-
-    const mensagens =
-      box.querySelectorAll(
-        ".message.ai"
-      );
-
-
-    if(
-      mensagens.length > 0
-    ){
-
-      const ultima =
-        mensagens[
-          mensagens.length - 1
-        ];
-
-
-      if(
-        ultima.innerText ===
-        "Thinking..."
-      ){
-
-        ultima.remove();
-
-      }
-
-    }
-
-
-    adicionarMensagem(
-      "Não foi possível conectar ao Gemini. Verifique sua API Key e sua conexão.",
-      "ai"
-    );
-
-  }
-
-}
-
-
-/* ==========================================
-   MICROFONE
-   ========================================== */
-
-function iniciarMicrofone(){
-
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-
-  if(
-    !SpeechRecognition
-  ){
-
-    alert(
-      "Seu navegador não oferece reconhecimento de voz."
-    );
-
-    return;
-
-  }
-
-
-  const recognition =
-    new SpeechRecognition();
-
-
-  recognition.lang =
-    "en-US";
-
-
-  recognition.continuous =
-    false;
-
-
-  recognition.interimResults =
-    true;
-
-
-  const input =
-    document.getElementById(
-      "input"
-    );
-
-
-  recognition.onstart =
-    function(){
-
-      input.placeholder =
-        "🎤 Listening...";
-
-    };
-
-
-  recognition.onresult =
-    function(event){
-
-      let texto =
-        "";
-
-
-      for(
-        let i =
-          event.resultIndex;
-
-        i <
-        event.results.length;
-
-        i++
-      ){
-
-        texto +=
-          event
-            .results[i][0]
-            .transcript;
-
-      }
-
-
-      input.value =
-        texto;
-
-    };
-
-
-  recognition.onerror =
-    function(){
-
-      input.placeholder =
-        "Digite ou fale em inglês...";
-
-    };
-
-
-  recognition.onend =
-    function(){
-
-      input.placeholder =
-        "Digite ou fale em inglês...";
-
-    };
-
-
-  recognition.start();
-
-}
-
-
-/* ==========================================
-   ENTER NA CONVERSAÇÃO
-   ========================================== */
-
-document
-  .getElementById("input")
-  .addEventListener(
-    "keydown",
-    function(event){
-
-      if(
-        event.key ===
-        "Enter" &&
-        !event.shiftKey
-      ){
-
-        event.preventDefault();
-
-        enviarMensagem();
-
-      }
-
-    }
-  );
-
-
-/* ==========================================
-   INICIALIZAÇÃO
-   ========================================== */
-
-verificarRenovacaoVidas();
-
-atualizarInterface();
-
-carregarVocabulario();
-
-carregarApiKey();
-
-
-/* ==========================================
-   SERVICE WORKER
-   ========================================== */
-
-if(
-  "serviceWorker"
-  in navigator
-){
-
-  window.addEventListener(
-    "load",
-    function(){
-
-      navigator
-        .serviceWorker
-        .register(
-          "./sw.js"
-        )
-        .catch(
-          function(erro){
-
-            console.log(
-              "Service Worker:",
-              erro
+            console.error(
+              "Falha ao registrar o Service Worker:",
+              error
             );
 
-          }
-        );
+          });
+
+      });
 
     }
-  );
 
-}
-
-
-</script>
-
+  </script>
 
 </body>
 
