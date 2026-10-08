@@ -13,19 +13,13 @@ const CACHE_NAME = "english-family-v1.1.0";
 
 
 const APP_SHELL = [
-
   "./",
-
   "./index.html",
-
   "./style.css",
-
+  "./course-data.js",
   "./app.js",
-
   "./manifest.json",
-
   "./icon.svg"
-
 ];
 
 
