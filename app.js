@@ -1,7 +1,7 @@
 /* =========================================================
    ENGLISH FAMILY
    APP.JS
-   Núcleo inicial da aplicação
+   Núcleo principal da aplicação
    ========================================================= */
 
 
@@ -13,7 +13,7 @@ const APP_CONFIG = {
 
   name: "English Family",
 
-  version: "1.0.0",
+  version: "1.1.0",
 
   language: "en",
 
@@ -27,7 +27,11 @@ const APP_CONFIG = {
 
   xpPerConversation: 15,
 
-  storageKey: "englishFamilyData"
+  xpPerTest: 30,
+
+  storageKey: "englishFamilyData",
+
+  storageVersion: 1
 
 };
 
@@ -92,7 +96,7 @@ const COURSE = {
 
 
 /* =========================================================
-   3. CONTEÚDO INICIAL
+   3. CONTEÚDO INICIAL DO CURSO
    ========================================================= */
 
 const LESSON_CONTENT = {
@@ -303,7 +307,7 @@ const LESSON_CONTENT = {
 
 
 /* =========================================================
-   4. ESTADO PADRÃO DO USUÁRIO
+   4. ESTRUTURA PADRÃO DO USUÁRIO
    ========================================================= */
 
 const DEFAULT_USER = {
@@ -314,7 +318,7 @@ const DEFAULT_USER = {
 
   email: "",
 
-  level: "A2",
+  level: APP_CONFIG.defaultLevel,
 
   module: 1,
 
@@ -326,9 +330,21 @@ const DEFAULT_USER = {
 
   lastStudyDate: null,
 
+  dailyDate: null,
+
   dailyMinutes: 0,
 
   dailyGoal: APP_CONFIG.dailyGoalMinutes,
+
+  totalStudyMinutes: 0,
+
+  lessonsCompletedCount: 0,
+
+  reviewCompletedCount: 0,
+
+  conversationsCompletedCount: 0,
+
+  testsCompletedCount: 0,
 
   progress: {
 
@@ -350,7 +366,9 @@ const DEFAULT_USER = {
 
     due: 0,
 
-    weakPoints: 0
+    weakPoints: 0,
+
+    items: []
 
   },
 
@@ -370,11 +388,15 @@ const DEFAULT_USER = {
 
   conversations: [],
 
+  studySessions: [],
+
   settings: {
 
     darkMode: false,
 
-    notifications: true
+    notifications: true,
+
+    sound: true
 
   }
 
@@ -382,7 +404,7 @@ const DEFAULT_USER = {
 
 
 /* =========================================================
-   5. ESTADO GLOBAL
+   5. ESTADO GLOBAL DA APLICAÇÃO
    ========================================================= */
 
 let APP_STATE = {
@@ -393,7 +415,11 @@ let APP_STATE = {
 
   menuOpen: false,
 
-  initialized: false
+  initialized: false,
+
+  currentLesson: null,
+
+  currentSession: null
 
 };
 
@@ -410,17 +436,34 @@ document.addEventListener(
 
 function initializeApp() {
 
-  loadUserData();
+  try {
 
-  setupNavigation();
+    loadUserData();
 
-  setupMenu();
+    normalizeDailyData();
 
-  setupButtons();
+    setupNavigation();
 
-  updateInterface();
+    setupMenu();
 
-  APP_STATE.initialized = true;
+    setupButtons();
+
+    updateInterface();
+
+    APP_STATE.initialized = true;
+
+    console.log(
+      `${APP_CONFIG.name} ${APP_CONFIG.version} inicializado.`
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Erro durante a inicialização do aplicativo:",
+      error
+    );
+
+  }
 
 }
 
@@ -439,25 +482,35 @@ function loadUserData() {
       );
 
 
-    if (savedData) {
-
-      const parsed =
-        JSON.parse(savedData);
+    if (!savedData) {
 
       APP_STATE.user =
-        mergeObjects(
-          DEFAULT_USER,
-          parsed
+        cloneObject(
+          DEFAULT_USER
         );
-
-    } else {
-
-      APP_STATE.user =
-        cloneObject(DEFAULT_USER);
 
       saveUserData();
 
+      return;
+
     }
+
+
+    const parsed =
+      JSON.parse(
+        savedData
+      );
+
+
+    APP_STATE.user =
+      mergeObjects(
+        DEFAULT_USER,
+        parsed
+      );
+
+
+    normalizeUserData();
+
 
   } catch (error) {
 
@@ -466,8 +519,11 @@ function loadUserData() {
       error
     );
 
+
     APP_STATE.user =
-      cloneObject(DEFAULT_USER);
+      cloneObject(
+        DEFAULT_USER
+      );
 
   }
 
@@ -475,6 +531,13 @@ function loadUserData() {
 
 
 function saveUserData() {
+
+  if (!APP_STATE.user) {
+
+    return;
+
+  }
+
 
   try {
 
@@ -498,7 +561,214 @@ function saveUserData() {
 
 
 /* =========================================================
-   8. UTILITÁRIOS
+   8. NORMALIZAÇÃO DOS DADOS
+   ========================================================= */
+
+function normalizeUserData() {
+
+  const user =
+    APP_STATE.user;
+
+
+  if (!user.id) {
+
+    user.id =
+      "local-user";
+
+  }
+
+
+  if (!user.name) {
+
+    user.name =
+      "Aluno";
+
+  }
+
+
+  if (
+    !COURSE[user.level]
+  ) {
+
+    user.level =
+      APP_CONFIG.defaultLevel;
+
+  }
+
+
+  if (
+    !Number.isInteger(
+      user.module
+    ) ||
+    user.module < 1
+  ) {
+
+    user.module =
+      1;
+
+  }
+
+
+  if (
+    !Number.isInteger(
+      user.lesson
+    ) ||
+    user.lesson < 1
+  ) {
+
+    user.lesson =
+      1;
+
+  }
+
+
+  if (!Array.isArray(
+    user.completedLessons
+  )) {
+
+    user.completedLessons =
+      [];
+
+  }
+
+
+  if (!Array.isArray(
+    user.completedReviews
+  )) {
+
+    user.completedReviews =
+      [];
+
+  }
+
+
+  if (!Array.isArray(
+    user.completedTests
+  )) {
+
+    user.completedTests =
+      [];
+
+  }
+
+
+  if (!Array.isArray(
+    user.achievements
+  )) {
+
+    user.achievements =
+      [];
+
+  }
+
+
+  if (!Array.isArray(
+    user.errors
+  )) {
+
+    user.errors =
+      [];
+
+  }
+
+
+  if (!Array.isArray(
+    user.conversations
+  )) {
+
+    user.conversations =
+      [];
+
+  }
+
+
+  if (!Array.isArray(
+    user.studySessions
+  )) {
+
+    user.studySessions =
+      [];
+
+  }
+
+
+  if (
+    !user.progress ||
+    typeof user.progress !== "object"
+  ) {
+
+    user.progress =
+      cloneObject(
+        DEFAULT_USER.progress
+      );
+
+  }
+
+
+  if (
+    !user.review ||
+    typeof user.review !== "object"
+  ) {
+
+    user.review =
+      cloneObject(
+        DEFAULT_USER.review
+      );
+
+  }
+
+
+  if (!user.settings) {
+
+    user.settings =
+      cloneObject(
+        DEFAULT_USER.settings
+      );
+
+  }
+
+
+  saveUserData();
+
+}
+
+
+/* =========================================================
+   9. CONTROLE DA META DIÁRIA
+   ========================================================= */
+
+function normalizeDailyData() {
+
+  const user =
+    APP_STATE.user;
+
+
+  const today =
+    getDateKey(
+      new Date()
+    );
+
+
+  if (
+    user.dailyDate !==
+    today
+  ) {
+
+    user.dailyDate =
+      today;
+
+    user.dailyMinutes =
+      0;
+
+    saveUserData();
+
+  }
+
+}
+
+
+/* =========================================================
+   10. UTILITÁRIOS
    ========================================================= */
 
 function cloneObject(object) {
@@ -510,12 +780,20 @@ function cloneObject(object) {
 }
 
 
-function mergeObjects(base, extra) {
+function mergeObjects(
+  base,
+  extra
+) {
 
   const result =
-    cloneObject(base);
+    cloneObject(
+      base
+    );
 
-  Object.keys(extra || {}).forEach(
+
+  Object.keys(
+    extra || {}
+  ).forEach(
     key => {
 
       if (
@@ -524,7 +802,9 @@ function mergeObjects(base, extra) {
 
         typeof extra[key] === "object" &&
 
-        !Array.isArray(extra[key])
+        !Array.isArray(
+          extra[key]
+        )
 
       ) {
 
@@ -544,13 +824,14 @@ function mergeObjects(base, extra) {
     }
   );
 
+
   return result;
 
 }
 
 
 /* =========================================================
-   9. NAVEGAÇÃO
+   11. NAVEGAÇÃO
    ========================================================= */
 
 function setupNavigation() {
@@ -584,7 +865,16 @@ function setupNavigation() {
 }
 
 
-function navigateTo(section) {
+function navigateTo(
+  section
+) {
+
+  if (!section) {
+
+    return;
+
+  }
+
 
   const target =
     document.getElementById(
@@ -632,7 +922,8 @@ function navigateTo(section) {
 
         item.classList.toggle(
           "active",
-          item.dataset.section === section
+          item.dataset.section ===
+            section
         );
 
       }
@@ -645,16 +936,20 @@ function navigateTo(section) {
 
   closeMenu();
 
+
   window.scrollTo({
+
     top: 0,
+
     behavior: "smooth"
+
   });
 
 }
 
 
 /* =========================================================
-   10. MENU
+   12. MENU
    ========================================================= */
 
 function setupMenu() {
@@ -720,7 +1015,11 @@ function openMenu() {
     );
 
 
-  if (!menu) return;
+  if (!menu) {
+
+    return;
+
+  }
 
 
   menu.classList.add(
@@ -764,7 +1063,11 @@ function closeMenu() {
     );
 
 
-  if (!menu) return;
+  if (!menu) {
+
+    return;
+
+  }
 
 
   menu.classList.remove(
@@ -796,7 +1099,7 @@ function closeMenu() {
 
 
 /* =========================================================
-   11. BOTÕES PRINCIPAIS
+   13. BOTÕES PRINCIPAIS
    ========================================================= */
 
 function setupButtons() {
@@ -874,14 +1177,10 @@ function setupButtons() {
 
 
 /* =========================================================
-   12. CONTINUAR APRENDIZADO
+   14. CONTINUAR APRENDIZADO
    ========================================================= */
 
 function continueLearning() {
-
-  const user =
-    APP_STATE.user;
-
 
   const lesson =
     getCurrentLesson();
@@ -906,7 +1205,7 @@ function continueLearning() {
 
 
 /* =========================================================
-   13. LOCALIZAR AULA ATUAL
+   15. LOCALIZAR AULA ATUAL
    ========================================================= */
 
 function getCurrentLesson() {
@@ -916,7 +1215,9 @@ function getCurrentLesson() {
 
 
   const level =
-    LESSON_CONTENT[user.level];
+    LESSON_CONTENT[
+      user.level
+    ];
 
 
   if (!level) {
@@ -927,7 +1228,9 @@ function getCurrentLesson() {
 
 
   const module =
-    level[user.module];
+    level[
+      user.module
+    ];
 
 
   if (!module) {
@@ -947,55 +1250,166 @@ function getCurrentLesson() {
 
 
 /* =========================================================
-   14. INICIAR AULA
+   16. LOCALIZAR QUALQUER ATIVIDADE
    ========================================================= */
 
-function startLesson(lesson) {
+function findActivity(
+  activityId
+) {
+
+  if (!activityId) {
+
+    return null;
+
+  }
+
+
+  for (
+    const levelKey of
+    Object.keys(
+      LESSON_CONTENT
+    )
+  ) {
+
+    const level =
+      LESSON_CONTENT[
+        levelKey
+      ];
+
+
+    for (
+      const moduleKey of
+      Object.keys(
+        level
+      )
+    ) {
+
+      const module =
+        level[
+          moduleKey
+        ];
+
+
+      const activity =
+        module.lessons.find(
+          lesson =>
+            lesson.id ===
+            activityId
+        );
+
+
+      if (activity) {
+
+        return activity;
+
+      }
+
+    }
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   17. INICIAR AULA
+   ========================================================= */
+
+function startLesson(
+  lesson
+) {
+
+  if (!lesson) {
+
+    return;
+
+  }
+
+
+  APP_STATE.currentLesson =
+    lesson;
+
+
+  APP_STATE.currentSession = {
+
+    type: lesson.type,
+
+    activityId: lesson.id,
+
+    startedAt:
+      new Date().toISOString(),
+
+    completed: false
+
+  };
+
 
   console.log(
-    "Iniciando aula:",
+    "Iniciando atividade:",
     lesson
   );
 
 
   /*
-    Futuramente esta função abrirá
-    o motor completo da aula:
+    ESTA É A PORTA DE ENTRADA
+    PARA O FUTURO MOTOR DE AULAS.
 
-    Reading
-    Comprehension
-    Vocabulary
-    Grammar
-    Translation
-    Fixation
-    Listening
-    Speaking
-    Writing
+    O motor completo será responsável por:
+
+    1. Contextualização
+    2. Reading
+    3. Comprehension
+    4. Vocabulary
+    5. Grammar
+    6. Translation
+    7. Active Recall
+    8. Listening
+    9. Speaking
+    10. Writing
+    11. Fixation
+    12. Feedback
+    13. Review Scheduling
+    14. Error Tracking
   */
 
 
   alert(
     `Aula selecionada:\n\n${lesson.title}\n\n` +
-    `O conteúdo completo da aula será carregado pelo motor pedagógico.`
+    `O conteúdo completo desta aula será carregado pelo Motor de Aulas.`
   );
 
 }
 
 
 /* =========================================================
-   15. REVISÃO
+   18. REVISÃO
    ========================================================= */
 
 function startReview() {
 
-  console.log(
-    "Iniciando revisão"
-  );
+  const user =
+    APP_STATE.user;
+
+
+  const due =
+    Number(
+      user.review?.due || 0
+    );
+
+
+  const weakPoints =
+    Number(
+      user.review?.weakPoints || 0
+    );
 
 
   if (
-    APP_STATE.user.review.due === 0 &&
-    APP_STATE.user.review.weakPoints === 0
+    due === 0 &&
+    weakPoints === 0 &&
+    !user.review?.items?.length
   ) {
 
     alert(
@@ -1007,16 +1421,24 @@ function startReview() {
   }
 
 
-  /*
-    Futuramente:
+  console.log(
+    "Itens de revisão:",
+    user.review
+  );
 
-    1. selecionar itens vencidos
-    2. selecionar pontos fracos
-    3. misturar vocabulário
-    4. gramática
-    5. frases
-    6. recuperação ativa
-    7. atualizar memória
+
+  /*
+    Futuro MOTOR DE REVISÃO:
+
+    - Spaced Repetition
+    - Active Recall
+    - Retrieval Practice
+    - Vocabulário
+    - Gramática
+    - Frases
+    - Erros
+    - Pontos fracos
+    - Intervalos adaptativos
   */
 
 
@@ -1028,16 +1450,12 @@ function startReview() {
 
 
 /* =========================================================
-   16. CONVERSAÇÃO
+   19. CONVERSAÇÃO
    ========================================================= */
 
-function startConversation(mode) {
-
-  console.log(
-    "Modo de conversação:",
-    mode
-  );
-
+function startConversation(
+  mode
+) {
 
   const labels = {
 
@@ -1053,8 +1471,33 @@ function startConversation(mode) {
   };
 
 
+  const selectedMode =
+    labels[mode] ||
+    "Conversação";
+
+
+  APP_STATE.currentSession = {
+
+    type: "conversation",
+
+    mode: mode || "guided",
+
+    startedAt:
+      new Date().toISOString(),
+
+    completed: false
+
+  };
+
+
+  console.log(
+    "Modo de conversação:",
+    mode
+  );
+
+
   alert(
-    `${labels[mode] || "Conversação"}\n\n` +
+    `${selectedMode}\n\n` +
     "O módulo de conversação será aberto aqui."
   );
 
@@ -1062,38 +1505,69 @@ function startConversation(mode) {
 
 
 /* =========================================================
-   17. PERFIL
+   20. PERFIL
    ========================================================= */
 
 function openProfile() {
 
+  const user =
+    APP_STATE.user;
+
+
   alert(
-    `Perfil atual:\n\n${APP_STATE.user.name}\n\n` +
-    `Nível: ${APP_STATE.user.level}\n` +
-    `XP: ${APP_STATE.user.xp}\n` +
-    `Sequência: ${APP_STATE.user.streak} dias`
+
+    `Perfil atual:\n\n` +
+
+    `${user.name}\n\n` +
+
+    `Nível: ${user.level}\n` +
+
+    `XP: ${user.xp}\n` +
+
+    `Sequência: ${user.streak} dias`
+
   );
 
 }
 
 
 /* =========================================================
-   18. XP
+   21. XP
    ========================================================= */
 
-function addXP(amount) {
+function addXP(
+  amount,
+  reason = "general"
+) {
 
-  if (!Number.isFinite(amount)) {
+  const value =
+    Number(
+      amount
+    );
 
-    return;
+
+  if (
+    !Number.isFinite(
+      value
+    ) ||
+    value <= 0
+  ) {
+
+    return 0;
 
   }
 
 
-  APP_STATE.user.xp +=
-    Math.max(
-      0,
-      amount
+  const oldXP =
+    Number(
+      APP_STATE.user.xp || 0
+    );
+
+
+  APP_STATE.user.xp =
+    oldXP +
+    Math.floor(
+      value
     );
 
 
@@ -1103,11 +1577,101 @@ function addXP(amount) {
 
   checkAchievements();
 
+
+  console.log(
+    `XP +${Math.floor(value)} (${reason})`
+  );
+
+
+  return Math.floor(
+    value
+  );
+
 }
 
 
 /* =========================================================
-   19. SEQUÊNCIA
+   22. NÍVEL DE XP
+   ========================================================= */
+
+function getXPLevel() {
+
+  const xp =
+    Number(
+      APP_STATE.user.xp || 0
+    );
+
+
+  if (xp >= 5000) {
+
+    return 10;
+
+  }
+
+
+  if (xp >= 4000) {
+
+    return 9;
+
+  }
+
+
+  if (xp >= 3000) {
+
+    return 8;
+
+  }
+
+
+  if (xp >= 2000) {
+
+    return 7;
+
+  }
+
+
+  if (xp >= 1500) {
+
+    return 6;
+
+  }
+
+
+  if (xp >= 1000) {
+
+    return 5;
+
+  }
+
+
+  if (xp >= 700) {
+
+    return 4;
+
+  }
+
+
+  if (xp >= 400) {
+
+    return 3;
+
+  }
+
+
+  if (xp >= 200) {
+
+    return 2;
+
+  }
+
+
+  return 1;
+
+}
+
+
+/* =========================================================
+   23. SEQUÊNCIA
    ========================================================= */
 
 function updateStreak() {
@@ -1127,13 +1691,17 @@ function updateStreak() {
     APP_STATE.user.streak =
       1;
 
-  } else if (
+  }
+
+  else if (
     lastDate === today
   ) {
 
     return;
 
-  } else {
+  }
+
+  else {
 
     const difference =
       daysBetween(
@@ -1142,12 +1710,16 @@ function updateStreak() {
       );
 
 
-    if (difference === 1) {
+    if (
+      difference === 1
+    ) {
 
       APP_STATE.user.streak +=
         1;
 
-    } else {
+    }
+
+    else {
 
       APP_STATE.user.streak =
         1;
@@ -1171,14 +1743,24 @@ function updateStreak() {
 
 
 /* =========================================================
-   20. TEMPO DE ESTUDO
+   24. TEMPO DE ESTUDO
    ========================================================= */
 
-function addStudyMinutes(minutes) {
+function addStudyMinutes(
+  minutes
+) {
+
+  const value =
+    Number(
+      minutes
+    );
+
 
   if (
-    !Number.isFinite(minutes) ||
-    minutes <= 0
+    !Number.isFinite(
+      value
+    ) ||
+    value <= 0
   ) {
 
     return;
@@ -1186,86 +1768,176 @@ function addStudyMinutes(minutes) {
   }
 
 
-  APP_STATE.user.dailyMinutes +=
-    minutes;
+  normalizeDailyData();
 
+
+  const roundedMinutes =
+    Math.max(
+      1,
+      Math.round(
+        value
+      )
+    );
+
+
+  APP_STATE.user.dailyMinutes +=
+    roundedMinutes;
+
+
+  APP_STATE.user.totalStudyMinutes +=
+    roundedMinutes;
+
+
+  APP_STATE.user.studySessions.push({
+
+    date:
+      getDateKey(
+        new Date()
+      ),
+
+    minutes:
+      roundedMinutes,
+
+    timestamp:
+      new Date().toISOString()
+
+  });
+
+
+  /*
+    Mantemos um histórico razoável.
+    No futuro isso poderá ser substituído
+    por sincronização com banco de dados.
+  */
+
+  if (
+    APP_STATE.user.studySessions.length >
+    500
+  ) {
+
+    APP_STATE.user.studySessions =
+      APP_STATE.user.studySessions.slice(
+        -500
+      );
+
+  }
+
+
+  updateStreak();
 
   saveUserData();
 
   updateDailyGoal();
 
-
-  /*
-    Aqui futuramente podemos
-    registrar sessões completas
-    no histórico do aluno.
-  */
-
 }
 
 
 /* =========================================================
-   21. CONCLUSÃO DE AULA
+   25. CONCLUSÃO DE AULA
    ========================================================= */
 
-function completeLesson(lessonId) {
+function completeLesson(
+  lessonId
+) {
 
-  if (
-    !lessonId
-  ) {
+  if (!lessonId) {
 
-    return;
+    return false;
 
   }
 
 
-  const completed =
-    APP_STATE.user.completedLessons;
+  const user =
+    APP_STATE.user;
+
+
+  const lesson =
+    findActivity(
+      lessonId
+    );
+
+
+  if (!lesson) {
+
+    console.warn(
+      `Aula não encontrada: ${lessonId}`
+    );
+
+    return false;
+
+  }
 
 
   if (
-    !completed.includes(
+    user.completedLessons.includes(
       lessonId
     )
   ) {
 
-    completed.push(
-      lessonId
-    );
-
-
-    addXP(
-      APP_CONFIG.xpPerLesson
-    );
-
-
-    updateStreak();
-
-
-    advanceLesson();
+    return false;
 
   }
+
+
+  user.completedLessons.push(
+    lessonId
+  );
+
+
+  user.lessonsCompletedCount =
+    user.completedLessons.length;
+
+
+  addXP(
+    APP_CONFIG.xpPerLesson,
+    "lesson"
+  );
+
+
+  updateStreak();
+
+
+  updateSkillFromLesson(
+    lesson
+  );
+
+
+  scheduleLessonForReview(
+    lesson
+  );
+
+
+  advanceLesson(
+    lesson
+  );
 
 
   saveUserData();
 
   updateInterface();
 
+
+  return true;
+
 }
 
 
 /* =========================================================
-   22. AVANÇAR AULA
+   26. AVANÇAR AULA
    ========================================================= */
 
-function advanceLesson() {
+function advanceLesson(
+  completedLesson = null
+) {
 
   const user =
     APP_STATE.user;
 
 
   const module =
-    LESSON_CONTENT[user.level]?.[
+    LESSON_CONTENT[
+      user.level
+    ]?.[
       user.module
     ];
 
@@ -1285,17 +1957,25 @@ function advanceLesson() {
     );
 
 
-  const nextLessonIndex =
-    user.lesson;
+  const currentIndex =
+    contentLessons.findIndex(
+      lesson =>
+        lesson.id ===
+        (
+          completedLesson?.id ||
+          `${user.level}-M${user.module}-L${user.lesson}`
+        )
+    );
 
 
   if (
-    nextLessonIndex <
-    contentLessons.length
+    currentIndex >= 0 &&
+    currentIndex <
+      contentLessons.length - 1
   ) {
 
-    user.lesson +=
-      1;
+    user.lesson =
+      currentIndex + 2;
 
     unlockCurrentLesson();
 
@@ -1305,23 +1985,57 @@ function advanceLesson() {
 
 
   /*
-    Depois da quinta aula:
+    Quando a quinta aula for concluída,
+    a próxima atividade lógica será:
 
-    Aula 6 = revisão
-    Aula 7 = prova
+    REVIEW
+    depois TEST
+
+    O avanço de módulo será controlado
+    pelo Motor de Curso.
   */
+
+
+  if (
+    user.lesson >=
+    contentLessons.length
+  ) {
+
+    console.log(
+      "Aulas do módulo concluídas. Próxima etapa: revisão."
+    );
+
+  }
 
 }
 
 
 /* =========================================================
-   23. DESBLOQUEAR AULA ATUAL
+   27. DESBLOQUEAR AULA ATUAL
    ========================================================= */
 
 function unlockCurrentLesson() {
 
+  const user =
+    APP_STATE.user;
+
+
   const currentId =
-    `${APP_STATE.user.level}-M${APP_STATE.user.module}-L${APP_STATE.user.lesson}`;
+    `${user.level}-M${user.module}-L${user.lesson}`;
+
+
+  const lesson =
+    findActivity(
+      currentId
+    );
+
+
+  if (lesson) {
+
+    lesson.status =
+      "current";
+
+  }
 
 
   console.log(
@@ -1333,7 +2047,191 @@ function unlockCurrentLesson() {
 
 
 /* =========================================================
-   24. CONQUISTAS
+   28. HABILIDADES
+   ========================================================= */
+
+function updateSkillFromLesson(
+  lesson
+) {
+
+  if (!lesson) {
+
+    return;
+
+  }
+
+
+  const skillMap = {
+
+    reading: "reading",
+
+    listening: "listening",
+
+    speaking: "speaking",
+
+    writing: "writing",
+
+    vocabulary: "vocabulary",
+
+    grammar: "grammar"
+
+  };
+
+
+  const skill =
+    skillMap[
+      lesson.type
+    ];
+
+
+  if (!skill) {
+
+    return;
+
+  }
+
+
+  const current =
+    Number(
+      APP_STATE.user.progress[
+        skill
+      ] || 0
+    );
+
+
+  APP_STATE.user.progress[
+    skill
+  ] =
+    Math.min(
+      100,
+      current + 5
+    );
+
+}
+
+
+/* =========================================================
+   29. AGENDAMENTO DE REVISÃO
+   ========================================================= */
+
+function scheduleLessonForReview(
+  lesson
+) {
+
+  if (!lesson) {
+
+    return;
+
+  }
+
+
+  if (
+    !Array.isArray(
+      APP_STATE.user.review.items
+    )
+  ) {
+
+    APP_STATE.user.review.items =
+      [];
+
+  }
+
+
+  const exists =
+    APP_STATE.user.review.items
+      .some(
+        item =>
+          item.id ===
+          lesson.id
+      );
+
+
+  if (exists) {
+
+    return;
+
+  }
+
+
+  const tomorrow =
+    new Date();
+
+
+  tomorrow.setDate(
+    tomorrow.getDate() + 1
+  );
+
+
+  APP_STATE.user.review.items.push({
+
+    id:
+      lesson.id,
+
+    type:
+      lesson.type,
+
+    nextReview:
+      getDateKey(
+        tomorrow
+      ),
+
+    interval:
+      1,
+
+    repetitions:
+      0,
+
+    ease:
+      2.5
+
+  });
+
+
+  updateReviewCounters();
+
+}
+
+
+/* =========================================================
+   30. ATUALIZAR CONTADORES DE REVISÃO
+   ========================================================= */
+
+function updateReviewCounters() {
+
+  const today =
+    getDateKey(
+      new Date()
+    );
+
+
+  const items =
+    APP_STATE.user.review.items ||
+    [];
+
+
+  const dueItems =
+    items.filter(
+      item =>
+        item.nextReview <=
+        today
+    );
+
+
+  APP_STATE.user.review.due =
+    dueItems.length;
+
+
+  APP_STATE.user.review.weakPoints =
+    APP_STATE.user.errors.length;
+
+
+  saveUserData();
+
+}
+
+
+/* =========================================================
+   31. CONQUISTAS
    ========================================================= */
 
 function checkAchievements() {
@@ -1343,7 +2241,8 @@ function checkAchievements() {
 
 
   if (
-    user.completedLessons.length >= 1
+    user.completedLessons.length >=
+    1
   ) {
 
     unlockAchievement(
@@ -1354,7 +2253,8 @@ function checkAchievements() {
 
 
   if (
-    user.streak >= 7
+    user.streak >=
+    7
   ) {
 
     unlockAchievement(
@@ -1365,7 +2265,20 @@ function checkAchievements() {
 
 
   if (
-    user.conversations.length >= 1
+    user.streak >=
+    30
+  ) {
+
+    unlockAchievement(
+      "thirtyDays"
+    );
+
+  }
+
+
+  if (
+    user.conversations.length >=
+    1
   ) {
 
     unlockAchievement(
@@ -1374,10 +2287,43 @@ function checkAchievements() {
 
   }
 
+
+  if (
+    user.xp >=
+    1000
+  ) {
+
+    unlockAchievement(
+      "oneThousandXP"
+    );
+
+  }
+
+
+  if (
+    user.completedLessons.length >=
+    10
+  ) {
+
+    unlockAchievement(
+      "tenLessons"
+    );
+
+  }
+
 }
 
 
-function unlockAchievement(id) {
+function unlockAchievement(
+  id
+) {
+
+  if (!id) {
+
+    return;
+
+  }
+
 
   if (
     !APP_STATE.user.achievements.includes(
@@ -1389,7 +2335,10 @@ function unlockAchievement(id) {
       id
     );
 
+
     saveUserData();
+
+    updateAchievements();
 
   }
 
@@ -1397,10 +2346,19 @@ function unlockAchievement(id) {
 
 
 /* =========================================================
-   25. ATUALIZAÇÃO DA INTERFACE
+   32. ATUALIZAÇÃO DA INTERFACE
    ========================================================= */
 
 function updateInterface() {
+
+  if (!APP_STATE.user) {
+
+    return;
+
+  }
+
+
+  updateReviewCounters();
 
   updateUserName();
 
@@ -1424,7 +2382,7 @@ function updateInterface() {
 
 
 /* =========================================================
-   26. NOME
+   33. NOME DO USUÁRIO
    ========================================================= */
 
 function updateUserName() {
@@ -1435,7 +2393,11 @@ function updateUserName() {
     );
 
 
-  if (!element) return;
+  if (!element) {
+
+    return;
+
+  }
 
 
   const name =
@@ -1450,7 +2412,7 @@ function updateUserName() {
 
 
 /* =========================================================
-   27. NÍVEL
+   34. NÍVEL
    ========================================================= */
 
 function updateLevel() {
@@ -1536,7 +2498,7 @@ function updateLevel() {
 
 
 /* =========================================================
-   28. PROGRESSO DO NÍVEL
+   35. PROGRESSO DO NÍVEL
    ========================================================= */
 
 function calculateLevelProgress() {
@@ -1545,14 +2507,27 @@ function calculateLevelProgress() {
     APP_STATE.user;
 
 
+  const course =
+    COURSE[
+      user.level
+    ];
+
+
+  if (!course) {
+
+    return 0;
+
+  }
+
+
   const totalLessons =
-    COURSE[user.level]
-      ?.modules *
-    COURSE[user.level]
-      ?.lessonsPerModule;
+    course.modules *
+    course.lessonsPerModule;
 
 
-  if (!totalLessons) {
+  if (
+    totalLessons <= 0
+  ) {
 
     return 0;
 
@@ -1564,24 +2539,32 @@ function calculateLevelProgress() {
       id =>
         id.startsWith(
           user.level
+        ) &&
+        /-L\d+$/.test(
+          id
         )
     ).length;
 
 
   return Math.min(
+
     100,
+
     Math.round(
-      (completed /
-        totalLessons) *
+      (
+        completed /
+        totalLessons
+      ) *
       100
     )
+
   );
 
 }
 
 
 /* =========================================================
-   29. XP
+   36. XP NA INTERFACE
    ========================================================= */
 
 function updateXPDisplay() {
@@ -1599,11 +2582,25 @@ function updateXPDisplay() {
 
   }
 
+
+  const levelElement =
+    document.getElementById(
+      "xpLevel"
+    );
+
+
+  if (levelElement) {
+
+    levelElement.textContent =
+      getXPLevel();
+
+  }
+
 }
 
 
 /* =========================================================
-   30. STREAK
+   37. STREAK NA INTERFACE
    ========================================================= */
 
 function updateStreakDisplay() {
@@ -1625,31 +2622,44 @@ function updateStreakDisplay() {
 
 
 /* =========================================================
-   31. META DIÁRIA
+   38. META DIÁRIA
    ========================================================= */
 
 function updateDailyGoal() {
+
+  normalizeDailyData();
+
 
   const user =
     APP_STATE.user;
 
 
   const minutes =
-    user.dailyMinutes;
+    Number(
+      user.dailyMinutes || 0
+    );
 
 
   const goal =
-    user.dailyGoal;
+    Number(
+      user.dailyGoal ||
+      APP_CONFIG.dailyGoalMinutes
+    );
 
 
   const percent =
-    Math.min(
-      100,
-      Math.round(
-        (minutes / goal) *
-        100
-      )
-    );
+    goal > 0
+      ? Math.min(
+          100,
+          Math.round(
+            (
+              minutes /
+              goal
+            ) *
+            100
+          )
+        )
+      : 0;
 
 
   const text =
@@ -1697,7 +2707,7 @@ function updateDailyGoal() {
 
 
 /* =========================================================
-   32. HABILIDADES
+   39. HABILIDADES
    ========================================================= */
 
 function updateSkills() {
@@ -1747,6 +2757,10 @@ function updateSkills() {
 }
 
 
+/* =========================================================
+   40. PONTO FRACO
+   ========================================================= */
+
 function updateWeakPoint() {
 
   const progress =
@@ -1761,7 +2775,8 @@ function updateWeakPoint() {
 
   entries.sort(
     (a, b) =>
-      a[1] - b[1]
+      Number(a[1]) -
+      Number(b[1])
   );
 
 
@@ -1771,17 +2786,23 @@ function updateWeakPoint() {
 
   const names = {
 
-    reading: "Reading",
+    reading:
+      "Reading",
 
-    listening: "Listening",
+    listening:
+      "Listening",
 
-    speaking: "Speaking",
+    speaking:
+      "Speaking",
 
-    writing: "Writing",
+    writing:
+      "Writing",
 
-    vocabulary: "Vocabulary",
+    vocabulary:
+      "Vocabulary",
 
-    grammar: "Grammar"
+    grammar:
+      "Grammar"
 
   };
 
@@ -1798,13 +2819,19 @@ function updateWeakPoint() {
     );
 
 
-  if (!weakest) return;
+  if (!weakest) {
+
+    return;
+
+  }
 
 
   if (title) {
 
     title.textContent =
-      names[weakest[0]] ||
+      names[
+        weakest[0]
+      ] ||
       weakest[0];
 
   }
@@ -1821,10 +2848,13 @@ function updateWeakPoint() {
 
 
 /* =========================================================
-   33. REVISÃO
+   41. REVISÃO NA INTERFACE
    ========================================================= */
 
 function updateReview() {
+
+  updateReviewCounters();
+
 
   setText(
     "reviewDueCount",
@@ -1841,7 +2871,7 @@ function updateReview() {
 
 
 /* =========================================================
-   34. CAMINHO DO CURSO
+   42. CAMINHO DO CURSO
    ========================================================= */
 
 function updateCoursePath() {
@@ -1852,20 +2882,20 @@ function updateCoursePath() {
     );
 
 
-  if (!container) return;
+  if (!container) {
+
+    return;
+
+  }
 
 
   container.innerHTML =
     "";
 
 
-  const levels =
-    Object.keys(
-      COURSE
-    );
-
-
-  levels.forEach(
+  Object.keys(
+    COURSE
+  ).forEach(
     level => {
 
       const levelElement =
@@ -1884,7 +2914,13 @@ function updateCoursePath() {
 }
 
 
-function createLevelElement(level) {
+/* =========================================================
+   43. ELEMENTO DE NÍVEL
+   ========================================================= */
+
+function createLevelElement(
+  level
+) {
 
   const wrapper =
     document.createElement(
@@ -1897,7 +2933,9 @@ function createLevelElement(level) {
 
 
   const course =
-    COURSE[level];
+    COURSE[
+      level
+    ];
 
 
   const header =
@@ -1942,15 +2980,13 @@ function createLevelElement(level) {
     moduleNumber++
   ) {
 
-    const moduleElement =
+    wrapper.appendChild(
+
       createModuleElement(
         level,
         moduleNumber
-      );
+      )
 
-
-    wrapper.appendChild(
-      moduleElement
     );
 
   }
@@ -1960,6 +2996,10 @@ function createLevelElement(level) {
 
 }
 
+
+/* =========================================================
+   44. ELEMENTO DE MÓDULO
+   ========================================================= */
 
 function createModuleElement(
   level,
@@ -1984,15 +3024,15 @@ function createModuleElement(
 
 
   const moduleData =
-    LESSON_CONTENT[level]
-      ?.[
-        moduleNumber
-      ];
+    LESSON_CONTENT[
+      level
+    ]?.[
+      moduleNumber
+    ];
 
 
   let lessons =
-    moduleData
-      ?.lessons ||
+    moduleData?.lessons ||
     [];
 
 
@@ -2036,8 +3076,11 @@ function createModuleElement(
   `;
 
 
-  if (!isCurrent &&
-      level !== APP_STATE.user.level) {
+  if (
+    !isCurrent &&
+    level !==
+      APP_STATE.user.level
+  ) {
 
     moduleCard.style.opacity =
       "0.65";
@@ -2055,9 +3098,11 @@ function createModuleElement(
     lesson => {
 
       lessonList.appendChild(
+
         createLessonElement(
           lesson
         )
+
       );
 
     }
@@ -2069,12 +3114,17 @@ function createModuleElement(
 }
 
 
+/* =========================================================
+   45. AULAS PLACEHOLDER
+   ========================================================= */
+
 function createPlaceholderLessons(
   level,
   moduleNumber
 ) {
 
-  const lessons = [];
+  const lessons =
+    [];
 
 
   for (
@@ -2150,6 +3200,10 @@ function createPlaceholderLessons(
 }
 
 
+/* =========================================================
+   46. ELEMENTO DE AULA
+   ========================================================= */
+
 function createLessonElement(
   lesson
 ) {
@@ -2180,6 +3234,23 @@ function createLessonElement(
     `${APP_STATE.user.level}-M${APP_STATE.user.module}-L${APP_STATE.user.lesson}`;
 
 
+  const isReview =
+    lesson.type ===
+    "review";
+
+
+  const isTest =
+    lesson.type ===
+    "test";
+
+
+  const isUnlocked =
+    completed ||
+    isCurrent ||
+    lesson.status ===
+      "current";
+
+
   let icon =
     "🔒";
 
@@ -2189,21 +3260,23 @@ function createLessonElement(
     icon =
       "✅";
 
-  } else if (isCurrent) {
+  }
+
+  else if (isCurrent) {
 
     icon =
       "▶️";
 
-  } else if (
-    lesson.type === "review"
-  ) {
+  }
+
+  else if (isReview) {
 
     icon =
       "🧠";
 
-  } else if (
-    lesson.type === "test"
-  ) {
+  }
+
+  else if (isTest) {
 
     icon =
       "📝";
@@ -2241,19 +3314,33 @@ function createLessonElement(
     function () {
 
       if (
-        lesson.status ===
-        "locked" &&
-        !isCurrent &&
-        !completed
+        !isUnlocked
       ) {
-
-        /*
-          No futuro teremos regras
-          completas de desbloqueio.
-        */
 
         alert(
           "Esta atividade ainda está bloqueada."
+        );
+
+        return;
+
+      }
+
+
+      if (isReview) {
+
+        startReviewActivity(
+          lesson
+        );
+
+        return;
+
+      }
+
+
+      if (isTest) {
+
+        startTest(
+          lesson
         );
 
         return;
@@ -2275,7 +3362,65 @@ function createLessonElement(
 
 
 /* =========================================================
-   35. CONQUISTAS
+   47. REVISÃO ESPECÍFICA
+   ========================================================= */
+
+function startReviewActivity(
+  lesson
+) {
+
+  console.log(
+    "Revisão do módulo:",
+    lesson.id
+  );
+
+
+  startReview();
+
+}
+
+
+/* =========================================================
+   48. TESTE
+   ========================================================= */
+
+function startTest(
+  lesson
+) {
+
+  console.log(
+    "Teste:",
+    lesson
+  );
+
+
+  APP_STATE.currentSession = {
+
+    type:
+      "test",
+
+    activityId:
+      lesson.id,
+
+    startedAt:
+      new Date().toISOString(),
+
+    completed:
+      false
+
+  };
+
+
+  alert(
+    `Avaliação selecionada:\n\n${lesson.title}\n\n` +
+    "O Motor de Testes será responsável por carregar as questões."
+  );
+
+}
+
+
+/* =========================================================
+   49. CONQUISTAS NA INTERFACE
    ========================================================= */
 
 function updateAchievements() {
@@ -2348,6 +3493,7 @@ function updateAchievements() {
           "locked"
         );
 
+
         const icon =
           card.querySelector(
             ".achievement-icon"
@@ -2370,7 +3516,7 @@ function updateAchievements() {
 
 
 /* =========================================================
-   36. UTILITÁRIO DE TEXTO
+   50. UTILITÁRIO DE TEXTO
    ========================================================= */
 
 function setText(
@@ -2395,10 +3541,12 @@ function setText(
 
 
 /* =========================================================
-   37. DATAS
+   51. DATAS
    ========================================================= */
 
-function getDateKey(date) {
+function getDateKey(
+  date
+) {
 
   const year =
     date.getFullYear();
@@ -2450,22 +3598,461 @@ function daysBetween(
 
 
   return Math.round(
+
     difference /
-    (1000 * 60 * 60 * 24)
+    (
+      1000 *
+      60 *
+      60 *
+      24
+    )
+
   );
 
 }
 
 
 /* =========================================================
-   38. RESET LOCAL
+   52. REGISTRO DE ERRO
+   ========================================================= */
+
+function registerError(
+  errorData
+) {
+
+  if (
+    !errorData ||
+    typeof errorData !==
+      "object"
+  ) {
+
+    return;
+
+  }
+
+
+  const error = {
+
+    id:
+      errorData.id ||
+      `error-${Date.now()}`,
+
+    type:
+      errorData.type ||
+      "general",
+
+    question:
+      errorData.question ||
+      "",
+
+    expected:
+      errorData.expected ||
+      "",
+
+    answer:
+      errorData.answer ||
+      "",
+
+    date:
+      getDateKey(
+        new Date()
+      ),
+
+    timestamp:
+      new Date().toISOString(),
+
+    resolved:
+      false
+
+  };
+
+
+  APP_STATE.user.errors.push(
+    error
+  );
+
+
+  APP_STATE.user.review.weakPoints =
+    APP_STATE.user.errors.length;
+
+
+  saveUserData();
+
+  updateReview();
+
+
+  return error;
+
+}
+
+
+/* =========================================================
+   53. REGISTRAR VOCABULÁRIO
+   ========================================================= */
+
+function registerVocabulary(
+  word,
+  data = {}
+) {
+
+  if (!word) {
+
+    return;
+
+  }
+
+
+  const key =
+    String(
+      word
+    ).trim()
+    .toLowerCase();
+
+
+  if (!key) {
+
+    return;
+
+  }
+
+
+  const existing =
+    APP_STATE.user.vocabulary[
+      key
+    ] || {};
+
+
+  APP_STATE.user.vocabulary[
+    key
+  ] = {
+
+    word:
+      data.word ||
+      word,
+
+    translation:
+      data.translation ||
+      existing.translation ||
+      "",
+
+    level:
+      data.level ||
+      existing.level ||
+      APP_STATE.user.level,
+
+    category:
+      data.category ||
+      existing.category ||
+      "",
+
+    examples:
+      data.examples ||
+      existing.examples ||
+      [],
+
+    repetitions:
+      Number(
+        existing.repetitions ||
+        0
+      ),
+
+    correct:
+      Number(
+        existing.correct ||
+        0
+      ),
+
+    incorrect:
+      Number(
+        existing.incorrect ||
+        0
+      ),
+
+    lastSeen:
+      getDateKey(
+        new Date()
+      )
+
+  };
+
+
+  saveUserData();
+
+}
+
+
+/* =========================================================
+   54. REGISTRAR GRAMÁTICA
+   ========================================================= */
+
+function registerGrammar(
+  topic,
+  data = {}
+) {
+
+  if (!topic) {
+
+    return;
+
+  }
+
+
+  const key =
+    String(
+      topic
+    ).trim();
+
+
+  const existing =
+    APP_STATE.user.grammar[
+      key
+    ] || {};
+
+
+  APP_STATE.user.grammar[
+    key
+  ] = {
+
+    topic:
+      key,
+
+    level:
+      data.level ||
+      existing.level ||
+      APP_STATE.user.level,
+
+    correct:
+      Number(
+        existing.correct ||
+        0
+      ),
+
+    incorrect:
+      Number(
+        existing.incorrect ||
+        0
+      ),
+
+    mastery:
+      Number(
+        data.mastery ??
+        existing.mastery ??
+        0
+      ),
+
+    lastPracticed:
+      getDateKey(
+        new Date()
+      )
+
+  };
+
+
+  saveUserData();
+
+}
+
+
+/* =========================================================
+   55. REGISTRAR CONVERSAÇÃO
+   ========================================================= */
+
+function completeConversation(
+  mode = "guided",
+  minutes = 0
+) {
+
+  const record = {
+
+    id:
+      `conversation-${Date.now()}`,
+
+    mode:
+
+      mode,
+
+    date:
+      getDateKey(
+        new Date()
+      ),
+
+    minutes:
+      Number(
+        minutes || 0
+      ),
+
+    timestamp:
+      new Date().toISOString()
+
+  };
+
+
+  APP_STATE.user.conversations.push(
+    record
+  );
+
+
+  APP_STATE.user.conversationsCompletedCount =
+    APP_STATE.user.conversations.length;
+
+
+  addXP(
+    APP_CONFIG.xpPerConversation,
+    "conversation"
+  );
+
+
+  updateStreak();
+
+
+  saveUserData();
+
+  updateInterface();
+
+
+  return record;
+
+}
+
+
+/* =========================================================
+   56. CONCLUIR REVISÃO
+   ========================================================= */
+
+function completeReview(
+  reviewId
+) {
+
+  if (!reviewId) {
+
+    return;
+
+  }
+
+
+  if (
+    !APP_STATE.user.completedReviews
+      .includes(
+        reviewId
+      )
+  ) {
+
+    APP_STATE.user.completedReviews
+      .push(
+        reviewId
+      );
+
+
+    APP_STATE.user.reviewCompletedCount =
+      APP_STATE.user.completedReviews.length;
+
+
+    addXP(
+      APP_CONFIG.xpPerReview,
+      "review"
+    );
+
+
+    updateStreak();
+
+  }
+
+
+  updateReviewCounters();
+
+  saveUserData();
+
+  updateInterface();
+
+}
+
+
+/* =========================================================
+   57. CONCLUIR TESTE
+   ========================================================= */
+
+function completeTest(
+  testId,
+  score = null
+) {
+
+  if (!testId) {
+
+    return;
+
+  }
+
+
+  const alreadyCompleted =
+    APP_STATE.user.completedTests
+      .some(
+        test =>
+          typeof test ===
+            "string"
+            ? test ===
+              testId
+            : test.id ===
+              testId
+      );
+
+
+  if (
+    !alreadyCompleted
+  ) {
+
+    APP_STATE.user.completedTests
+      .push({
+
+        id:
+          testId,
+
+        score:
+          score,
+
+        date:
+          getDateKey(
+            new Date()
+          ),
+
+        timestamp:
+          new Date().toISOString()
+
+      });
+
+
+    APP_STATE.user.testsCompletedCount =
+      APP_STATE.user.completedTests.length;
+
+
+    addXP(
+      APP_CONFIG.xpPerTest,
+      "test"
+    );
+
+
+    updateStreak();
+
+  }
+
+
+  saveUserData();
+
+  updateInterface();
+
+}
+
+
+/* =========================================================
+   58. RESET LOCAL
    ========================================================= */
 
 function resetLocalData() {
 
   const confirmation =
     confirm(
+
       "Isso apagará todo o progresso local deste dispositivo. Continuar?"
+
     );
 
 
@@ -2487,10 +4074,143 @@ function resetLocalData() {
 
 
 /* =========================================================
-   39. API PÚBLICA DO APP
+   59. EXPORTAR DADOS
+   ========================================================= */
+
+function exportUserData() {
+
+  const data =
+    JSON.stringify(
+      APP_STATE.user,
+      null,
+      2
+    );
+
+
+  const blob =
+    new Blob(
+      [
+        data
+      ],
+      {
+        type:
+          "application/json"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+
+  link.href =
+    url;
+
+
+  link.download =
+    `english-family-${getDateKey(
+      new Date()
+    )}.json`;
+
+
+  document.body.appendChild(
+    link
+  );
+
+
+  link.click();
+
+
+  link.remove();
+
+
+  URL.revokeObjectURL(
+    url
+  );
+
+}
+
+
+/* =========================================================
+   60. IMPORTAR DADOS
+   ========================================================= */
+
+function importUserData(
+  jsonData
+) {
+
+  try {
+
+    const imported =
+      typeof jsonData ===
+        "string"
+        ? JSON.parse(
+            jsonData
+          )
+        : jsonData;
+
+
+    if (
+      !imported ||
+      typeof imported !==
+        "object"
+    ) {
+
+      throw new Error(
+        "Dados inválidos."
+      );
+
+    }
+
+
+    APP_STATE.user =
+      mergeObjects(
+        DEFAULT_USER,
+        imported
+      );
+
+
+    normalizeUserData();
+
+    normalizeDailyData();
+
+    updateInterface();
+
+    saveUserData();
+
+
+    return true;
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao importar dados:",
+      error
+    );
+
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================================================
+   61. API PÚBLICA DO APP
    ========================================================= */
 
 window.EnglishFamily = {
+
+  /* ---------- USUÁRIO ---------- */
 
   getUser() {
 
@@ -2499,45 +4219,18 @@ window.EnglishFamily = {
   },
 
 
+  getState() {
+
+    return APP_STATE;
+
+  },
+
+
+  /* ---------- STORAGE ---------- */
+
   save() {
 
     saveUserData();
-
-  },
-
-
-  addXP(amount) {
-
-    addXP(
-      amount
-    );
-
-  },
-
-
-  addStudyMinutes(minutes) {
-
-    addStudyMinutes(
-      minutes
-    );
-
-  },
-
-
-  completeLesson(id) {
-
-    completeLesson(
-      id
-    );
-
-  },
-
-
-  navigate(section) {
-
-    navigateTo(
-      section
-    );
 
   },
 
@@ -2546,11 +4239,239 @@ window.EnglishFamily = {
 
     resetLocalData();
 
+  },
+
+
+  exportData() {
+
+    exportUserData();
+
+  },
+
+
+  importData(
+    data
+  ) {
+
+    return importUserData(
+      data
+    );
+
+  },
+
+
+  /* ---------- NAVEGAÇÃO ---------- */
+
+  navigate(
+    section
+  ) {
+
+    navigateTo(
+      section
+    );
+
+  },
+
+
+  /* ---------- AULAS ---------- */
+
+  getCurrentLesson() {
+
+    return getCurrentLesson();
+
+  },
+
+
+  startLesson(
+    lesson
+  ) {
+
+    startLesson(
+      lesson
+    );
+
+  },
+
+
+  completeLesson(
+    id
+  ) {
+
+    return completeLesson(
+      id
+    );
+
+  },
+
+
+  /* ---------- XP ---------- */
+
+  addXP(
+    amount,
+    reason
+  ) {
+
+    return addXP(
+      amount,
+      reason
+    );
+
+  },
+
+
+  getXPLevel() {
+
+    return getXPLevel();
+
+  },
+
+
+  /* ---------- ESTUDO ---------- */
+
+  addStudyMinutes(
+    minutes
+  ) {
+
+    addStudyMinutes(
+      minutes
+    );
+
+  },
+
+
+  updateStreak() {
+
+    updateStreak();
+
+  },
+
+
+  /* ---------- REVISÃO ---------- */
+
+  startReview() {
+
+    startReview();
+
+  },
+
+
+  completeReview(
+    id
+  ) {
+
+    completeReview(
+      id
+    );
+
+  },
+
+
+  /* ---------- TESTES ---------- */
+
+  startTest(
+    lesson
+  ) {
+
+    startTest(
+      lesson
+    );
+
+  },
+
+
+  completeTest(
+    id,
+    score
+  ) {
+
+    completeTest(
+      id,
+      score
+    );
+
+  },
+
+
+  /* ---------- CONVERSAÇÃO ---------- */
+
+  startConversation(
+    mode
+  ) {
+
+    startConversation(
+      mode
+    );
+
+  },
+
+
+  completeConversation(
+    mode,
+    minutes
+  ) {
+
+    return completeConversation(
+      mode,
+      minutes
+    );
+
+  },
+
+
+  /* ---------- ERROS ---------- */
+
+  registerError(
+    data
+  ) {
+
+    return registerError(
+      data
+    );
+
+  },
+
+
+  /* ---------- VOCABULÁRIO ---------- */
+
+  registerVocabulary(
+    word,
+    data
+  ) {
+
+    registerVocabulary(
+      word,
+      data
+    );
+
+  },
+
+
+  /* ---------- GRAMÁTICA ---------- */
+
+  registerGrammar(
+    topic,
+    data
+  ) {
+
+    registerGrammar(
+      topic,
+      data
+    );
+
+  },
+
+
+  /* ---------- INTERFACE ---------- */
+
+  refresh() {
+
+    updateInterface();
+
   }
 
 };
 
 
 /* =========================================================
-   40. FIM
+   62. FIM DO APP.JS
    ========================================================= */
