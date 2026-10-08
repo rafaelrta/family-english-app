@@ -9,7 +9,7 @@
    1. CONFIGURAÇÃO
    ========================================================= */
 
-const CACHE_NAME = "english-family-v1.1.0";
+const CACHE_NAME = "english-family-v1.4.0";
 
 
 const APP_SHELL = [
