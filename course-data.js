@@ -10,201 +10,611 @@
 
 
   /* =======================================================
-     CONFIGURAÇÃO DOS NÍVEIS
-     ======================================================= */
+   CONFIGURAÇÃO DOS NÍVEIS
+   ======================================================= */
 
-  const LEVELS = {
+const LEVELS = {
 
-    A1: {
-      title: "A1 — Beginner",
-      description: "Fundamentos do inglês.",
-      modules: [
-        {
-          title: "Getting Started",
-          lessons: [
-            ["Hello and Introductions", "Cumprimentos e apresentações."],
-            ["Personal Information", "Informações pessoais."],
-            ["Family and People", "Família e pessoas."],
-            ["Numbers, Time and Dates", "Números, horários e datas."],
-            ["Everyday Objects", "Objetos do dia a dia."]
-          ]
-        },
-        {
-          title: "Everyday English",
-          lessons: [
-            ["Daily Activities", "Atividades diárias."],
-            ["Food and Drinks", "Comidas e bebidas."],
-            ["Home and Places", "Casa e lugares."],
-            ["Work and School", "Trabalho e escola."],
-            ["Free Time", "Tempo livre."]
-          ]
-        },
-        {
-          title: "Basic Communication",
-          lessons: [
-            ["Present Simple", "Hábitos e rotinas."],
-            ["There Is and There Are", "Existência e localização."],
-            ["Can and Can't", "Habilidades e possibilidades."],
-            ["Questions and Answers", "Perguntas e respostas."],
-            ["A1 Review and Communication", "Consolidação do nível A1."]
-          ]
-        }
-      ]
-    },
+  /* =====================================================
+     A1 — BEGINNER
+     ===================================================== */
 
+  A1: {
 
-    A2: {
-      title: "A2 — Elementary",
-      description: "Comunicação cotidiana e expansão da leitura.",
-      modules: [
-        {
-          title: "Everyday Life",
-          lessons: [
-            ["Daily Routine", "Rotinas e hábitos."],
-            ["A Busy Day", "Um dia movimentado."],
-            ["An Unexpected Afternoon", "Situações inesperadas."],
-            ["A Change of Plans", "Mudanças de planos."],
-            ["Coming Soon", "Planos e acontecimentos futuros."]
-          ]
-        },
-        {
-          title: "Experiences and Plans",
-          lessons: [
-            ["Last Weekend", "Experiências recentes."],
-            ["A Memorable Trip", "Viagens e experiências."],
-            ["Future Plans", "Planos futuros."],
-            ["Making Arrangements", "Combinando compromissos."],
-            ["Life Experiences", "Experiências de vida."]
-          ]
-        },
-        {
-          title: "Real-Life English",
-          lessons: [
-            ["Shopping", "Compras e preços."],
-            ["At the Restaurant", "Restaurante e pedidos."],
-            ["Travel Problems", "Problemas durante viagens."],
-            ["Health and Advice", "Saúde e conselhos."],
-            ["A2 Final Challenge", "Consolidação do A2."]
-          ]
-        }
-      ]
-    },
+    title: "A1 — Beginner",
 
+    description:
+      "Fundamentos do inglês para comunicação básica.",
 
-    B1: {
-      title: "B1 — Intermediate",
-      description: "Comunicação independente e leitura intermediária.",
-      modules: [
-        {
-          title: "Life and Experiences",
-          lessons: [
-            ["Life Changes", "Mudanças na vida."],
-            ["Work Experiences", "Experiências profissionais."],
-            ["Learning from Mistakes", "Aprendendo com erros."],
-            ["Important Decisions", "Decisões importantes."],
-            ["Personal Goals", "Objetivos pessoais."]
-          ]
-        },
-        {
-          title: "Society and Communication",
-          lessons: [
-            ["Technology in Daily Life", "Tecnologia no cotidiano."],
-            ["Social Media", "Redes sociais."],
-            ["Modern Communication", "Comunicação moderna."],
-            ["People and Society", "Pessoas e sociedade."],
-            ["The World Around Us", "O mundo ao nosso redor."]
-          ]
-        },
-        {
-          title: "Stories and Opinions",
-          lessons: [
-            ["Telling a Story", "Contando histórias."],
-            ["Giving Opinions", "Expressando opiniões."],
-            ["Agreeing and Disagreeing", "Concordando e discordando."],
-            ["Solving Problems", "Resolvendo problemas."],
-            ["B1 Final Challenge", "Consolidação do B1."]
-          ]
-        }
-      ]
-    },
+    modules: [
 
+      {
+        title: "Getting Started",
 
-    B2: {
-      title: "B2 — Upper Intermediate",
-      description: "Comunicação avançada e compreensão mais complexa.",
-      modules: [
-        {
-          title: "Advanced Everyday English",
-          lessons: [
-            ["Complex Routines", "Rotinas e situações complexas."],
-            ["Workplace Communication", "Comunicação profissional."],
-            ["Managing Time", "Administração do tempo."],
-            ["Difficult Conversations", "Conversas difíceis."],
-            ["Making Decisions", "Tomada de decisões."]
+        lessons: [
+
+          [
+            "Hello and Introductions",
+            "Cumprimentos, apresentações e primeiras conversas."
+          ],
+
+          [
+            "Personal Information",
+            "Nome, idade, origem, profissão e informações pessoais."
+          ],
+
+          [
+            "Family and People",
+            "Família, pessoas e relações."
+          ],
+
+          [
+            "Numbers, Time and Dates",
+            "Números, horários, dias, meses e datas."
+          ],
+
+          [
+            "Everyday Objects",
+            "Objetos e situações do cotidiano."
           ]
-        },
-        {
-          title: "Ideas and Arguments",
-          lessons: [
-            ["Building an Argument", "Construção de argumentos."],
-            ["Advantages and Disadvantages", "Vantagens e desvantagens."],
-            ["Cause and Effect", "Causa e consequência."],
-            ["Comparing Perspectives", "Comparação de perspectivas."],
-            ["Critical Thinking", "Pensamento crítico."]
+
+        ]
+
+      },
+
+      {
+        title: "Everyday English",
+
+        lessons: [
+
+          [
+            "Daily Activities",
+            "Rotinas, hábitos e atividades diárias."
+          ],
+
+          [
+            "Food and Drinks",
+            "Comidas, bebidas e preferências."
+          ],
+
+          [
+            "Home and Places",
+            "Casa, cômodos e lugares."
+          ],
+
+          [
+            "Work and School",
+            "Trabalho, escola e atividades de estudo."
+          ],
+
+          [
+            "Free Time",
+            "Hobbies, lazer e tempo livre."
           ]
-        },
-        {
-          title: "Communication in Context",
-          lessons: [
-            ["News and Information", "Notícias e informações."],
-            ["Culture and Society", "Cultura e sociedade."],
-            ["Technology and the Future", "Tecnologia e futuro."],
-            ["Professional Situations", "Situações profissionais."],
-            ["B2 Final Challenge", "Consolidação do B2."]
+
+        ]
+
+      },
+
+      {
+        title: "Basic Communication",
+
+        lessons: [
+
+          [
+            "Present Simple",
+            "Hábitos, rotinas e fatos cotidianos."
+          ],
+
+          [
+            "There Is and There Are",
+            "Existência, localização e descrição de lugares."
+          ],
+
+          [
+            "Can and Can't",
+            "Habilidades, possibilidades e limitações."
+          ],
+
+          [
+            "Questions and Answers",
+            "Perguntas, respostas e comunicação básica."
+          ],
+
+          [
+            "A1 Review and Communication",
+            "Consolidação prática de todo o nível A1."
           ]
-        }
-      ]
-    },
+
+        ]
+
+      }
+
+    ]
+
+  },
 
 
-    C1: {
-      title: "C1 — Advanced",
-      description: "Fluência avançada, precisão e comunicação sofisticada.",
-      modules: [
-        {
-          title: "Advanced Reading",
-          lessons: [
-            ["Complex Texts", "Textos complexos."],
-            ["Implicit Meaning", "Significados implícitos."],
-            ["Tone and Context", "Tom e contexto."],
-            ["Academic Language", "Linguagem acadêmica."],
-            ["Advanced Vocabulary", "Vocabulário avançado."]
-          ]
-        },
-        {
-          title: "Advanced Communication",
-          lessons: [
-            ["Professional Discussions", "Discussões profissionais."],
-            ["Presenting Ideas", "Apresentação de ideias."],
-            ["Negotiation", "Negociação."],
-            ["Persuasion", "Persuasão."],
-            ["Leadership Communication", "Comunicação de liderança."]
-          ]
-        },
-        {
-          title: "Fluency and Mastery",
-          lessons: [
-            ["Complex Conversations", "Conversas complexas."],
-            ["Expressing Nuance", "Expressando nuances."],
-            ["Debate and Argumentation", "Debate e argumentação."],
-            ["Advanced Problem Solving", "Resolução avançada de problemas."],
-            ["C1 Final Challenge", "Consolidação do C1."]
-          ]
-        }
-      ]
-    }
+  /* =====================================================
+     A2 — ELEMENTARY
+     ===================================================== */
 
-  };
+  A2: {
+
+    title: "A2 — Elementary",
+
+    description:
+      "Comunicação cotidiana, experiências, leitura e expansão gramatical.",
+
+    modules: [
+
+      {
+        title: "Everyday Life",
+
+        lessons: [
+
+          [
+            "Daily Routine",
+            "Rotinas e hábitos."
+          ],
+
+          [
+            "A Busy Day",
+            "Um dia movimentado e acontecimentos passados."
+          ],
+
+          [
+            "An Unexpected Afternoon",
+            "Situações inesperadas e acontecimentos."
+          ],
+
+          [
+            "A Change of Plans",
+            "Mudanças de planos e decisões."
+          ],
+
+          [
+            "Coming Soon",
+            "Planos, intenções e acontecimentos futuros."
+          ]
+
+        ]
+
+      },
+
+      {
+        title: "Experiences and Plans",
+
+        lessons: [
+
+          [
+            "Last Weekend",
+            "Experiências recentes e passado."
+          ],
+
+          [
+            "A Memorable Trip",
+            "Viagens, experiências e acontecimentos marcantes."
+          ],
+
+          [
+            "Future Plans",
+            "Planos e intenções futuras."
+          ],
+
+          [
+            "Making Arrangements",
+            "Compromissos, encontros e organização."
+          ],
+
+          [
+            "Life Experiences",
+            "Experiências de vida e Present Perfect."
+          ]
+
+        ]
+
+      },
+
+      {
+        title: "Real-Life English",
+
+        lessons: [
+
+          [
+            "Shopping",
+            "Compras, preços, comparação e negociação simples."
+          ],
+
+          [
+            "At the Restaurant",
+            "Pedidos, refeições e situações em restaurantes."
+          ],
+
+          [
+            "Travel Problems",
+            "Problemas, soluções e situações durante viagens."
+          ],
+
+          [
+            "Health and Advice",
+            "Saúde, sintomas, recomendações e conselhos."
+          ],
+
+          [
+            "A2 Final Challenge",
+            "Consolidação prática do nível A2."
+          ]
+
+        ]
+
+      }
+
+    ]
+
+  },
+
+
+  /* =====================================================
+     B1 — INTERMEDIATE
+     ===================================================== */
+
+  B1: {
+
+    title: "B1 — Intermediate",
+
+    description:
+      "Comunicação independente, narrativas, opiniões e situações reais.",
+
+    modules: [
+
+      {
+        title: "Life and Experiences",
+
+        lessons: [
+
+          [
+            "Life Changes",
+            "Mudanças pessoais, profissionais e de vida."
+          ],
+
+          [
+            "Work Experiences",
+            "Experiências profissionais e situações no trabalho."
+          ],
+
+          [
+            "Learning from Mistakes",
+            "Erros, consequências e aprendizado."
+          ],
+
+          [
+            "Important Decisions",
+            "Decisões, escolhas e consequências."
+          ],
+
+          [
+            "Personal Goals",
+            "Objetivos, planos e desenvolvimento pessoal."
+          ]
+
+        ]
+
+      },
+
+      {
+        title: "Society and Communication",
+
+        lessons: [
+
+          [
+            "Technology in Daily Life",
+            "Tecnologia e seus efeitos no cotidiano."
+          ],
+
+          [
+            "Social Media",
+            "Redes sociais, comportamento e comunicação."
+          ],
+
+          [
+            "Modern Communication",
+            "Formas modernas de comunicação."
+          ],
+
+          [
+            "People and Society",
+            "Relacionamentos, sociedade e comportamento."
+          ],
+
+          [
+            "The World Around Us",
+            "Comunidade, mundo e questões do cotidiano."
+          ]
+
+        ]
+
+      },
+
+      {
+        title: "Stories and Opinions",
+
+        lessons: [
+
+          [
+            "Telling a Story",
+            "Narrativas, acontecimentos e experiências."
+          ],
+
+          [
+            "Giving Opinions",
+            "Expressando opiniões e justificativas."
+          ],
+
+          [
+            "Agreeing and Disagreeing",
+            "Concordância, discordância e argumentação."
+          ],
+
+          [
+            "Solving Problems",
+            "Análise de problemas e busca de soluções."
+          ],
+
+          [
+            "B1 Final Challenge",
+            "Consolidação prática do nível B1."
+          ]
+
+        ]
+
+      }
+
+    ]
+
+  },
+
+
+  /* =====================================================
+     B2 — UPPER INTERMEDIATE
+     ===================================================== */
+
+  B2: {
+
+    title: "B2 — Upper Intermediate",
+
+    description:
+      "Comunicação avançada, argumentação, análise e compreensão complexa.",
+
+    modules: [
+
+      {
+        title: "Advanced Everyday English",
+
+        lessons: [
+
+          [
+            "Complex Routines",
+            "Rotinas complexas e situações do cotidiano."
+          ],
+
+          [
+            "Workplace Communication",
+            "Comunicação profissional e ambiente de trabalho."
+          ],
+
+          [
+            "Managing Time",
+            "Organização, prioridades e administração do tempo."
+          ],
+
+          [
+            "Difficult Conversations",
+            "Conversas difíceis, conflitos e resolução."
+          ],
+
+          [
+            "Making Decisions",
+            "Decisões complexas e análise de alternativas."
+          ]
+
+        ]
+
+      },
+
+      {
+        title: "Ideas and Arguments",
+
+        lessons: [
+
+          [
+            "Building an Argument",
+            "Construção de argumentos e justificativas."
+          ],
+
+          [
+            "Advantages and Disadvantages",
+            "Comparação, vantagens e desvantagens."
+          ],
+
+          [
+            "Cause and Effect",
+            "Relações de causa, consequência e impacto."
+          ],
+
+          [
+            "Comparing Perspectives",
+            "Diferentes pontos de vista e perspectivas."
+          ],
+
+          [
+            "Critical Thinking",
+            "Análise crítica, evidências e conclusões."
+          ]
+
+        ]
+
+      },
+
+      {
+        title: "Communication in Context",
+
+        lessons: [
+
+          [
+            "News and Information",
+            "Notícias, informações e interpretação."
+          ],
+
+          [
+            "Culture and Society",
+            "Cultura, sociedade e diferenças."
+          ],
+
+          [
+            "Technology and the Future",
+            "Tecnologia, inovação e futuro."
+          ],
+
+          [
+            "Professional Situations",
+            "Situações profissionais e comunicação formal."
+          ],
+
+          [
+            "B2 Final Challenge",
+            "Consolidação prática do nível B2."
+          ]
+
+        ]
+
+      }
+
+    ]
+
+  },
+
+
+  /* =====================================================
+     C1 — ADVANCED
+     ===================================================== */
+
+  C1: {
+
+    title: "C1 — Advanced",
+
+    description:
+      "Fluência avançada, precisão, interpretação, argumentação e comunicação sofisticada.",
+
+    modules: [
+
+      {
+        title: "Advanced Reading",
+
+        lessons: [
+
+          [
+            "Complex Texts",
+            "Leitura e interpretação de textos complexos."
+          ],
+
+          [
+            "Implicit Meaning",
+            "Inferência e identificação de significados implícitos."
+          ],
+
+          [
+            "Tone and Context",
+            "Tom, contexto, intenção e interpretação."
+          ],
+
+          [
+            "Academic Language",
+            "Vocabulário e estruturas acadêmicas."
+          ],
+
+          [
+            "Advanced Vocabulary",
+            "Vocabulário avançado e precisão lexical."
+          ]
+
+        ]
+
+      },
+
+      {
+        title: "Advanced Communication",
+
+        lessons: [
+
+          [
+            "Professional Discussions",
+            "Discussões profissionais e comunicação sofisticada."
+          ],
+
+          [
+            "Presenting Ideas",
+            "Apresentação, organização e defesa de ideias."
+          ],
+
+          [
+            "Negotiation",
+            "Negociação, concessões e busca de acordos."
+          ],
+
+          [
+            "Persuasion",
+            "Persuasão, argumentos e influência."
+          ],
+
+          [
+            "Leadership Communication",
+            "Comunicação de liderança e tomada de decisões."
+          ]
+
+        ]
+
+      },
+
+      {
+        title: "Fluency and Mastery",
+
+        lessons: [
+
+          [
+            "Complex Conversations",
+            "Conversas complexas e espontâneas."
+          ],
+
+          [
+            "Expressing Nuance",
+            "Nuances, precisão e diferentes graus de significado."
+          ],
+
+          [
+            "Debate and Argumentation",
+            "Debate, argumentação e contra-argumentação."
+          ],
+
+          [
+            "Advanced Problem Solving",
+            "Problemas complexos e construção de soluções."
+          ],
+
+          [
+            "C1 Final Challenge",
+            "Consolidação e avaliação final do nível C1."
+          ]
+
+        ]
+
+      }
+
+    ]
+
+  }
+
+};
 
 
   /* =======================================================
