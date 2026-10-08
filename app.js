@@ -13,7 +13,7 @@ const APP_CONFIG = {
 
   name: "English Family",
 
-  version: "1.2.0",
+  version: "1.3.0",
 
   language: "en",
 
@@ -77,15 +77,6 @@ const COURSE = {
 
 /* =========================================================
    3. BANCO DE AULAS
-   =========================================================
-   
-   A estrutura foi criada para comportar A1 → C1.
-
-   Nesta primeira versão real do Motor de Aulas,
-   A2-M1-L1 já possui conteúdo completo.
-
-   As demais aulas permanecem estruturadas para
-   receber o conteúdo completo posteriormente.
    ========================================================= */
 
 const LESSON_CONTENT = {
@@ -236,62 +227,82 @@ const LESSON_CONTENT = {
 
               {
                 id: "q1",
+
                 question:
                   "What time does the person usually wake up?",
+
                 options: [
                   "At six o'clock.",
                   "At seven o'clock.",
                   "At eight o'clock.",
                   "At nine o'clock."
                 ],
+
                 answer: 1,
+
                 explanation:
                   "The text says: 'I usually wake up at seven o'clock.'"
+
               },
 
               {
                 id: "q2",
+
                 question:
                   "Who does the person have breakfast with?",
+
                 options: [
                   "Friends.",
                   "Colleagues.",
                   "Family.",
                   "Nobody."
                 ],
+
                 answer: 2,
+
                 explanation:
                   "The text says: 'I get up and have breakfast with my family.'"
+
               },
 
               {
                 id: "q3",
+
                 question:
                   "When does the person have lunch?",
+
                 options: [
                   "In the morning.",
                   "At noon.",
                   "In the evening.",
                   "At night."
                 ],
+
                 answer: 1,
+
                 explanation:
                   "The text says: 'I have lunch at noon.'"
+
               },
 
               {
                 id: "q4",
+
                 question:
                   "What does the person usually do after dinner?",
+
                 options: [
                   "Go to work.",
                   "Go to school.",
                   "Relax and read a book.",
                   "Have lunch."
                 ],
+
                 answer: 2,
+
                 explanation:
                   "The text says: 'After dinner, I usually relax and read a book.'"
+
               }
 
             ],
@@ -300,37 +311,49 @@ const LESSON_CONTENT = {
 
               {
                 id: "t1",
+
                 question:
                   "Traduza para o inglês: 'Eu acordo às sete horas.'",
+
                 answer:
                   "I wake up at seven o'clock.",
+
                 alternatives: [
                   "I wake up at seven.",
                   "I wake up at 7 o'clock."
                 ]
+
               },
 
               {
                 id: "t2",
+
                 question:
                   "Traduza para o inglês: 'Eu almoço ao meio-dia.'",
+
                 answer:
                   "I have lunch at noon.",
+
                 alternatives: [
                   "I have lunch at twelve.",
                   "I have lunch at 12."
                 ]
+
               },
 
               {
                 id: "t3",
+
                 question:
                   "Traduza para o inglês: 'Eu vou para a cama às onze horas.'",
+
                 answer:
                   "I go to bed at eleven o'clock.",
+
                 alternatives: [
                   "I go to bed at eleven."
                 ]
+
               }
 
             ],
@@ -339,47 +362,62 @@ const LESSON_CONTENT = {
 
               {
                 id: "g1",
+
                 question:
                   "Choose the correct sentence.",
+
                 options: [
                   "She work every day.",
                   "She works every day.",
                   "She working every day.",
                   "She works every days."
                 ],
+
                 answer: 1,
+
                 explanation:
                   "With 'she', the verb 'work' becomes 'works' in the Present Simple."
+
               },
 
               {
                 id: "g2",
+
                 question:
                   "Choose the correct sentence.",
+
                 options: [
                   "He go to work at eight.",
                   "He goes to work at eight.",
                   "He going to work at eight.",
                   "He goes work at eight."
                 ],
+
                 answer: 1,
+
                 explanation:
                   "With 'he', 'go' becomes 'goes'."
+
               },
 
               {
                 id: "g3",
+
                 question:
                   "Choose the correct sentence.",
+
                 options: [
                   "I has breakfast at seven.",
                   "I have breakfast at seven.",
                   "I having breakfast at seven.",
                   "I haves breakfast at seven."
                 ],
+
                 answer: 1,
+
                 explanation:
                   "With 'I', we use the base form 'have'."
+
               }
 
             ],
@@ -388,26 +426,35 @@ const LESSON_CONTENT = {
 
               {
                 id: "r1",
+
                 question:
                   "Complete: I _____ up at seven.",
+
                 answer:
                   "wake"
+
               },
 
               {
                 id: "r2",
+
                 question:
                   "Complete: I _____ lunch at noon.",
+
                 answer:
                   "have"
+
               },
 
               {
                 id: "r3",
+
                 question:
                   "Complete: I _____ to bed at eleven.",
+
                 answer:
                   "go"
+
               }
 
             ]
@@ -472,10 +519,11 @@ const LESSON_CONTENT = {
 
       title: "Módulo 2",
 
-      lessons: createModuleLessons(
-        "A2",
-        2
-      )
+      lessons:
+        createModuleLessons(
+          "A2",
+          2
+        )
 
     },
 
@@ -483,10 +531,11 @@ const LESSON_CONTENT = {
 
       title: "Módulo 3",
 
-      lessons: createModuleLessons(
-        "A2",
-        3
-      )
+      lessons:
+        createModuleLessons(
+          "A2",
+          3
+        )
 
     }
 
@@ -1110,7 +1159,10 @@ function normalizeUserData() {
 
   }
 
-  if (!user.settings) {
+  if (
+    !user.settings ||
+    typeof user.settings !== "object"
+  ) {
 
     user.settings =
       cloneObject(
@@ -1666,15 +1718,37 @@ function startLesson(
 
   }
 
-  if (
-    lesson.status ===
-      "locked" &&
-    lesson.id !==
-      `${APP_STATE.user.level}-M${APP_STATE.user.module}-L${APP_STATE.user.lesson}`
-  ) {
+  const currentId =
+    `${APP_STATE.user.level}-M${APP_STATE.user.module}-L${APP_STATE.user.lesson}`;
+
+  const completed =
+    APP_STATE.user.completedLessons
+      .includes(
+        lesson.id
+      );
+
+  const isCurrent =
+    lesson.id === currentId;
+
+  const isUnlocked =
+    completed ||
+    isCurrent ||
+    lesson.status === "current";
+
+  if (!isUnlocked) {
 
     alert(
       "Esta aula ainda está bloqueada."
+    );
+
+    return;
+
+  }
+
+  if (!lesson.content) {
+
+    openUnavailableLesson(
+      lesson
     );
 
     return;
@@ -1701,30 +1775,22 @@ function startLesson(
     step:
       0,
 
-    answers: [],
+    answers: {},
 
-    score: 0,
+    score:
+      0,
 
     total:
       0,
 
-    errors: []
+    errors: [],
+
+    feedbackShown:
+      false
 
   };
 
-  if (
-    lesson.content
-  ) {
-
-    openLessonEngine(
-      lesson
-    );
-
-    return;
-
-  }
-
-  openUnavailableLesson(
+  openLessonEngine(
     lesson
   );
 
@@ -1774,7 +1840,7 @@ function openLessonEngine(
   }
 
   engine.className =
-    "lesson-engine-overlay";
+    "lesson-overlay active";
 
   engine.innerHTML =
     buildLessonEngineHTML(
@@ -1814,77 +1880,73 @@ function buildLessonEngineHTML(
 
   return `
 
-    <div class="lesson-engine">
+    <div class="lesson-header">
 
-      <header class="lesson-engine-header">
+      <button
+        type="button"
+        class="lesson-close-button"
+        id="lessonCloseButton"
+        aria-label="Fechar aula"
+      >
+        ×
+      </button>
 
-        <button
-          type="button"
-          class="lesson-close-button"
-          id="lessonCloseButton"
-          aria-label="Fechar aula"
-        >
-          ×
-        </button>
+      <div class="lesson-header-center">
 
-        <div class="lesson-header-info">
-
-          <span class="lesson-level">
-            ${content.level}
-          </span>
-
-          <strong>
-            ${content.title}
-          </strong>
-
+        <div class="lesson-header-title">
+          ${escapeHTML(content.title)}
         </div>
 
-        <div class="lesson-step-counter">
-          <span id="lessonStepCurrent">1</span>
-          /
-          <span id="lessonStepTotal">
-            ${totalSteps}
-          </span>
+        <div class="lesson-progress-track">
+
+          <div
+            id="lessonEngineProgress"
+            class="lesson-progress-fill"
+            style="width:0%"
+          ></div>
+
         </div>
-
-      </header>
-
-      <div class="lesson-progress-track">
-
-        <div
-          id="lessonEngineProgress"
-          class="lesson-progress-fill"
-          style="width:0%"
-        ></div>
 
       </div>
 
-      <main
-        id="lessonEngineContent"
-        class="lesson-engine-content"
-      ></main>
-
-      <footer class="lesson-engine-footer">
-
-        <button
-          type="button"
-          id="lessonBackButton"
-          class="lesson-secondary-button"
-        >
-          Voltar
-        </button>
-
-        <button
-          type="button"
-          id="lessonNextButton"
-          class="lesson-primary-button"
-        >
-          Continuar
-        </button>
-
-      </footer>
+      <div class="lesson-xp">
+        +${APP_CONFIG.xpPerLesson} XP
+      </div>
 
     </div>
+
+    <main
+      id="lessonEngineContent"
+      class="lesson-body"
+    ></main>
+
+    <footer class="lesson-footer">
+
+      <button
+        type="button"
+        id="lessonBackButton"
+        class="secondary-button"
+      >
+        Voltar
+      </button>
+
+      <div class="lesson-step-indicator">
+        <span id="lessonStepCurrent">1</span>
+        /
+        <span id="lessonStepTotal">
+          ${totalSteps}
+        </span>
+      </div>
+
+      <button
+        type="button"
+        id="lessonNextButton"
+        class="primary-button"
+      >
+        Continuar
+      </button>
+
+    </footer>
 
   `;
 
@@ -1899,73 +1961,9 @@ function calculateLessonSteps(
   content
 ) {
 
-  let steps = 0;
-
-  if (content.introduction) {
-
-    steps++;
-
-  }
-
-  if (
-    content.vocabulary?.length
-  ) {
-
-    steps++;
-
-  }
-
-  if (content.grammar) {
-
-    steps++;
-
-  }
-
-  if (content.reading) {
-
-    steps++;
-
-  }
-
-  if (
-    content.comprehension?.length
-  ) {
-
-    steps +=
-      content.comprehension.length;
-
-  }
-
-  if (
-    content.translation?.length
-  ) {
-
-    steps +=
-      content.translation.length;
-
-  }
-
-  if (
-    content.grammarExercises?.length
-  ) {
-
-    steps +=
-      content.grammarExercises.length;
-
-  }
-
-  if (
-    content.activeRecall?.length
-  ) {
-
-    steps +=
-      content.activeRecall.length;
-
-  }
-
-  steps++;
-
-  return steps;
+  return buildLessonSteps(
+    content
+  ).length;
 
 }
 
@@ -2184,6 +2182,9 @@ function showLessonStep(
   APP_STATE.currentSession.step =
     safeIndex;
 
+  APP_STATE.currentSession.feedbackShown =
+    false;
+
   const step =
     steps[
       safeIndex
@@ -2224,8 +2225,7 @@ function showLessonStep(
    ========================================================= */
 
 function renderLessonStep(
-  step,
-  index
+  step
 ) {
 
   switch (
@@ -2294,7 +2294,7 @@ function renderLessonStep(
 
       return `
 
-        <div class="lesson-card">
+        <section class="lesson-card">
 
           <h2>Atividade</h2>
 
@@ -2302,7 +2302,7 @@ function renderLessonStep(
             Conteúdo da atividade.
           </p>
 
-        </div>
+        </section>
 
       `;
 
@@ -2319,47 +2319,55 @@ function renderIntroduction(
   data
 ) {
 
+  const objectives =
+    APP_STATE.currentLesson
+      ?.content
+      ?.objectives || [];
+
   return `
 
-    <section class="lesson-card lesson-introduction">
+    <div class="lesson-content">
 
-      <span class="lesson-eyebrow">
+      <span class="lesson-kicker">
         LET'S START
       </span>
 
-      <h1>
-        ${data.title}
+      <h1 class="lesson-title">
+        ${escapeHTML(data.title)}
       </h1>
 
-      <h3>
-        ${data.text}
-      </h3>
+      <p class="lesson-description">
+        ${escapeHTML(data.text)}
+      </p>
 
-      <div class="lesson-objectives">
+      ${
+        objectives.length
+          ? `
 
-        <h3>
-          🎯 O que você vai aprender
-        </h3>
+            <div class="lesson-card">
 
-        <ul>
+              <h3 class="lesson-card-title">
+                🎯 O que você vai aprender
+              </h3>
 
-          ${
-            (
-              APP_STATE.currentLesson.content
-                .objectives || []
-            )
-            .map(
-              item =>
-                `<li>${item}</li>`
-            )
-            .join("")
-          }
+              <ul>
+                ${
+                  objectives
+                    .map(
+                      item =>
+                        `<li>${escapeHTML(item)}</li>`
+                    )
+                    .join("")
+                }
+              </ul>
 
-        </ul>
+            </div>
 
-      </div>
+          `
+          : ""
+      }
 
-    </section>
+    </div>
 
   `;
 
@@ -2376,42 +2384,43 @@ function renderVocabulary(
 
   return `
 
-    <section class="lesson-card">
+    <div class="lesson-content">
 
-      <span class="lesson-eyebrow">
+      <span class="lesson-kicker">
         VOCABULARY
       </span>
 
-      <h1>
+      <h1 class="lesson-title">
         Palavras importantes
       </h1>
 
-      <p>
-        Leia as palavras e observe os exemplos.
+      <p class="lesson-description">
+        Leia as palavras, observe os exemplos
+        e tente criar suas próprias frases.
       </p>
 
-      <div class="lesson-vocabulary-grid">
+      <div class="lesson-card">
 
         ${
           words
             .map(
               item => `
 
-                <article class="vocabulary-card">
+                <div class="lesson-example">
 
                   <strong>
-                    ${item.word}
+                    ${escapeHTML(item.word)}
                   </strong>
 
                   <span>
-                    ${item.translation}
+                    ${escapeHTML(item.translation)}
                   </span>
 
                   <small>
-                    ${item.example}
+                    ${escapeHTML(item.example)}
                   </small>
 
-                </article>
+                </div>
 
               `
             )
@@ -2420,7 +2429,7 @@ function renderVocabulary(
 
       </div>
 
-    </section>
+    </div>
 
   `;
 
@@ -2437,52 +2446,67 @@ function renderGrammar(
 
   return `
 
-    <section class="lesson-card">
+    <div class="lesson-content">
 
-      <span class="lesson-eyebrow">
+      <span class="lesson-kicker">
         GRAMMAR
       </span>
 
-      <h1>
-        ${data.title}
+      <h1 class="lesson-title">
+        ${escapeHTML(data.title)}
       </h1>
 
-      <p>
-        ${data.explanation}
-      </p>
+      <div class="lesson-card">
 
-      <div class="grammar-rule">
+        <h3 class="lesson-card-title">
+          Explicação
+        </h3>
 
-        <strong>
-          Regra principal
-        </strong>
-
-        <p>
-          ${data.rule}
+        <p class="lesson-card-text">
+          ${escapeHTML(data.explanation)}
         </p>
 
       </div>
 
-      <h3>
-        Exemplos
-      </h3>
+      <div class="lesson-card">
 
-      <div class="grammar-examples">
+        <h3 class="lesson-card-title">
+          Regra principal
+        </h3>
 
-        ${
-          data.examples
-            .map(
-              example =>
-                `<div class="grammar-example">
-                  ${example}
-                </div>`
-            )
-            .join("")
-        }
+        <p class="lesson-card-text">
+          ${escapeHTML(data.rule)}
+        </p>
 
       </div>
 
-    </section>
+      <div class="lesson-card">
+
+        <h3 class="lesson-card-title">
+          Exemplos
+        </h3>
+
+        <div class="lesson-example-list">
+
+          ${
+            (data.examples || [])
+              .map(
+                example => `
+
+                  <div class="lesson-example">
+                    ${escapeHTML(example)}
+                  </div>
+
+                `
+              )
+              .join("")
+          }
+
+        </div>
+
+      </div>
+
+    </div>
 
   `;
 
@@ -2499,35 +2523,41 @@ function renderReading(
 
   return `
 
-    <section class="lesson-card">
+    <div class="lesson-content">
 
-      <span class="lesson-eyebrow">
+      <span class="lesson-kicker">
         READING
       </span>
 
-      <h1>
-        ${data.title}
+      <h1 class="lesson-title">
+        ${escapeHTML(data.title)}
       </h1>
 
-      <div class="reading-text">
+      <div class="lesson-card">
 
-        ${data.text}
+        <div class="lesson-english-text">
+          ${escapeHTML(data.text)}
+        </div>
 
       </div>
 
-      <details class="translation-box">
+      <div class="lesson-card">
 
-        <summary>
-          🇧🇷 Ver tradução
-        </summary>
+        <details>
 
-        <p>
-          ${data.translation}
-        </p>
+          <summary>
+            🇧🇷 Ver tradução
+          </summary>
 
-      </details>
+          <div class="lesson-translation">
+            ${escapeHTML(data.translation)}
+          </div>
 
-    </section>
+        </details>
+
+      </div>
+
+    </div>
 
   `;
 
@@ -2551,9 +2581,9 @@ function renderQuestion(
 
     return `
 
-      <section class="lesson-card">
+      <div class="lesson-content">
 
-        <span class="lesson-eyebrow">
+        <span class="lesson-kicker">
           ${
             type === "translation"
               ? "TRANSLATION"
@@ -2561,28 +2591,39 @@ function renderQuestion(
           }
         </span>
 
-        <h1>
-          ${data.question}
+        <h1 class="lesson-title">
+          ${escapeHTML(data.question)}
         </h1>
 
-        <div class="lesson-answer-area">
+        <div class="lesson-exercise">
 
-          <input
-            id="lessonTextAnswer"
-            class="lesson-text-input"
-            type="text"
-            autocomplete="off"
-            placeholder="Digite sua resposta..."
-          >
+          <div class="exercise-type">
+            ${
+              type === "translation"
+                ? "Tradução"
+                : "Recuperação ativa"
+            }
+          </div>
+
+          <div class="exercise-input">
+
+            <input
+              id="lessonTextAnswer"
+              type="text"
+              autocomplete="off"
+              placeholder="Digite sua resposta..."
+            >
+
+          </div>
 
           <div
             id="lessonAnswerFeedback"
-            class="lesson-answer-feedback"
+            class="exercise-feedback"
           ></div>
 
         </div>
 
-      </section>
+      </div>
 
     `;
 
@@ -2590,9 +2631,9 @@ function renderQuestion(
 
   return `
 
-    <section class="lesson-card">
+    <div class="lesson-content">
 
-      <span class="lesson-eyebrow">
+      <span class="lesson-kicker">
         ${
           type === "grammarExercise"
             ? "GRAMMAR"
@@ -2600,45 +2641,58 @@ function renderQuestion(
         }
       </span>
 
-      <h1>
-        ${data.question}
+      <h1 class="lesson-title">
+        ${escapeHTML(data.question)}
       </h1>
 
-      <div class="lesson-options">
+      <div class="lesson-exercise">
 
-        ${
-          data.options
-            .map(
-              (option, index) => `
+        <div class="exercise-type">
+          ${
+            type === "grammarExercise"
+              ? "Grammar"
+              : "Comprehension"
+          }
+        </div>
 
-                <button
-                  type="button"
-                  class="lesson-option"
-                  data-answer-index="${index}"
-                >
-                  <span>
-                    ${String.fromCharCode(
-                      65 + index
-                    )}
-                  </span>
+        <div class="exercise-options">
 
-                  ${option}
+          ${
+            (data.options || [])
+              .map(
+                (option, index) => `
 
-                </button>
+                  <button
+                    type="button"
+                    class="exercise-option"
+                    data-answer-index="${index}"
+                  >
 
-              `
-            )
-            .join("")
-        }
+                    <span>
+                      ${String.fromCharCode(
+                        65 + index
+                      )}
+                    </span>
+
+                    ${escapeHTML(option)}
+
+                  </button>
+
+                `
+              )
+              .join("")
+          }
+
+        </div>
+
+        <div
+          id="lessonAnswerFeedback"
+          class="exercise-feedback"
+        ></div>
 
       </div>
 
-      <div
-        id="lessonAnswerFeedback"
-        class="lesson-answer-feedback"
-      ></div>
-
-    </section>
+    </div>
 
   `;
 
@@ -2668,63 +2722,59 @@ function renderCompletion(
 
   return `
 
-    <section class="lesson-card lesson-completion">
+    <div class="lesson-content">
 
-      <div class="completion-icon">
-        🎉
-      </div>
+      <div class="lesson-result">
 
-      <span class="lesson-eyebrow">
-        LESSON COMPLETE
-      </span>
+        <div class="lesson-result-icon">
+          🎉
+        </div>
 
-      <h1>
-        Muito bem!
-      </h1>
+        <span class="lesson-kicker">
+          LESSON COMPLETE
+        </span>
 
-      <p>
-        Você concluiu:
-      </p>
+        <h1 class="lesson-title">
+          Muito bem!
+        </h1>
 
-      <h2>
-        ${lesson.title}
-      </h2>
+        <p class="lesson-description">
+          Você concluiu:
+        </p>
 
-      <div class="lesson-result-grid">
+        <h2>
+          ${escapeHTML(lesson.title)}
+        </h2>
 
-        <div>
+        <div class="lesson-result-xp">
+          +${APP_CONFIG.xpPerLesson} XP
+        </div>
+
+        <div class="lesson-card">
+
+          <h3>
+            Desempenho
+          </h3>
+
           <strong>
             ${score}%
           </strong>
-          <span>
-            desempenho
-          </span>
-        </div>
 
-        <div>
-          <strong>
-            +${APP_CONFIG.xpPerLesson}
-          </strong>
-          <span>
-            XP
-          </span>
+          <p>
+            ${
+              score >= 80
+                ? "Excelente desempenho! Você está pronto para continuar."
+                : score >= 60
+                  ? "Bom trabalho! Continue praticando para fortalecer o conteúdo."
+                  : "Você concluiu a aula. Os pontos de dificuldade serão reforçados nas próximas revisões."
+            }
+          </p>
+
         </div>
 
       </div>
 
-      <p class="completion-message">
-
-        ${
-          score >= 80
-            ? "Excelente desempenho! Você está pronto para continuar."
-            : score >= 60
-              ? "Bom trabalho! Continue praticando para fortalecer o conteúdo."
-              : "Você concluiu a aula. Os pontos que apresentou dificuldade serão reforçados nas próximas revisões."
-        }
-
-      </p>
-
-    </section>
+    </div>
 
   `;
 
@@ -2817,9 +2867,7 @@ function updateLessonEngineControls(
    35. INTERAÇÕES DA AULA
    ========================================================= */
 
-function bindLessonEngine(
-  lesson
-) {
+function bindLessonEngine() {
 
   document
     .getElementById(
@@ -2851,6 +2899,10 @@ function bindLessonEngine(
 }
 
 
+/* =========================================================
+   36. INTERAÇÕES DE CADA ETAPA
+   ========================================================= */
+
 function bindStepInteractions(
   step
 ) {
@@ -2864,7 +2916,7 @@ function bindStepInteractions(
 
     document
       .querySelectorAll(
-        ".lesson-option"
+        ".exercise-option"
       )
       .forEach(
         button => {
@@ -2889,45 +2941,11 @@ function bindStepInteractions(
 
   }
 
-  if (
-    step.type ===
-      "translation" ||
-    step.type ===
-      "activeRecall"
-  ) {
-
-    const input =
-      document.getElementById(
-        "lessonTextAnswer"
-      );
-
-    if (input) {
-
-      input.addEventListener(
-        "keydown",
-        event => {
-
-          if (
-            event.key ===
-            "Enter"
-          ) {
-
-            lessonNextStep();
-
-          }
-
-        }
-      );
-
-    }
-
-  }
-
 }
 
 
 /* =========================================================
-   36. PRÓXIMA ETAPA
+   37. PRÓXIMA ETAPA
    ========================================================= */
 
 function lessonNextStep() {
@@ -2935,23 +2953,44 @@ function lessonNextStep() {
   const steps =
     getLessonSteps();
 
+  if (!steps.length) {
+
+    return;
+
+  }
+
+  const session =
+    APP_STATE.currentSession;
+
   const index =
-    APP_STATE.currentSession.step;
+    session.step;
 
   const step =
     steps[index];
 
+  if (!step) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     QUESTÃO DE MÚLTIPLA ESCOLHA
+     ------------------------------------------------------- */
+
   if (
-    step?.type ===
+    step.type ===
       "comprehension" ||
-    step?.type ===
+    step.type ===
       "grammarExercise"
   ) {
 
     if (
-      !APP_STATE.currentSession.answers[
+      !Object.prototype.hasOwnProperty.call(
+        session.answers,
         index
-      ]
+      )
     ) {
 
       showTemporaryMessage(
@@ -2964,19 +3003,35 @@ function lessonNextStep() {
 
   }
 
+
+  /* -------------------------------------------------------
+     QUESTÃO DE TEXTO
+     ------------------------------------------------------- */
+
   if (
-    step?.type ===
+    step.type ===
       "translation" ||
-    step?.type ===
+    step.type ===
       "activeRecall"
   ) {
 
-    const input =
-      document.getElementById(
-        "lessonTextAnswer"
-      );
+    if (
+      !Object.prototype.hasOwnProperty.call(
+        session.answers,
+        index
+      )
+    ) {
 
-    if (input) {
+      const input =
+        document.getElementById(
+          "lessonTextAnswer"
+        );
+
+      if (!input) {
+
+        return;
+
+      }
 
       const answer =
         input.value.trim();
@@ -2999,9 +3054,16 @@ function lessonNextStep() {
         index
       );
 
+      return;
+
     }
 
   }
+
+
+  /* -------------------------------------------------------
+     FINAL
+     ------------------------------------------------------- */
 
   if (
     index >=
@@ -3022,13 +3084,22 @@ function lessonNextStep() {
 
 
 /* =========================================================
-   37. ETAPA ANTERIOR
+   38. ETAPA ANTERIOR
    ========================================================= */
 
 function lessonPreviousStep() {
 
+  const session =
+    APP_STATE.currentSession;
+
+  if (!session) {
+
+    return;
+
+  }
+
   const index =
-    APP_STATE.currentSession.step;
+    session.step;
 
   if (
     index <= 0
@@ -3046,7 +3117,7 @@ function lessonPreviousStep() {
 
 
 /* =========================================================
-   38. MÚLTIPLA ESCOLHA
+   39. MÚLTIPLA ESCOLHA
    ========================================================= */
 
 function handleMultipleChoice(
@@ -3055,11 +3126,17 @@ function handleMultipleChoice(
   button
 ) {
 
+  const session =
+    APP_STATE.currentSession;
+
   const index =
-    APP_STATE.currentSession.step;
+    session.step;
 
   if (
-    APP_STATE.currentSession.answers[index]
+    Object.prototype.hasOwnProperty.call(
+      session.answers,
+      index
+    )
   ) {
 
     return;
@@ -3070,9 +3147,7 @@ function handleMultipleChoice(
     selected ===
     data.answer;
 
-  APP_STATE.currentSession.answers[
-    index
-  ] = {
+  session.answers[index] = {
 
     correct:
       correct,
@@ -3082,17 +3157,17 @@ function handleMultipleChoice(
 
   };
 
-  APP_STATE.currentSession.total++;
+  session.total++;
 
   if (correct) {
 
-    APP_STATE.currentSession.score++;
+    session.score++;
 
   }
 
   document
     .querySelectorAll(
-      ".lesson-option"
+      ".exercise-option"
     )
     .forEach(
       option => {
@@ -3133,6 +3208,17 @@ function handleMultipleChoice(
 
   }
 
+  if (
+    data.options
+  ) {
+
+    updateVocabularyAndGrammarFromQuestion(
+      data,
+      correct
+    );
+
+  }
+
   const feedback =
     document.getElementById(
       "lessonAnswerFeedback"
@@ -3141,10 +3227,10 @@ function handleMultipleChoice(
   if (feedback) {
 
     feedback.className =
-      `lesson-answer-feedback ${
+      `exercise-feedback visible ${
         correct
-          ? "success"
-          : "error"
+          ? "correct"
+          : "incorrect"
       }`;
 
     feedback.innerHTML =
@@ -3152,31 +3238,40 @@ function handleMultipleChoice(
 
         ? `
           <strong>✓ Correct!</strong>
+
           <p>
             ${
-              data.explanation ||
-              "Muito bem!"
+              escapeHTML(
+                data.explanation ||
+                "Muito bem!"
+              )
             }
           </p>
         `
 
         : `
           <strong>✗ Not quite.</strong>
+
           <p>
             ${
-              data.explanation ||
-              "Observe a resposta correta e continue."
+              escapeHTML(
+                data.explanation ||
+                "Observe a resposta correta e continue."
+              )
             }
           </p>
         `;
 
   }
 
+  session.feedbackShown =
+    true;
+
 }
 
 
 /* =========================================================
-   39. RESPOSTA ESCRITA
+   40. RESPOSTA ESCRITA
    ========================================================= */
 
 function evaluateTextAnswer(
@@ -3185,8 +3280,14 @@ function evaluateTextAnswer(
   index
 ) {
 
+  const session =
+    APP_STATE.currentSession;
+
   if (
-    APP_STATE.currentSession.answers[index]
+    Object.prototype.hasOwnProperty.call(
+      session.answers,
+      index
+    )
   ) {
 
     return;
@@ -3214,9 +3315,7 @@ function evaluateTextAnswer(
       normalized
     );
 
-  APP_STATE.currentSession.answers[
-    index
-  ] = {
+  session.answers[index] = {
 
     correct:
       correct,
@@ -3226,11 +3325,11 @@ function evaluateTextAnswer(
 
   };
 
-  APP_STATE.currentSession.total++;
+  session.total++;
 
   if (correct) {
 
-    APP_STATE.currentSession.score++;
+    session.score++;
 
   }
 
@@ -3248,13 +3347,25 @@ function evaluateTextAnswer(
       "lessonAnswerFeedback"
     );
 
+  const input =
+    document.getElementById(
+      "lessonTextAnswer"
+    );
+
+  if (input) {
+
+    input.disabled =
+      true;
+
+  }
+
   if (feedback) {
 
     feedback.className =
-      `lesson-answer-feedback ${
+      `exercise-feedback visible ${
         correct
-          ? "success"
-          : "error"
+          ? "correct"
+          : "incorrect"
       }`;
 
     feedback.innerHTML =
@@ -3262,6 +3373,7 @@ function evaluateTextAnswer(
 
         ? `
           <strong>✓ Excellent!</strong>
+
           <p>
             Resposta correta.
           </p>
@@ -3269,13 +3381,103 @@ function evaluateTextAnswer(
 
         : `
           <strong>✗ Vamos reforçar.</strong>
+
           <p>
             Resposta esperada:
             <strong>
-              ${data.answer}
+              ${escapeHTML(data.answer)}
             </strong>
           </p>
         `;
+
+  }
+
+  updateVocabularyAndGrammarFromQuestion(
+    data,
+    correct
+  );
+
+  session.feedbackShown =
+    true;
+
+}
+
+
+/* =========================================================
+   41. VOCABULÁRIO E GRAMÁTICA A PARTIR DE QUESTÕES
+   ========================================================= */
+
+function updateVocabularyAndGrammarFromQuestion(
+  data,
+  correct
+) {
+
+  const lesson =
+    APP_STATE.currentLesson;
+
+  const content =
+    lesson?.content;
+
+  if (!content) {
+
+    return;
+
+  }
+
+  if (
+    content.vocabulary?.length
+  ) {
+
+    content.vocabulary.forEach(
+      item => {
+
+        registerVocabulary(
+          item.word,
+          {
+
+            word:
+              item.word,
+
+            translation:
+              item.translation,
+
+            level:
+              content.level,
+
+            category:
+              item.category,
+
+            examples:
+              item.example
+                ? [item.example]
+                : []
+
+          }
+        );
+
+      }
+    );
+
+  }
+
+  if (
+    content.grammar?.title
+  ) {
+
+    registerGrammar(
+      content.grammar.title,
+      {
+
+        level:
+          content.level,
+
+        mastery:
+          correct
+            ? 5
+            : 0
+
+      }
+    );
 
   }
 
@@ -3283,7 +3485,7 @@ function evaluateTextAnswer(
 
 
 /* =========================================================
-   40. REGISTRAR ERRO DA AULA
+   42. REGISTRAR ERRO DA AULA
    ========================================================= */
 
 function registerLessonError(
@@ -3296,39 +3498,49 @@ function registerLessonError(
       ? "multiple-choice"
       : "text";
 
-  registerError({
+  const error =
+    registerError({
 
-    id:
-      `${APP_STATE.currentLesson.id}-${data.id || Date.now()}`,
+      id:
+        `${APP_STATE.currentLesson.id}-${data.id || Date.now()}`,
 
-    type:
+      type:
+        type,
 
-      type,
+      question:
+        data.question,
 
-    question:
-      data.question,
+      expected:
+        data.options
+          ? data.options[
+              data.answer
+            ]
+          : data.answer,
 
-    expected:
-      data.options
-        ? data.options[
-            data.answer
-          ]
-        : data.answer,
+      answer:
+        typeof answer === "number"
+          ? data.options?.[
+              answer
+            ] || String(answer)
+          : answer
 
-    answer:
-      typeof answer === "number"
-        ? data.options?.[
-            answer
-          ] || String(answer)
-        : answer
+    });
 
-  });
+  if (
+    APP_STATE.currentSession
+  ) {
+
+    APP_STATE.currentSession.errors.push(
+      error
+    );
+
+  }
 
 }
 
 
 /* =========================================================
-   41. FINALIZAR MOTOR
+   43. FINALIZAR MOTOR
    ========================================================= */
 
 function finishLessonEngine() {
@@ -3345,6 +3557,24 @@ function finishLessonEngine() {
   const session =
     APP_STATE.currentSession;
 
+  if (!session) {
+
+    return;
+
+  }
+
+  if (
+    session.completed
+  ) {
+
+    showLessonStep(
+      getLessonSteps().length - 1
+    );
+
+    return;
+
+  }
+
   const minutes =
     calculateSessionMinutes(
       session.startedAt
@@ -3357,25 +3587,22 @@ function finishLessonEngine() {
     )
   );
 
-  if (
-    !session.completed
-  ) {
-
+  const completed =
     completeLesson(
       lesson.id,
       {
+
         score:
           session.score,
 
         total:
           session.total
+
       }
     );
 
-    session.completed =
-      true;
-
-  }
+  session.completed =
+    true;
 
   showLessonStep(
     getLessonSteps().length - 1
@@ -3396,11 +3623,19 @@ function finishLessonEngine() {
 
   }
 
+  if (!completed) {
+
+    console.log(
+      "Aula já havia sido concluída anteriormente."
+    );
+
+  }
+
 }
 
 
 /* =========================================================
-   42. FECHAR MOTOR
+   44. FECHAR MOTOR
    ========================================================= */
 
 function closeLessonEngine() {
@@ -3432,7 +3667,7 @@ function closeLessonEngine() {
 
 
 /* =========================================================
-   43. AULA SEM CONTEÚDO
+   45. AULA SEM CONTEÚDO
    ========================================================= */
 
 function openUnavailableLesson(
@@ -3452,7 +3687,7 @@ function openUnavailableLesson(
 
 
 /* =========================================================
-   44. TEMPO DA SESSÃO
+   46. TEMPO DA SESSÃO
    ========================================================= */
 
 function calculateSessionMinutes(
@@ -3491,7 +3726,7 @@ function calculateSessionMinutes(
 
 
 /* =========================================================
-   45. NORMALIZAR RESPOSTA
+   47. NORMALIZAR RESPOSTA
    ========================================================= */
 
 function normalizeAnswer(
@@ -3516,7 +3751,7 @@ function normalizeAnswer(
 
 
 /* =========================================================
-   46. MENSAGEM TEMPORÁRIA
+   48. MENSAGEM TEMPORÁRIA
    ========================================================= */
 
 function showTemporaryMessage(
@@ -3539,7 +3774,7 @@ function showTemporaryMessage(
       "lessonTemporaryMessage";
 
     element.className =
-      "lesson-temporary-message";
+      "lesson-status-message";
 
     document.body.appendChild(
       element
@@ -3551,14 +3786,16 @@ function showTemporaryMessage(
     message;
 
   element.classList.add(
-    "visible"
+    "visible",
+    "warning"
   );
 
   setTimeout(
     () => {
 
       element.classList.remove(
-        "visible"
+        "visible",
+        "warning"
       );
 
     },
@@ -3569,7 +3806,7 @@ function showTemporaryMessage(
 
 
 /* =========================================================
-   47. REVISÃO
+   49. REVISÃO
    ========================================================= */
 
 function startReview() {
@@ -3609,7 +3846,7 @@ function startReview() {
 
 
 /* =========================================================
-   48. CONVERSAÇÃO
+   50. CONVERSAÇÃO
    ========================================================= */
 
 function startConversation(
@@ -3658,7 +3895,7 @@ function startConversation(
 
 
 /* =========================================================
-   49. PERFIL
+   51. PERFIL
    ========================================================= */
 
 function openProfile() {
@@ -3684,7 +3921,7 @@ function openProfile() {
 
 
 /* =========================================================
-   50. XP
+   52. XP
    ========================================================= */
 
 function addXP(
@@ -3731,7 +3968,7 @@ function addXP(
 
 
 /* =========================================================
-   51. NÍVEL XP
+   53. NÍVEL XP
    ========================================================= */
 
 function getXPLevel() {
@@ -3757,7 +3994,7 @@ function getXPLevel() {
 
 
 /* =========================================================
-   52. STREAK
+   54. STREAK
    ========================================================= */
 
 function updateStreak() {
@@ -3824,7 +4061,7 @@ function updateStreak() {
 
 
 /* =========================================================
-   53. TEMPO DE ESTUDO
+   55. TEMPO DE ESTUDO
    ========================================================= */
 
 function addStudyMinutes(
@@ -3900,7 +4137,7 @@ function addStudyMinutes(
 
 
 /* =========================================================
-   54. CONCLUSÃO DE AULA
+   56. CONCLUSÃO DE AULA
    ========================================================= */
 
 function completeLesson(
@@ -3975,7 +4212,7 @@ function completeLesson(
 
 
 /* =========================================================
-   55. AVANÇAR AULA
+   57. AVANÇAR AULA
    ========================================================= */
 
 function advanceLesson(
@@ -4016,9 +4253,21 @@ function advanceLesson(
     );
 
   if (
-    currentIndex >= 0 &&
+    currentIndex < 0
+  ) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     EXISTE PRÓXIMA AULA
+     ------------------------------------------------------- */
+
+  if (
     currentIndex <
-      contentLessons.length - 1
+    contentLessons.length - 1
   ) {
 
     user.lesson =
@@ -4030,15 +4279,46 @@ function advanceLesson(
 
   }
 
+
+  /* -------------------------------------------------------
+     ÚLTIMA AULA DO MÓDULO
+     ------------------------------------------------------- */
+
+  const review =
+    module.lessons.find(
+      lesson =>
+        lesson.type === "review"
+    );
+
+  const test =
+    module.lessons.find(
+      lesson =>
+        lesson.type === "test"
+    );
+
+  if (review) {
+
+    review.status =
+      "current";
+
+  }
+
+  if (test) {
+
+    test.status =
+      "locked";
+
+  }
+
   console.log(
-    "Aulas do módulo concluídas. Próxima etapa: revisão."
+    "Aulas do módulo concluídas. Revisão desbloqueada."
   );
 
 }
 
 
 /* =========================================================
-   56. DESBLOQUEAR
+   58. DESBLOQUEAR
    ========================================================= */
 
 function unlockCurrentLesson() {
@@ -4065,7 +4345,7 @@ function unlockCurrentLesson() {
 
 
 /* =========================================================
-   57. HABILIDADES
+   59. HABILIDADES
    ========================================================= */
 
 function updateSkillFromLesson(
@@ -4096,12 +4376,6 @@ function updateSkillFromLesson(
       );
 
   }
-
-  /*
-    Como uma aula completa trabalha várias
-    competências, o Motor já começa a desenvolver
-    mais de uma habilidade.
-  */
 
   skills.vocabulary =
     Math.min(
@@ -4141,13 +4415,25 @@ function updateSkillFromLesson(
 
     }
 
+    if (
+      accuracy >= 0.9
+    ) {
+
+      skills.vocabulary =
+        Math.min(
+          100,
+          skills.vocabulary + 2
+        );
+
+    }
+
   }
 
 }
 
 
 /* =========================================================
-   58. REVISÃO ESPAÇADA
+   60. REVISÃO ESPAÇADA
    ========================================================= */
 
 function scheduleLessonForReview(
@@ -4171,15 +4457,14 @@ function scheduleLessonForReview(
 
   }
 
-  const exists =
-    APP_STATE.user.review.items
-      .some(
-        item =>
-          item.id ===
-          lesson.id
-      );
+  const existing =
+    APP_STATE.user.review.items.find(
+      item =>
+        item.id ===
+        lesson.id
+    );
 
-  if (exists) {
+  if (existing) {
 
     return;
 
@@ -4222,7 +4507,7 @@ function scheduleLessonForReview(
 
 
 /* =========================================================
-   59. CONTADORES DE REVISÃO
+   61. CONTADORES DE REVISÃO
    ========================================================= */
 
 function updateReviewCounters() {
@@ -4255,7 +4540,7 @@ function updateReviewCounters() {
 
 
 /* =========================================================
-   60. CONQUISTAS
+   62. CONQUISTAS
    ========================================================= */
 
 function checkAchievements() {
@@ -4356,7 +4641,7 @@ function unlockAchievement(
 
 
 /* =========================================================
-   61. INTERFACE
+   63. INTERFACE
    ========================================================= */
 
 function updateInterface() {
@@ -4391,7 +4676,7 @@ function updateInterface() {
 
 
 /* =========================================================
-   62. NOME
+   64. NOME
    ========================================================= */
 
 function updateUserName() {
@@ -4414,7 +4699,7 @@ function updateUserName() {
 
 
 /* =========================================================
-   63. NÍVEL
+   65. NÍVEL
    ========================================================= */
 
 function updateLevel() {
@@ -4461,7 +4746,7 @@ function updateLevel() {
 
 
 /* =========================================================
-   64. PROGRESSO DO NÍVEL
+   66. PROGRESSO DO NÍVEL
    ========================================================= */
 
 function calculateLevelProgress() {
@@ -4512,7 +4797,7 @@ function calculateLevelProgress() {
 
 
 /* =========================================================
-   65. XP
+   67. XP
    ========================================================= */
 
 function updateXPDisplay() {
@@ -4538,7 +4823,7 @@ function updateXPDisplay() {
 
 
 /* =========================================================
-   66. STREAK
+   68. STREAK
    ========================================================= */
 
 function updateStreakDisplay() {
@@ -4559,7 +4844,7 @@ function updateStreakDisplay() {
 
 
 /* =========================================================
-   67. META
+   69. META
    ========================================================= */
 
 function updateDailyGoal() {
@@ -4619,7 +4904,7 @@ function updateDailyGoal() {
 
 
 /* =========================================================
-   68. HABILIDADES
+   70. HABILIDADES
    ========================================================= */
 
 function updateSkills() {
@@ -4663,7 +4948,7 @@ function updateSkills() {
 
 
 /* =========================================================
-   69. PONTO FRACO
+   71. PONTO FRACO
    ========================================================= */
 
 function updateWeakPoint() {
@@ -4732,7 +5017,7 @@ function updateWeakPoint() {
 
 
 /* =========================================================
-   70. REVISÃO NA INTERFACE
+   72. REVISÃO NA INTERFACE
    ========================================================= */
 
 function updateReview() {
@@ -4753,7 +5038,7 @@ function updateReview() {
 
 
 /* =========================================================
-   71. CAMINHO DO CURSO
+   73. CAMINHO DO CURSO
    ========================================================= */
 
 function updateCoursePath() {
@@ -4792,7 +5077,7 @@ function updateCoursePath() {
 
 
 /* =========================================================
-   72. NÍVEL DO CURSO
+   74. NÍVEL DO CURSO
    ========================================================= */
 
 function createLevelElement(
@@ -4831,7 +5116,7 @@ function createLevelElement(
       <div>
 
         <h2>
-          ${course.title}
+          ${escapeHTML(course.title)}
         </h2>
 
       </div>
@@ -4868,7 +5153,7 @@ function createLevelElement(
 
 
 /* =========================================================
-   73. MÓDULO
+   75. MÓDULO
    ========================================================= */
 
 function createModuleElement(
@@ -4974,7 +5259,7 @@ function createModuleElement(
 
 
 /* =========================================================
-   74. ELEMENTO DE AULA
+   76. ELEMENTO DE AULA
    ========================================================= */
 
 function createLessonElement(
@@ -5036,14 +5321,18 @@ function createLessonElement(
   else if (isReview) {
 
     icon =
-      "🧠";
+      lesson.status === "current"
+        ? "🧠"
+        : "🔒";
 
   }
 
   else if (isTest) {
 
     icon =
-      "📝";
+      lesson.status === "current"
+        ? "📝"
+        : "🔒";
 
   }
 
@@ -5056,11 +5345,11 @@ function createLessonElement(
     <span class="lesson-info">
 
       <strong>
-        ${lesson.title}
+        ${escapeHTML(lesson.title)}
       </strong>
 
       <span>
-        ${lesson.description}
+        ${escapeHTML(lesson.description)}
       </span>
 
     </span>
@@ -5118,7 +5407,7 @@ function createLessonElement(
 
 
 /* =========================================================
-   75. REVISÃO ESPECÍFICA
+   77. REVISÃO ESPECÍFICA
    ========================================================= */
 
 function startReviewActivity(
@@ -5136,7 +5425,7 @@ function startReviewActivity(
 
 
 /* =========================================================
-   76. TESTE
+   78. TESTE
    ========================================================= */
 
 function startTest(
@@ -5168,7 +5457,7 @@ function startTest(
 
 
 /* =========================================================
-   77. CONQUISTAS
+   79. CONQUISTAS
    ========================================================= */
 
 function updateAchievements() {
@@ -5254,7 +5543,7 @@ function updateAchievements() {
 
 
 /* =========================================================
-   78. TEXTO
+   80. TEXTO
    ========================================================= */
 
 function setText(
@@ -5278,7 +5567,7 @@ function setText(
 
 
 /* =========================================================
-   79. DATAS
+   81. DATAS
    ========================================================= */
 
 function getDateKey(
@@ -5344,7 +5633,7 @@ function daysBetween(
 
 
 /* =========================================================
-   80. REGISTRO DE ERROS
+   82. REGISTRO DE ERROS
    ========================================================= */
 
 function registerError(
@@ -5357,7 +5646,7 @@ function registerError(
       "object"
   ) {
 
-    return;
+    return null;
 
   }
 
@@ -5413,7 +5702,7 @@ function registerError(
 
 
 /* =========================================================
-   81. VOCABULÁRIO
+   83. VOCABULÁRIO
    ========================================================= */
 
 function registerVocabulary(
@@ -5451,6 +5740,7 @@ function registerVocabulary(
 
     word:
       data.word ||
+      existing.word ||
       word,
 
     translation:
@@ -5483,12 +5773,22 @@ function registerVocabulary(
       Number(
         existing.correct ||
         0
+      ) +
+      (
+        data.correct
+          ? 1
+          : 0
       ),
 
     incorrect:
       Number(
         existing.incorrect ||
         0
+      ) +
+      (
+        data.incorrect
+          ? 1
+          : 0
       ),
 
     lastSeen:
@@ -5504,7 +5804,7 @@ function registerVocabulary(
 
 
 /* =========================================================
-   82. GRAMÁTICA
+   84. GRAMÁTICA
    ========================================================= */
 
 function registerGrammar(
@@ -5528,6 +5828,34 @@ function registerGrammar(
       key
     ] || {};
 
+  const oldCorrect =
+    Number(
+      existing.correct ||
+      0
+    );
+
+  const oldIncorrect =
+    Number(
+      existing.incorrect ||
+      0
+    );
+
+  const newCorrect =
+    oldCorrect +
+    (
+      data.correct
+        ? 1
+        : 0
+    );
+
+  const newIncorrect =
+    oldIncorrect +
+    (
+      data.incorrect
+        ? 1
+        : 0
+    );
+
   APP_STATE.user.grammar[
     key
   ] = {
@@ -5541,16 +5869,10 @@ function registerGrammar(
       APP_STATE.user.level,
 
     correct:
-      Number(
-        existing.correct ||
-        0
-      ),
+      newCorrect,
 
     incorrect:
-      Number(
-        existing.incorrect ||
-        0
-      ),
+      newIncorrect,
 
     mastery:
       Number(
@@ -5572,7 +5894,7 @@ function registerGrammar(
 
 
 /* =========================================================
-   83. CONVERSAÇÃO
+   85. CONVERSAÇÃO
    ========================================================= */
 
 function completeConversation(
@@ -5627,7 +5949,7 @@ function completeConversation(
 
 
 /* =========================================================
-   84. CONCLUIR REVISÃO
+   86. CONCLUIR REVISÃO
    ========================================================= */
 
 function completeReview(
@@ -5674,7 +5996,7 @@ function completeReview(
 
 
 /* =========================================================
-   85. CONCLUIR TESTE
+   87. CONCLUIR TESTE
    ========================================================= */
 
 function completeTest(
@@ -5741,7 +6063,7 @@ function completeTest(
 
 
 /* =========================================================
-   86. RESET
+   88. RESET
    ========================================================= */
 
 function resetLocalData() {
@@ -5767,7 +6089,7 @@ function resetLocalData() {
 
 
 /* =========================================================
-   87. EXPORTAR
+   89. EXPORTAR
    ========================================================= */
 
 function exportUserData() {
@@ -5822,7 +6144,7 @@ function exportUserData() {
 
 
 /* =========================================================
-   88. IMPORTAR
+   90. IMPORTAR
    ========================================================= */
 
 function importUserData(
@@ -5884,7 +6206,42 @@ function importUserData(
 
 
 /* =========================================================
-   89. API PÚBLICA
+   91. ESCAPAR HTML
+   ========================================================= */
+
+function escapeHTML(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   92. API PÚBLICA
    ========================================================= */
 
 window.EnglishFamily = {
@@ -6105,5 +6462,5 @@ window.EnglishFamily = {
 
 
 /* =========================================================
-   90. FIM DO APP.JS
+   93. FIM DO APP.JS
    ========================================================= */
