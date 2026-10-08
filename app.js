@@ -1,7 +1,7 @@
 /* =========================================================
    ENGLISH FAMILY
    APP.JS
-   Núcleo principal da aplicação
+   Núcleo principal + MOTOR DE AULAS
    ========================================================= */
 
 
@@ -13,7 +13,7 @@ const APP_CONFIG = {
 
   name: "English Family",
 
-  version: "1.1.0",
+  version: "1.2.0",
 
   language: "en",
 
@@ -43,60 +43,49 @@ const APP_CONFIG = {
 const COURSE = {
 
   A1: {
-
     title: "A1 — Beginner",
-
     modules: 3,
-
     lessonsPerModule: 5
-
   },
 
   A2: {
-
     title: "A2 — Elementary",
-
     modules: 3,
-
     lessonsPerModule: 5
-
   },
 
   B1: {
-
     title: "B1 — Intermediate",
-
     modules: 3,
-
     lessonsPerModule: 5
-
   },
 
   B2: {
-
     title: "B2 — Upper Intermediate",
-
     modules: 3,
-
     lessonsPerModule: 5
-
   },
 
   C1: {
-
     title: "C1 — Advanced",
-
     modules: 3,
-
     lessonsPerModule: 5
-
   }
 
 };
 
 
 /* =========================================================
-   3. CONTEÚDO INICIAL DO CURSO
+   3. BANCO DE AULAS
+   =========================================================
+   
+   A estrutura foi criada para comportar A1 → C1.
+
+   Nesta primeira versão real do Motor de Aulas,
+   A2-M1-L1 já possui conteúdo completo.
+
+   As demais aulas permanecem estruturadas para
+   receber o conteúdo completo posteriormente.
    ========================================================= */
 
 const LESSON_CONTENT = {
@@ -114,7 +103,317 @@ const LESSON_CONTENT = {
           title: "Daily Routine",
           description: "Talking about everyday routines.",
           type: "reading",
-          status: "current"
+          status: "current",
+
+          content: {
+
+            level: "A2",
+
+            module: 1,
+
+            lesson: 1,
+
+            title: "Daily Routine",
+
+            subtitle:
+              "Talking about everyday routines",
+
+            estimatedMinutes: 15,
+
+            objectives: [
+
+              "Talk about your daily routine.",
+              "Use common routine verbs.",
+              "Understand the Present Simple.",
+              "Build simple sentences about everyday life."
+
+            ],
+
+            introduction: {
+
+              title: "Let's talk about your day",
+
+              text:
+                "Every day we do many things. We wake up, have breakfast, go to work or school, have lunch, come home and go to bed. In English, we can use the Present Simple to talk about routines and habits."
+
+            },
+
+            vocabulary: [
+
+              {
+                word: "wake up",
+                translation: "acordar",
+                category: "daily routine",
+                example: "I wake up at seven."
+              },
+
+              {
+                word: "get up",
+                translation: "levantar-se",
+                category: "daily routine",
+                example: "I get up at seven thirty."
+              },
+
+              {
+                word: "have breakfast",
+                translation: "tomar café da manhã",
+                category: "daily routine",
+                example: "I have breakfast at eight."
+              },
+
+              {
+                word: "go to work",
+                translation: "ir para o trabalho",
+                category: "daily routine",
+                example: "I go to work at nine."
+              },
+
+              {
+                word: "have lunch",
+                translation: "almoçar",
+                category: "daily routine",
+                example: "I have lunch at noon."
+              },
+
+              {
+                word: "come home",
+                translation: "voltar para casa",
+                category: "daily routine",
+                example: "I come home at six."
+              },
+
+              {
+                word: "have dinner",
+                translation: "jantar",
+                category: "daily routine",
+                example: "I have dinner with my family."
+              },
+
+              {
+                word: "go to bed",
+                translation: "ir para a cama",
+                category: "daily routine",
+                example: "I go to bed at eleven."
+              }
+
+            ],
+
+            grammar: {
+
+              title: "Present Simple",
+
+              explanation:
+                "We use the Present Simple to talk about routines, habits and things that happen regularly.",
+
+              examples: [
+
+                "I wake up at seven.",
+                "I go to work every day.",
+                "I have lunch at noon.",
+                "She works in the morning.",
+                "He goes to bed at eleven."
+
+              ],
+
+              rule:
+                "With he, she and it, the verb usually receives -s or -es."
+
+            },
+
+            reading: {
+
+              title: "My Daily Routine",
+
+              text:
+                "I usually wake up at seven o'clock. I get up and have breakfast with my family. Then I get ready for work. I go to work in the morning and have lunch at noon. In the afternoon, I finish work and come home. In the evening, I have dinner with my family. After dinner, I usually relax and read a book. I go to bed at eleven o'clock.",
+
+              translation:
+                "Eu geralmente acordo às sete horas. Eu me levanto e tomo café da manhã com minha família. Depois, eu me preparo para o trabalho. Eu vou para o trabalho de manhã e almoço ao meio-dia. À tarde, termino o trabalho e volto para casa. À noite, janto com minha família. Depois do jantar, geralmente relaxo e leio um livro. Vou para a cama às onze horas."
+
+            },
+
+            comprehension: [
+
+              {
+                id: "q1",
+                question:
+                  "What time does the person usually wake up?",
+                options: [
+                  "At six o'clock.",
+                  "At seven o'clock.",
+                  "At eight o'clock.",
+                  "At nine o'clock."
+                ],
+                answer: 1,
+                explanation:
+                  "The text says: 'I usually wake up at seven o'clock.'"
+              },
+
+              {
+                id: "q2",
+                question:
+                  "Who does the person have breakfast with?",
+                options: [
+                  "Friends.",
+                  "Colleagues.",
+                  "Family.",
+                  "Nobody."
+                ],
+                answer: 2,
+                explanation:
+                  "The text says: 'I get up and have breakfast with my family.'"
+              },
+
+              {
+                id: "q3",
+                question:
+                  "When does the person have lunch?",
+                options: [
+                  "In the morning.",
+                  "At noon.",
+                  "In the evening.",
+                  "At night."
+                ],
+                answer: 1,
+                explanation:
+                  "The text says: 'I have lunch at noon.'"
+              },
+
+              {
+                id: "q4",
+                question:
+                  "What does the person usually do after dinner?",
+                options: [
+                  "Go to work.",
+                  "Go to school.",
+                  "Relax and read a book.",
+                  "Have lunch."
+                ],
+                answer: 2,
+                explanation:
+                  "The text says: 'After dinner, I usually relax and read a book.'"
+              }
+
+            ],
+
+            translation: [
+
+              {
+                id: "t1",
+                question:
+                  "Traduza para o inglês: 'Eu acordo às sete horas.'",
+                answer:
+                  "I wake up at seven o'clock.",
+                alternatives: [
+                  "I wake up at seven.",
+                  "I wake up at 7 o'clock."
+                ]
+              },
+
+              {
+                id: "t2",
+                question:
+                  "Traduza para o inglês: 'Eu almoço ao meio-dia.'",
+                answer:
+                  "I have lunch at noon.",
+                alternatives: [
+                  "I have lunch at twelve.",
+                  "I have lunch at 12."
+                ]
+              },
+
+              {
+                id: "t3",
+                question:
+                  "Traduza para o inglês: 'Eu vou para a cama às onze horas.'",
+                answer:
+                  "I go to bed at eleven o'clock.",
+                alternatives: [
+                  "I go to bed at eleven."
+                ]
+              }
+
+            ],
+
+            grammarExercises: [
+
+              {
+                id: "g1",
+                question:
+                  "Choose the correct sentence.",
+                options: [
+                  "She work every day.",
+                  "She works every day.",
+                  "She working every day.",
+                  "She works every days."
+                ],
+                answer: 1,
+                explanation:
+                  "With 'she', the verb 'work' becomes 'works' in the Present Simple."
+              },
+
+              {
+                id: "g2",
+                question:
+                  "Choose the correct sentence.",
+                options: [
+                  "He go to work at eight.",
+                  "He goes to work at eight.",
+                  "He going to work at eight.",
+                  "He goes work at eight."
+                ],
+                answer: 1,
+                explanation:
+                  "With 'he', 'go' becomes 'goes'."
+              },
+
+              {
+                id: "g3",
+                question:
+                  "Choose the correct sentence.",
+                options: [
+                  "I has breakfast at seven.",
+                  "I have breakfast at seven.",
+                  "I having breakfast at seven.",
+                  "I haves breakfast at seven."
+                ],
+                answer: 1,
+                explanation:
+                  "With 'I', we use the base form 'have'."
+              }
+
+            ],
+
+            activeRecall: [
+
+              {
+                id: "r1",
+                question:
+                  "Complete: I _____ up at seven.",
+                answer:
+                  "wake"
+              },
+
+              {
+                id: "r2",
+                question:
+                  "Complete: I _____ lunch at noon.",
+                answer:
+                  "have"
+              },
+
+              {
+                id: "r3",
+                question:
+                  "Complete: I _____ to bed at eleven.",
+                answer:
+                  "go"
+              }
+
+            ]
+
+          }
+
         },
 
         {
@@ -173,65 +472,10 @@ const LESSON_CONTENT = {
 
       title: "Módulo 2",
 
-      lessons: [
-
-        {
-          id: "A2-M2-L1",
-          title: "Coming Soon",
-          description: "New lesson.",
-          type: "reading",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M2-L2",
-          title: "Coming Soon",
-          description: "New lesson.",
-          type: "reading",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M2-L3",
-          title: "Coming Soon",
-          description: "New lesson.",
-          type: "reading",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M2-L4",
-          title: "Coming Soon",
-          description: "New lesson.",
-          type: "reading",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M2-L5",
-          title: "Coming Soon",
-          description: "New lesson.",
-          type: "reading",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M2-REVIEW",
-          title: "Revisão Geral",
-          description: "Review everything from Module 2.",
-          type: "review",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M2-TEST",
-          title: "Avaliação do Módulo",
-          description: "Test your knowledge.",
-          type: "test",
-          status: "locked"
-        }
-
-      ]
+      lessons: createModuleLessons(
+        "A2",
+        2
+      )
 
     },
 
@@ -239,65 +483,10 @@ const LESSON_CONTENT = {
 
       title: "Módulo 3",
 
-      lessons: [
-
-        {
-          id: "A2-M3-L1",
-          title: "Coming Soon",
-          description: "New lesson.",
-          type: "reading",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M3-L2",
-          title: "Coming Soon",
-          description: "New lesson.",
-          type: "reading",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M3-L3",
-          title: "Coming Soon",
-          description: "New lesson.",
-          type: "reading",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M3-L4",
-          title: "Coming Soon",
-          description: "New lesson.",
-          type: "reading",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M3-L5",
-          title: "Coming Soon",
-          description: "New lesson.",
-          type: "reading",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M3-REVIEW",
-          title: "Revisão Geral",
-          description: "Review everything from Module 3.",
-          type: "review",
-          status: "locked"
-        },
-
-        {
-          id: "A2-M3-TEST",
-          title: "Avaliação do Módulo",
-          description: "Test your knowledge.",
-          type: "test",
-          status: "locked"
-        }
-
-      ]
+      lessons: createModuleLessons(
+        "A2",
+        3
+      )
 
     }
 
@@ -307,7 +496,141 @@ const LESSON_CONTENT = {
 
 
 /* =========================================================
-   4. ESTRUTURA PADRÃO DO USUÁRIO
+   4. CRIAÇÃO DOS MÓDULOS PLACEHOLDER
+   ========================================================= */
+
+function createModuleLessons(
+  level,
+  moduleNumber
+) {
+
+  const lessons = [];
+
+  for (
+    let i = 1;
+    i <= 5;
+    i++
+  ) {
+
+    lessons.push({
+
+      id:
+        `${level}-M${moduleNumber}-L${i}`,
+
+      title:
+        "Conteúdo em preparação",
+
+      description:
+        "Aula estruturada para o curso.",
+
+      type:
+        "reading",
+
+      status:
+        "locked"
+
+    });
+
+  }
+
+  lessons.push({
+
+    id:
+      `${level}-M${moduleNumber}-REVIEW`,
+
+    title:
+      "Revisão Geral",
+
+    description:
+      `Revisão do Módulo ${moduleNumber}.`,
+
+    type:
+      "review",
+
+    status:
+      "locked"
+
+  });
+
+  lessons.push({
+
+    id:
+      `${level}-M${moduleNumber}-TEST`,
+
+    title:
+      "Avaliação do Módulo",
+
+    description:
+      `Avaliação do Módulo ${moduleNumber}.`,
+
+    type:
+      "test",
+
+    status:
+      "locked"
+
+  });
+
+  return lessons;
+
+}
+
+
+/* =========================================================
+   5. GARANTIR ESTRUTURA A1 → C1
+   ========================================================= */
+
+function ensureCourseStructure() {
+
+  Object.keys(
+    COURSE
+  ).forEach(
+    level => {
+
+      if (
+        !LESSON_CONTENT[level]
+      ) {
+
+        LESSON_CONTENT[level] = {};
+
+      }
+
+      for (
+        let moduleNumber = 1;
+        moduleNumber <=
+          COURSE[level].modules;
+        moduleNumber++
+      ) {
+
+        if (
+          !LESSON_CONTENT[level][moduleNumber]
+        ) {
+
+          LESSON_CONTENT[level][moduleNumber] = {
+
+            title:
+              `Módulo ${moduleNumber}`,
+
+            lessons:
+              createModuleLessons(
+                level,
+                moduleNumber
+              )
+
+          };
+
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   6. ESTRUTURA PADRÃO DO USUÁRIO
    ========================================================= */
 
 const DEFAULT_USER = {
@@ -334,7 +657,8 @@ const DEFAULT_USER = {
 
   dailyMinutes: 0,
 
-  dailyGoal: APP_CONFIG.dailyGoalMinutes,
+  dailyGoal:
+    APP_CONFIG.dailyGoalMinutes,
 
   totalStudyMinutes: 0,
 
@@ -404,7 +728,7 @@ const DEFAULT_USER = {
 
 
 /* =========================================================
-   5. ESTADO GLOBAL DA APLICAÇÃO
+   7. ESTADO GLOBAL
    ========================================================= */
 
 let APP_STATE = {
@@ -425,7 +749,7 @@ let APP_STATE = {
 
 
 /* =========================================================
-   6. INICIALIZAÇÃO
+   8. INICIALIZAÇÃO
    ========================================================= */
 
 document.addEventListener(
@@ -437,6 +761,8 @@ document.addEventListener(
 function initializeApp() {
 
   try {
+
+    ensureCourseStructure();
 
     loadUserData();
 
@@ -450,16 +776,20 @@ function initializeApp() {
 
     updateInterface();
 
+    registerServiceWorker();
+
     APP_STATE.initialized = true;
 
     console.log(
       `${APP_CONFIG.name} ${APP_CONFIG.version} inicializado.`
     );
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
-      "Erro durante a inicialização do aplicativo:",
+      "Erro durante a inicialização:",
       error
     );
 
@@ -469,7 +799,54 @@ function initializeApp() {
 
 
 /* =========================================================
-   7. STORAGE
+   9. SERVICE WORKER
+   ========================================================= */
+
+function registerServiceWorker() {
+
+  if (
+    !("serviceWorker" in navigator)
+  ) {
+
+    return;
+
+  }
+
+  window.addEventListener(
+    "load",
+    () => {
+
+      navigator.serviceWorker
+        .register("./sw.js")
+        .then(
+          registration => {
+
+            console.log(
+              "[English Family] Service Worker registrado.",
+              registration.scope
+            );
+
+          }
+        )
+        .catch(
+          error => {
+
+            console.warn(
+              "[English Family] Falha ao registrar Service Worker:",
+              error
+            );
+
+          }
+        );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   10. STORAGE
    ========================================================= */
 
 function loadUserData() {
@@ -480,7 +857,6 @@ function loadUserData() {
       localStorage.getItem(
         APP_CONFIG.storageKey
       );
-
 
     if (!savedData) {
 
@@ -495,12 +871,10 @@ function loadUserData() {
 
     }
 
-
     const parsed =
       JSON.parse(
         savedData
       );
-
 
     APP_STATE.user =
       mergeObjects(
@@ -508,17 +882,16 @@ function loadUserData() {
         parsed
       );
 
-
     normalizeUserData();
 
+  }
 
-  } catch (error) {
+  catch (error) {
 
     console.error(
       "Erro ao carregar dados:",
       error
     );
-
 
     APP_STATE.user =
       cloneObject(
@@ -538,7 +911,6 @@ function saveUserData() {
 
   }
 
-
   try {
 
     localStorage.setItem(
@@ -548,7 +920,9 @@ function saveUserData() {
       )
     );
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
       "Erro ao salvar dados:",
@@ -561,14 +935,13 @@ function saveUserData() {
 
 
 /* =========================================================
-   8. NORMALIZAÇÃO DOS DADOS
+   11. NORMALIZAÇÃO
    ========================================================= */
 
 function normalizeUserData() {
 
   const user =
     APP_STATE.user;
-
 
   if (!user.id) {
 
@@ -577,14 +950,12 @@ function normalizeUserData() {
 
   }
 
-
   if (!user.name) {
 
     user.name =
       "Aluno";
 
   }
-
 
   if (
     !COURSE[user.level]
@@ -595,7 +966,6 @@ function normalizeUserData() {
 
   }
 
-
   if (
     !Number.isInteger(
       user.module
@@ -603,11 +973,9 @@ function normalizeUserData() {
     user.module < 1
   ) {
 
-    user.module =
-      1;
+    user.module = 1;
 
   }
-
 
   if (
     !Number.isInteger(
@@ -616,81 +984,79 @@ function normalizeUserData() {
     user.lesson < 1
   ) {
 
-    user.lesson =
-      1;
+    user.lesson = 1;
 
   }
 
+  if (
+    !Array.isArray(
+      user.completedLessons
+    )
+  ) {
 
-  if (!Array.isArray(
-    user.completedLessons
-  )) {
-
-    user.completedLessons =
-      [];
-
-  }
-
-
-  if (!Array.isArray(
-    user.completedReviews
-  )) {
-
-    user.completedReviews =
-      [];
+    user.completedLessons = [];
 
   }
 
+  if (
+    !Array.isArray(
+      user.completedReviews
+    )
+  ) {
 
-  if (!Array.isArray(
-    user.completedTests
-  )) {
-
-    user.completedTests =
-      [];
-
-  }
-
-
-  if (!Array.isArray(
-    user.achievements
-  )) {
-
-    user.achievements =
-      [];
+    user.completedReviews = [];
 
   }
 
+  if (
+    !Array.isArray(
+      user.completedTests
+    )
+  ) {
 
-  if (!Array.isArray(
-    user.errors
-  )) {
-
-    user.errors =
-      [];
-
-  }
-
-
-  if (!Array.isArray(
-    user.conversations
-  )) {
-
-    user.conversations =
-      [];
+    user.completedTests = [];
 
   }
 
+  if (
+    !Array.isArray(
+      user.achievements
+    )
+  ) {
 
-  if (!Array.isArray(
-    user.studySessions
-  )) {
-
-    user.studySessions =
-      [];
+    user.achievements = [];
 
   }
 
+  if (
+    !Array.isArray(
+      user.errors
+    )
+  ) {
+
+    user.errors = [];
+
+  }
+
+  if (
+    !Array.isArray(
+      user.conversations
+    )
+  ) {
+
+    user.conversations = [];
+
+  }
+
+  if (
+    !Array.isArray(
+      user.studySessions
+    )
+  ) {
+
+    user.studySessions = [];
+
+  }
 
   if (
     !user.progress ||
@@ -704,7 +1070,6 @@ function normalizeUserData() {
 
   }
 
-
   if (
     !user.review ||
     typeof user.review !== "object"
@@ -717,6 +1082,33 @@ function normalizeUserData() {
 
   }
 
+  if (
+    !Array.isArray(
+      user.review.items
+    )
+  ) {
+
+    user.review.items = [];
+
+  }
+
+  if (
+    !user.vocabulary ||
+    typeof user.vocabulary !== "object"
+  ) {
+
+    user.vocabulary = {};
+
+  }
+
+  if (
+    !user.grammar ||
+    typeof user.grammar !== "object"
+  ) {
+
+    user.grammar = {};
+
+  }
 
   if (!user.settings) {
 
@@ -727,14 +1119,13 @@ function normalizeUserData() {
 
   }
 
-
   saveUserData();
 
 }
 
 
 /* =========================================================
-   9. CONTROLE DA META DIÁRIA
+   12. META DIÁRIA
    ========================================================= */
 
 function normalizeDailyData() {
@@ -742,12 +1133,10 @@ function normalizeDailyData() {
   const user =
     APP_STATE.user;
 
-
   const today =
     getDateKey(
       new Date()
     );
-
 
   if (
     user.dailyDate !==
@@ -768,13 +1157,17 @@ function normalizeDailyData() {
 
 
 /* =========================================================
-   10. UTILITÁRIOS
+   13. UTILITÁRIOS
    ========================================================= */
 
-function cloneObject(object) {
+function cloneObject(
+  object
+) {
 
   return JSON.parse(
-    JSON.stringify(object)
+    JSON.stringify(
+      object
+    )
   );
 
 }
@@ -789,7 +1182,6 @@ function mergeObjects(
     cloneObject(
       base
     );
-
 
   Object.keys(
     extra || {}
@@ -814,7 +1206,9 @@ function mergeObjects(
             extra[key]
           );
 
-      } else {
+      }
+
+      else {
 
         result[key] =
           extra[key];
@@ -824,43 +1218,37 @@ function mergeObjects(
     }
   );
 
-
   return result;
 
 }
 
 
 /* =========================================================
-   11. NAVEGAÇÃO
+   14. NAVEGAÇÃO
    ========================================================= */
 
 function setupNavigation() {
 
-  const navigationButtons =
-    document.querySelectorAll(
+  document
+    .querySelectorAll(
       "[data-section]"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          function () {
+
+            navigateTo(
+              this.dataset.section
+            );
+
+          }
+        );
+
+      }
     );
-
-
-  navigationButtons.forEach(
-    button => {
-
-      button.addEventListener(
-        "click",
-        function () {
-
-          const section =
-            this.dataset.section;
-
-          navigateTo(
-            section
-          );
-
-        }
-      );
-
-    }
-  );
 
 }
 
@@ -875,12 +1263,10 @@ function navigateTo(
 
   }
 
-
   const target =
     document.getElementById(
       `section-${section}`
     );
-
 
   if (!target) {
 
@@ -892,26 +1278,23 @@ function navigateTo(
 
   }
 
-
   document
     .querySelectorAll(
       ".app-section"
     )
     .forEach(
-      sectionElement => {
+      element => {
 
-        sectionElement.classList.remove(
+        element.classList.remove(
           "active"
         );
 
       }
     );
 
-
   target.classList.add(
     "active"
   );
-
 
   document
     .querySelectorAll(
@@ -929,13 +1312,10 @@ function navigateTo(
       }
     );
 
-
   APP_STATE.currentSection =
     section;
 
-
   closeMenu();
-
 
   window.scrollTo({
 
@@ -949,7 +1329,7 @@ function navigateTo(
 
 
 /* =========================================================
-   12. MENU
+   15. MENU
    ========================================================= */
 
 function setupMenu() {
@@ -969,7 +1349,6 @@ function setupMenu() {
       "menuOverlay"
     );
 
-
   if (menuButton) {
 
     menuButton.addEventListener(
@@ -979,7 +1358,6 @@ function setupMenu() {
 
   }
 
-
   if (closeButton) {
 
     closeButton.addEventListener(
@@ -988,7 +1366,6 @@ function setupMenu() {
     );
 
   }
-
 
   if (overlay) {
 
@@ -1014,35 +1391,29 @@ function openMenu() {
       "menuOverlay"
     );
 
-
   if (!menu) {
 
     return;
 
   }
 
-
   menu.classList.add(
     "open"
   );
 
-
   overlay?.classList.add(
     "visible"
   );
-
 
   menu.setAttribute(
     "aria-hidden",
     "false"
   );
 
-
   overlay?.setAttribute(
     "aria-hidden",
     "false"
   );
-
 
   APP_STATE.menuOpen =
     true;
@@ -1062,35 +1433,29 @@ function closeMenu() {
       "menuOverlay"
     );
 
-
   if (!menu) {
 
     return;
 
   }
 
-
   menu.classList.remove(
     "open"
   );
 
-
   overlay?.classList.remove(
     "visible"
   );
-
 
   menu.setAttribute(
     "aria-hidden",
     "true"
   );
 
-
   overlay?.setAttribute(
     "aria-hidden",
     "true"
   );
-
 
   APP_STATE.menuOpen =
     false;
@@ -1099,7 +1464,7 @@ function closeMenu() {
 
 
 /* =========================================================
-   13. BOTÕES PRINCIPAIS
+   16. BOTÕES
    ========================================================= */
 
 function setupButtons() {
@@ -1108,7 +1473,6 @@ function setupButtons() {
     document.getElementById(
       "continueButton"
     );
-
 
   if (continueButton) {
 
@@ -1119,12 +1483,10 @@ function setupButtons() {
 
   }
 
-
   const reviewButton =
     document.getElementById(
       "startReviewButton"
     );
-
 
   if (reviewButton) {
 
@@ -1135,12 +1497,10 @@ function setupButtons() {
 
   }
 
-
   const profileButton =
     document.getElementById(
       "profileButton"
     );
-
 
   if (profileButton) {
 
@@ -1150,7 +1510,6 @@ function setupButtons() {
     );
 
   }
-
 
   document
     .querySelectorAll(
@@ -1177,14 +1536,13 @@ function setupButtons() {
 
 
 /* =========================================================
-   14. CONTINUAR APRENDIZADO
+   17. CONTINUAR APRENDIZADO
    ========================================================= */
 
 function continueLearning() {
 
   const lesson =
     getCurrentLesson();
-
 
   if (!lesson) {
 
@@ -1196,7 +1554,6 @@ function continueLearning() {
 
   }
 
-
   startLesson(
     lesson
   );
@@ -1205,7 +1562,7 @@ function continueLearning() {
 
 
 /* =========================================================
-   15. LOCALIZAR AULA ATUAL
+   18. LOCALIZAR AULA ATUAL
    ========================================================= */
 
 function getCurrentLesson() {
@@ -1213,32 +1570,18 @@ function getCurrentLesson() {
   const user =
     APP_STATE.user;
 
-
-  const level =
+  const module =
     LESSON_CONTENT[
       user.level
-    ];
-
-
-  if (!level) {
-
-    return null;
-
-  }
-
-
-  const module =
-    level[
+    ]?.[
       user.module
     ];
-
 
   if (!module) {
 
     return null;
 
   }
-
 
   return module.lessons.find(
     lesson =>
@@ -1250,7 +1593,7 @@ function getCurrentLesson() {
 
 
 /* =========================================================
-   16. LOCALIZAR QUALQUER ATIVIDADE
+   19. LOCALIZAR QUALQUER ATIVIDADE
    ========================================================= */
 
 function findActivity(
@@ -1262,7 +1605,6 @@ function findActivity(
     return null;
 
   }
-
 
   for (
     const levelKey of
@@ -1276,7 +1618,6 @@ function findActivity(
         levelKey
       ];
 
-
     for (
       const moduleKey of
       Object.keys(
@@ -1289,14 +1630,12 @@ function findActivity(
           moduleKey
         ];
 
-
       const activity =
         module.lessons.find(
           lesson =>
             lesson.id ===
             activityId
         );
-
 
       if (activity) {
 
@@ -1308,14 +1647,13 @@ function findActivity(
 
   }
 
-
   return null;
 
 }
 
 
 /* =========================================================
-   17. INICIAR AULA
+   20. MOTOR DE AULAS
    ========================================================= */
 
 function startLesson(
@@ -1328,64 +1666,1910 @@ function startLesson(
 
   }
 
+  if (
+    lesson.status ===
+      "locked" &&
+    lesson.id !==
+      `${APP_STATE.user.level}-M${APP_STATE.user.module}-L${APP_STATE.user.lesson}`
+  ) {
+
+    alert(
+      "Esta aula ainda está bloqueada."
+    );
+
+    return;
+
+  }
 
   APP_STATE.currentLesson =
     lesson;
 
-
   APP_STATE.currentSession = {
 
-    type: lesson.type,
+    type:
+      "lesson",
 
-    activityId: lesson.id,
+    activityId:
+      lesson.id,
 
     startedAt:
       new Date().toISOString(),
 
-    completed: false
+    completed:
+      false,
+
+    step:
+      0,
+
+    answers: [],
+
+    score: 0,
+
+    total:
+      0,
+
+    errors: []
 
   };
 
+  if (
+    lesson.content
+  ) {
 
-  console.log(
-    "Iniciando atividade:",
+    openLessonEngine(
+      lesson
+    );
+
+    return;
+
+  }
+
+  openUnavailableLesson(
     lesson
-  );
-
-
-  /*
-    ESTA É A PORTA DE ENTRADA
-    PARA O FUTURO MOTOR DE AULAS.
-
-    O motor completo será responsável por:
-
-    1. Contextualização
-    2. Reading
-    3. Comprehension
-    4. Vocabulary
-    5. Grammar
-    6. Translation
-    7. Active Recall
-    8. Listening
-    9. Speaking
-    10. Writing
-    11. Fixation
-    12. Feedback
-    13. Review Scheduling
-    14. Error Tracking
-  */
-
-
-  alert(
-    `Aula selecionada:\n\n${lesson.title}\n\n` +
-    `O conteúdo completo desta aula será carregado pelo Motor de Aulas.`
   );
 
 }
 
 
 /* =========================================================
-   18. REVISÃO
+   21. ABRIR MOTOR DE AULA
+   ========================================================= */
+
+function openLessonEngine(
+  lesson
+) {
+
+  const content =
+    lesson.content;
+
+  if (!content) {
+
+    openUnavailableLesson(
+      lesson
+    );
+
+    return;
+
+  }
+
+  let engine =
+    document.getElementById(
+      "lessonEngine"
+    );
+
+  if (!engine) {
+
+    engine =
+      document.createElement(
+        "div"
+      );
+
+    engine.id =
+      "lessonEngine";
+
+    document.body.appendChild(
+      engine
+    );
+
+  }
+
+  engine.className =
+    "lesson-engine-overlay";
+
+  engine.innerHTML =
+    buildLessonEngineHTML(
+      lesson
+    );
+
+  document.body.classList.add(
+    "lesson-engine-open"
+  );
+
+  bindLessonEngine(
+    lesson
+  );
+
+  showLessonStep(
+    0
+  );
+
+}
+
+
+/* =========================================================
+   22. CONSTRUIR INTERFACE DA AULA
+   ========================================================= */
+
+function buildLessonEngineHTML(
+  lesson
+) {
+
+  const content =
+    lesson.content;
+
+  const totalSteps =
+    calculateLessonSteps(
+      content
+    );
+
+  return `
+
+    <div class="lesson-engine">
+
+      <header class="lesson-engine-header">
+
+        <button
+          type="button"
+          class="lesson-close-button"
+          id="lessonCloseButton"
+          aria-label="Fechar aula"
+        >
+          ×
+        </button>
+
+        <div class="lesson-header-info">
+
+          <span class="lesson-level">
+            ${content.level}
+          </span>
+
+          <strong>
+            ${content.title}
+          </strong>
+
+        </div>
+
+        <div class="lesson-step-counter">
+          <span id="lessonStepCurrent">1</span>
+          /
+          <span id="lessonStepTotal">
+            ${totalSteps}
+          </span>
+        </div>
+
+      </header>
+
+      <div class="lesson-progress-track">
+
+        <div
+          id="lessonEngineProgress"
+          class="lesson-progress-fill"
+          style="width:0%"
+        ></div>
+
+      </div>
+
+      <main
+        id="lessonEngineContent"
+        class="lesson-engine-content"
+      ></main>
+
+      <footer class="lesson-engine-footer">
+
+        <button
+          type="button"
+          id="lessonBackButton"
+          class="lesson-secondary-button"
+        >
+          Voltar
+        </button>
+
+        <button
+          type="button"
+          id="lessonNextButton"
+          class="lesson-primary-button"
+        >
+          Continuar
+        </button>
+
+      </footer>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   23. ETAPAS DA AULA
+   ========================================================= */
+
+function calculateLessonSteps(
+  content
+) {
+
+  let steps = 0;
+
+  if (content.introduction) {
+
+    steps++;
+
+  }
+
+  if (
+    content.vocabulary?.length
+  ) {
+
+    steps++;
+
+  }
+
+  if (content.grammar) {
+
+    steps++;
+
+  }
+
+  if (content.reading) {
+
+    steps++;
+
+  }
+
+  if (
+    content.comprehension?.length
+  ) {
+
+    steps +=
+      content.comprehension.length;
+
+  }
+
+  if (
+    content.translation?.length
+  ) {
+
+    steps +=
+      content.translation.length;
+
+  }
+
+  if (
+    content.grammarExercises?.length
+  ) {
+
+    steps +=
+      content.grammarExercises.length;
+
+  }
+
+  if (
+    content.activeRecall?.length
+  ) {
+
+    steps +=
+      content.activeRecall.length;
+
+  }
+
+  steps++;
+
+  return steps;
+
+}
+
+
+/* =========================================================
+   24. CRIAR LISTA DE ETAPAS
+   ========================================================= */
+
+function buildLessonSteps(
+  content
+) {
+
+  const steps = [];
+
+  if (
+    content.introduction
+  ) {
+
+    steps.push({
+
+      type:
+        "introduction",
+
+      data:
+        content.introduction
+
+    });
+
+  }
+
+  if (
+    content.vocabulary?.length
+  ) {
+
+    steps.push({
+
+      type:
+        "vocabulary",
+
+      data:
+        content.vocabulary
+
+    });
+
+  }
+
+  if (
+    content.grammar
+  ) {
+
+    steps.push({
+
+      type:
+        "grammar",
+
+      data:
+        content.grammar
+
+    });
+
+  }
+
+  if (
+    content.reading
+  ) {
+
+    steps.push({
+
+      type:
+        "reading",
+
+      data:
+        content.reading
+
+    });
+
+  }
+
+  (
+    content.comprehension || []
+  ).forEach(
+    item => {
+
+      steps.push({
+
+        type:
+          "comprehension",
+
+        data:
+          item
+
+      });
+
+    }
+  );
+
+  (
+    content.translation || []
+  ).forEach(
+    item => {
+
+      steps.push({
+
+        type:
+          "translation",
+
+        data:
+          item
+
+      });
+
+    }
+  );
+
+  (
+    content.grammarExercises || []
+  ).forEach(
+    item => {
+
+      steps.push({
+
+        type:
+          "grammarExercise",
+
+        data:
+          item
+
+      });
+
+    }
+  );
+
+  (
+    content.activeRecall || []
+  ).forEach(
+    item => {
+
+      steps.push({
+
+        type:
+          "activeRecall",
+
+        data:
+          item
+
+      });
+
+    }
+  );
+
+  steps.push({
+
+    type:
+      "completion",
+
+    data:
+      null
+
+  });
+
+  return steps;
+
+}
+
+
+/* =========================================================
+   25. ESTADO DO MOTOR
+   ========================================================= */
+
+function getLessonSteps() {
+
+  const lesson =
+    APP_STATE.currentLesson;
+
+  if (
+    !lesson?.content
+  ) {
+
+    return [];
+
+  }
+
+  return buildLessonSteps(
+    lesson.content
+  );
+
+}
+
+
+/* =========================================================
+   26. MOSTRAR ETAPA
+   ========================================================= */
+
+function showLessonStep(
+  index
+) {
+
+  const steps =
+    getLessonSteps();
+
+  if (!steps.length) {
+
+    return;
+
+  }
+
+  const safeIndex =
+    Math.max(
+      0,
+      Math.min(
+        index,
+        steps.length - 1
+      )
+    );
+
+  APP_STATE.currentSession.step =
+    safeIndex;
+
+  const step =
+    steps[
+      safeIndex
+    ];
+
+  const container =
+    document.getElementById(
+      "lessonEngineContent"
+    );
+
+  if (!container) {
+
+    return;
+
+  }
+
+  container.innerHTML =
+    renderLessonStep(
+      step,
+      safeIndex
+    );
+
+  updateLessonEngineControls(
+    safeIndex,
+    steps.length
+  );
+
+  bindStepInteractions(
+    step,
+    safeIndex
+  );
+
+}
+
+
+/* =========================================================
+   27. RENDERIZAR ETAPA
+   ========================================================= */
+
+function renderLessonStep(
+  step,
+  index
+) {
+
+  switch (
+    step.type
+  ) {
+
+    case "introduction":
+
+      return renderIntroduction(
+        step.data
+      );
+
+    case "vocabulary":
+
+      return renderVocabulary(
+        step.data
+      );
+
+    case "grammar":
+
+      return renderGrammar(
+        step.data
+      );
+
+    case "reading":
+
+      return renderReading(
+        step.data
+      );
+
+    case "comprehension":
+
+      return renderQuestion(
+        step.data,
+        "comprehension"
+      );
+
+    case "translation":
+
+      return renderQuestion(
+        step.data,
+        "translation"
+      );
+
+    case "grammarExercise":
+
+      return renderQuestion(
+        step.data,
+        "grammarExercise"
+      );
+
+    case "activeRecall":
+
+      return renderQuestion(
+        step.data,
+        "activeRecall"
+      );
+
+    case "completion":
+
+      return renderCompletion(
+        APP_STATE.currentLesson
+      );
+
+    default:
+
+      return `
+
+        <div class="lesson-card">
+
+          <h2>Atividade</h2>
+
+          <p>
+            Conteúdo da atividade.
+          </p>
+
+        </div>
+
+      `;
+
+  }
+
+}
+
+
+/* =========================================================
+   28. INTRODUÇÃO
+   ========================================================= */
+
+function renderIntroduction(
+  data
+) {
+
+  return `
+
+    <section class="lesson-card lesson-introduction">
+
+      <span class="lesson-eyebrow">
+        LET'S START
+      </span>
+
+      <h1>
+        ${data.title}
+      </h1>
+
+      <h3>
+        ${data.text}
+      </h3>
+
+      <div class="lesson-objectives">
+
+        <h3>
+          🎯 O que você vai aprender
+        </h3>
+
+        <ul>
+
+          ${
+            (
+              APP_STATE.currentLesson.content
+                .objectives || []
+            )
+            .map(
+              item =>
+                `<li>${item}</li>`
+            )
+            .join("")
+          }
+
+        </ul>
+
+      </div>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================================================
+   29. VOCABULÁRIO
+   ========================================================= */
+
+function renderVocabulary(
+  words
+) {
+
+  return `
+
+    <section class="lesson-card">
+
+      <span class="lesson-eyebrow">
+        VOCABULARY
+      </span>
+
+      <h1>
+        Palavras importantes
+      </h1>
+
+      <p>
+        Leia as palavras e observe os exemplos.
+      </p>
+
+      <div class="lesson-vocabulary-grid">
+
+        ${
+          words
+            .map(
+              item => `
+
+                <article class="vocabulary-card">
+
+                  <strong>
+                    ${item.word}
+                  </strong>
+
+                  <span>
+                    ${item.translation}
+                  </span>
+
+                  <small>
+                    ${item.example}
+                  </small>
+
+                </article>
+
+              `
+            )
+            .join("")
+        }
+
+      </div>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================================================
+   30. GRAMÁTICA
+   ========================================================= */
+
+function renderGrammar(
+  data
+) {
+
+  return `
+
+    <section class="lesson-card">
+
+      <span class="lesson-eyebrow">
+        GRAMMAR
+      </span>
+
+      <h1>
+        ${data.title}
+      </h1>
+
+      <p>
+        ${data.explanation}
+      </p>
+
+      <div class="grammar-rule">
+
+        <strong>
+          Regra principal
+        </strong>
+
+        <p>
+          ${data.rule}
+        </p>
+
+      </div>
+
+      <h3>
+        Exemplos
+      </h3>
+
+      <div class="grammar-examples">
+
+        ${
+          data.examples
+            .map(
+              example =>
+                `<div class="grammar-example">
+                  ${example}
+                </div>`
+            )
+            .join("")
+        }
+
+      </div>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================================================
+   31. LEITURA
+   ========================================================= */
+
+function renderReading(
+  data
+) {
+
+  return `
+
+    <section class="lesson-card">
+
+      <span class="lesson-eyebrow">
+        READING
+      </span>
+
+      <h1>
+        ${data.title}
+      </h1>
+
+      <div class="reading-text">
+
+        ${data.text}
+
+      </div>
+
+      <details class="translation-box">
+
+        <summary>
+          🇧🇷 Ver tradução
+        </summary>
+
+        <p>
+          ${data.translation}
+        </p>
+
+      </details>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================================================
+   32. QUESTÕES
+   ========================================================= */
+
+function renderQuestion(
+  data,
+  type
+) {
+
+  const isText =
+    type === "translation" ||
+    type === "activeRecall";
+
+  if (isText) {
+
+    return `
+
+      <section class="lesson-card">
+
+        <span class="lesson-eyebrow">
+          ${
+            type === "translation"
+              ? "TRANSLATION"
+              : "ACTIVE RECALL"
+          }
+        </span>
+
+        <h1>
+          ${data.question}
+        </h1>
+
+        <div class="lesson-answer-area">
+
+          <input
+            id="lessonTextAnswer"
+            class="lesson-text-input"
+            type="text"
+            autocomplete="off"
+            placeholder="Digite sua resposta..."
+          >
+
+          <div
+            id="lessonAnswerFeedback"
+            class="lesson-answer-feedback"
+          ></div>
+
+        </div>
+
+      </section>
+
+    `;
+
+  }
+
+  return `
+
+    <section class="lesson-card">
+
+      <span class="lesson-eyebrow">
+        ${
+          type === "grammarExercise"
+            ? "GRAMMAR"
+            : "COMPREHENSION"
+        }
+      </span>
+
+      <h1>
+        ${data.question}
+      </h1>
+
+      <div class="lesson-options">
+
+        ${
+          data.options
+            .map(
+              (option, index) => `
+
+                <button
+                  type="button"
+                  class="lesson-option"
+                  data-answer-index="${index}"
+                >
+                  <span>
+                    ${String.fromCharCode(
+                      65 + index
+                    )}
+                  </span>
+
+                  ${option}
+
+                </button>
+
+              `
+            )
+            .join("")
+        }
+
+      </div>
+
+      <div
+        id="lessonAnswerFeedback"
+        class="lesson-answer-feedback"
+      ></div>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================================================
+   33. FINALIZAÇÃO
+   ========================================================= */
+
+function renderCompletion(
+  lesson
+) {
+
+  const session =
+    APP_STATE.currentSession;
+
+  const score =
+    session.total > 0
+      ? Math.round(
+          (
+            session.score /
+            session.total
+          ) * 100
+        )
+      : 100;
+
+  return `
+
+    <section class="lesson-card lesson-completion">
+
+      <div class="completion-icon">
+        🎉
+      </div>
+
+      <span class="lesson-eyebrow">
+        LESSON COMPLETE
+      </span>
+
+      <h1>
+        Muito bem!
+      </h1>
+
+      <p>
+        Você concluiu:
+      </p>
+
+      <h2>
+        ${lesson.title}
+      </h2>
+
+      <div class="lesson-result-grid">
+
+        <div>
+          <strong>
+            ${score}%
+          </strong>
+          <span>
+            desempenho
+          </span>
+        </div>
+
+        <div>
+          <strong>
+            +${APP_CONFIG.xpPerLesson}
+          </strong>
+          <span>
+            XP
+          </span>
+        </div>
+
+      </div>
+
+      <p class="completion-message">
+
+        ${
+          score >= 80
+            ? "Excelente desempenho! Você está pronto para continuar."
+            : score >= 60
+              ? "Bom trabalho! Continue praticando para fortalecer o conteúdo."
+              : "Você concluiu a aula. Os pontos que apresentou dificuldade serão reforçados nas próximas revisões."
+        }
+
+      </p>
+
+    </section>
+
+  `;
+
+}
+
+
+/* =========================================================
+   34. CONTROLES DO MOTOR
+   ========================================================= */
+
+function updateLessonEngineControls(
+  index,
+  total
+) {
+
+  const current =
+    document.getElementById(
+      "lessonStepCurrent"
+    );
+
+  const totalElement =
+    document.getElementById(
+      "lessonStepTotal"
+    );
+
+  const progress =
+    document.getElementById(
+      "lessonEngineProgress"
+    );
+
+  const back =
+    document.getElementById(
+      "lessonBackButton"
+    );
+
+  const next =
+    document.getElementById(
+      "lessonNextButton"
+    );
+
+  if (current) {
+
+    current.textContent =
+      index + 1;
+
+  }
+
+  if (totalElement) {
+
+    totalElement.textContent =
+      total;
+
+  }
+
+  if (progress) {
+
+    const percent =
+      total > 1
+        ? (
+            index /
+            (total - 1)
+          ) * 100
+        : 100;
+
+    progress.style.width =
+      `${percent}%`;
+
+  }
+
+  if (back) {
+
+    back.disabled =
+      index === 0;
+
+  }
+
+  if (next) {
+
+    next.textContent =
+      index === total - 1
+        ? "Concluir aula"
+        : "Continuar";
+
+  }
+
+}
+
+
+/* =========================================================
+   35. INTERAÇÕES DA AULA
+   ========================================================= */
+
+function bindLessonEngine(
+  lesson
+) {
+
+  document
+    .getElementById(
+      "lessonCloseButton"
+    )
+    ?.addEventListener(
+      "click",
+      closeLessonEngine
+    );
+
+  document
+    .getElementById(
+      "lessonBackButton"
+    )
+    ?.addEventListener(
+      "click",
+      lessonPreviousStep
+    );
+
+  document
+    .getElementById(
+      "lessonNextButton"
+    )
+    ?.addEventListener(
+      "click",
+      lessonNextStep
+    );
+
+}
+
+
+function bindStepInteractions(
+  step
+) {
+
+  if (
+    step.type ===
+      "comprehension" ||
+    step.type ===
+      "grammarExercise"
+  ) {
+
+    document
+      .querySelectorAll(
+        ".lesson-option"
+      )
+      .forEach(
+        button => {
+
+          button.addEventListener(
+            "click",
+            () => {
+
+              handleMultipleChoice(
+                step.data,
+                Number(
+                  button.dataset.answerIndex
+                ),
+                button
+              );
+
+            }
+          );
+
+        }
+      );
+
+  }
+
+  if (
+    step.type ===
+      "translation" ||
+    step.type ===
+      "activeRecall"
+  ) {
+
+    const input =
+      document.getElementById(
+        "lessonTextAnswer"
+      );
+
+    if (input) {
+
+      input.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key ===
+            "Enter"
+          ) {
+
+            lessonNextStep();
+
+          }
+
+        }
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   36. PRÓXIMA ETAPA
+   ========================================================= */
+
+function lessonNextStep() {
+
+  const steps =
+    getLessonSteps();
+
+  const index =
+    APP_STATE.currentSession.step;
+
+  const step =
+    steps[index];
+
+  if (
+    step?.type ===
+      "comprehension" ||
+    step?.type ===
+      "grammarExercise"
+  ) {
+
+    if (
+      !APP_STATE.currentSession.answers[
+        index
+      ]
+    ) {
+
+      showTemporaryMessage(
+        "Selecione uma resposta antes de continuar."
+      );
+
+      return;
+
+    }
+
+  }
+
+  if (
+    step?.type ===
+      "translation" ||
+    step?.type ===
+      "activeRecall"
+  ) {
+
+    const input =
+      document.getElementById(
+        "lessonTextAnswer"
+      );
+
+    if (input) {
+
+      const answer =
+        input.value.trim();
+
+      if (!answer) {
+
+        showTemporaryMessage(
+          "Digite uma resposta antes de continuar."
+        );
+
+        input.focus();
+
+        return;
+
+      }
+
+      evaluateTextAnswer(
+        step.data,
+        answer,
+        index
+      );
+
+    }
+
+  }
+
+  if (
+    index >=
+    steps.length - 1
+  ) {
+
+    finishLessonEngine();
+
+    return;
+
+  }
+
+  showLessonStep(
+    index + 1
+  );
+
+}
+
+
+/* =========================================================
+   37. ETAPA ANTERIOR
+   ========================================================= */
+
+function lessonPreviousStep() {
+
+  const index =
+    APP_STATE.currentSession.step;
+
+  if (
+    index <= 0
+  ) {
+
+    return;
+
+  }
+
+  showLessonStep(
+    index - 1
+  );
+
+}
+
+
+/* =========================================================
+   38. MÚLTIPLA ESCOLHA
+   ========================================================= */
+
+function handleMultipleChoice(
+  data,
+  selected,
+  button
+) {
+
+  const index =
+    APP_STATE.currentSession.step;
+
+  if (
+    APP_STATE.currentSession.answers[index]
+  ) {
+
+    return;
+
+  }
+
+  const correct =
+    selected ===
+    data.answer;
+
+  APP_STATE.currentSession.answers[
+    index
+  ] = {
+
+    correct:
+      correct,
+
+    answer:
+      selected
+
+  };
+
+  APP_STATE.currentSession.total++;
+
+  if (correct) {
+
+    APP_STATE.currentSession.score++;
+
+  }
+
+  document
+    .querySelectorAll(
+      ".lesson-option"
+    )
+    .forEach(
+      option => {
+
+        option.disabled =
+          true;
+
+      }
+    );
+
+  if (correct) {
+
+    button.classList.add(
+      "correct"
+    );
+
+  }
+
+  else {
+
+    button.classList.add(
+      "incorrect"
+    );
+
+    const correctButton =
+      document.querySelector(
+        `[data-answer-index="${data.answer}"]`
+      );
+
+    correctButton?.classList.add(
+      "correct"
+    );
+
+    registerLessonError(
+      data,
+      selected
+    );
+
+  }
+
+  const feedback =
+    document.getElementById(
+      "lessonAnswerFeedback"
+    );
+
+  if (feedback) {
+
+    feedback.className =
+      `lesson-answer-feedback ${
+        correct
+          ? "success"
+          : "error"
+      }`;
+
+    feedback.innerHTML =
+      correct
+
+        ? `
+          <strong>✓ Correct!</strong>
+          <p>
+            ${
+              data.explanation ||
+              "Muito bem!"
+            }
+          </p>
+        `
+
+        : `
+          <strong>✗ Not quite.</strong>
+          <p>
+            ${
+              data.explanation ||
+              "Observe a resposta correta e continue."
+            }
+          </p>
+        `;
+
+  }
+
+}
+
+
+/* =========================================================
+   39. RESPOSTA ESCRITA
+   ========================================================= */
+
+function evaluateTextAnswer(
+  data,
+  answer,
+  index
+) {
+
+  if (
+    APP_STATE.currentSession.answers[index]
+  ) {
+
+    return;
+
+  }
+
+  const normalized =
+    normalizeAnswer(
+      answer
+    );
+
+  const accepted = [
+
+    data.answer,
+
+    ...(data.alternatives || [])
+
+  ]
+    .map(
+      normalizeAnswer
+    );
+
+  const correct =
+    accepted.includes(
+      normalized
+    );
+
+  APP_STATE.currentSession.answers[
+    index
+  ] = {
+
+    correct:
+      correct,
+
+    answer:
+      answer
+
+  };
+
+  APP_STATE.currentSession.total++;
+
+  if (correct) {
+
+    APP_STATE.currentSession.score++;
+
+  }
+
+  else {
+
+    registerLessonError(
+      data,
+      answer
+    );
+
+  }
+
+  const feedback =
+    document.getElementById(
+      "lessonAnswerFeedback"
+    );
+
+  if (feedback) {
+
+    feedback.className =
+      `lesson-answer-feedback ${
+        correct
+          ? "success"
+          : "error"
+      }`;
+
+    feedback.innerHTML =
+      correct
+
+        ? `
+          <strong>✓ Excellent!</strong>
+          <p>
+            Resposta correta.
+          </p>
+        `
+
+        : `
+          <strong>✗ Vamos reforçar.</strong>
+          <p>
+            Resposta esperada:
+            <strong>
+              ${data.answer}
+            </strong>
+          </p>
+        `;
+
+  }
+
+}
+
+
+/* =========================================================
+   40. REGISTRAR ERRO DA AULA
+   ========================================================= */
+
+function registerLessonError(
+  data,
+  answer
+) {
+
+  const type =
+    data.options
+      ? "multiple-choice"
+      : "text";
+
+  registerError({
+
+    id:
+      `${APP_STATE.currentLesson.id}-${data.id || Date.now()}`,
+
+    type:
+
+      type,
+
+    question:
+      data.question,
+
+    expected:
+      data.options
+        ? data.options[
+            data.answer
+          ]
+        : data.answer,
+
+    answer:
+      typeof answer === "number"
+        ? data.options?.[
+            answer
+          ] || String(answer)
+        : answer
+
+  });
+
+}
+
+
+/* =========================================================
+   41. FINALIZAR MOTOR
+   ========================================================= */
+
+function finishLessonEngine() {
+
+  const lesson =
+    APP_STATE.currentLesson;
+
+  if (!lesson) {
+
+    return;
+
+  }
+
+  const session =
+    APP_STATE.currentSession;
+
+  const minutes =
+    calculateSessionMinutes(
+      session.startedAt
+    );
+
+  addStudyMinutes(
+    Math.max(
+      1,
+      minutes
+    )
+  );
+
+  if (
+    !session.completed
+  ) {
+
+    completeLesson(
+      lesson.id,
+      {
+        score:
+          session.score,
+
+        total:
+          session.total
+      }
+    );
+
+    session.completed =
+      true;
+
+  }
+
+  showLessonStep(
+    getLessonSteps().length - 1
+  );
+
+  const next =
+    document.getElementById(
+      "lessonNextButton"
+    );
+
+  if (next) {
+
+    next.textContent =
+      "Fechar";
+
+    next.onclick =
+      closeLessonEngine;
+
+  }
+
+}
+
+
+/* =========================================================
+   42. FECHAR MOTOR
+   ========================================================= */
+
+function closeLessonEngine() {
+
+  const engine =
+    document.getElementById(
+      "lessonEngine"
+    );
+
+  if (engine) {
+
+    engine.remove();
+
+  }
+
+  document.body.classList.remove(
+    "lesson-engine-open"
+  );
+
+  APP_STATE.currentLesson =
+    null;
+
+  APP_STATE.currentSession =
+    null;
+
+  updateInterface();
+
+}
+
+
+/* =========================================================
+   43. AULA SEM CONTEÚDO
+   ========================================================= */
+
+function openUnavailableLesson(
+  lesson
+) {
+
+  alert(
+
+    `${lesson.title}\n\n` +
+
+    "Esta aula já está estruturada no curso, " +
+    "mas o conteúdo completo ainda será incorporado."
+
+  );
+
+}
+
+
+/* =========================================================
+   44. TEMPO DA SESSÃO
+   ========================================================= */
+
+function calculateSessionMinutes(
+  startedAt
+) {
+
+  if (!startedAt) {
+
+    return 1;
+
+  }
+
+  const start =
+    new Date(
+      startedAt
+    ).getTime();
+
+  const now =
+    Date.now();
+
+  const minutes =
+    Math.round(
+      (
+        now -
+        start
+      ) /
+      60000
+    );
+
+  return Math.max(
+    1,
+    minutes
+  );
+
+}
+
+
+/* =========================================================
+   45. NORMALIZAR RESPOSTA
+   ========================================================= */
+
+function normalizeAnswer(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+    .toLowerCase()
+    .trim()
+    .replace(
+      /[.,!?;:']/g,
+      ""
+    )
+    .replace(
+      /\s+/g,
+      " "
+    );
+
+}
+
+
+/* =========================================================
+   46. MENSAGEM TEMPORÁRIA
+   ========================================================= */
+
+function showTemporaryMessage(
+  message
+) {
+
+  let element =
+    document.getElementById(
+      "lessonTemporaryMessage"
+    );
+
+  if (!element) {
+
+    element =
+      document.createElement(
+        "div"
+      );
+
+    element.id =
+      "lessonTemporaryMessage";
+
+    element.className =
+      "lesson-temporary-message";
+
+    document.body.appendChild(
+      element
+    );
+
+  }
+
+  element.textContent =
+    message;
+
+  element.classList.add(
+    "visible"
+  );
+
+  setTimeout(
+    () => {
+
+      element.classList.remove(
+        "visible"
+      );
+
+    },
+    2500
+  );
+
+}
+
+
+/* =========================================================
+   47. REVISÃO
    ========================================================= */
 
 function startReview() {
@@ -1393,18 +3577,15 @@ function startReview() {
   const user =
     APP_STATE.user;
 
-
   const due =
     Number(
       user.review?.due || 0
     );
 
-
   const weakPoints =
     Number(
       user.review?.weakPoints || 0
     );
-
 
   if (
     due === 0 &&
@@ -1420,37 +3601,15 @@ function startReview() {
 
   }
 
-
-  console.log(
-    "Itens de revisão:",
-    user.review
-  );
-
-
-  /*
-    Futuro MOTOR DE REVISÃO:
-
-    - Spaced Repetition
-    - Active Recall
-    - Retrieval Practice
-    - Vocabulário
-    - Gramática
-    - Frases
-    - Erros
-    - Pontos fracos
-    - Intervalos adaptativos
-  */
-
-
   alert(
-    "Revisão iniciada."
+    "O Motor de Revisão será aberto nesta área."
   );
 
 }
 
 
 /* =========================================================
-   19. CONVERSAÇÃO
+   48. CONVERSAÇÃO
    ========================================================= */
 
 function startConversation(
@@ -1470,49 +3629,42 @@ function startConversation(
 
   };
 
-
   const selectedMode =
     labels[mode] ||
     "Conversação";
 
-
   APP_STATE.currentSession = {
 
-    type: "conversation",
+    type:
+      "conversation",
 
-    mode: mode || "guided",
+    mode:
+      mode || "guided",
 
     startedAt:
       new Date().toISOString(),
 
-    completed: false
+    completed:
+      false
 
   };
 
-
-  console.log(
-    "Modo de conversação:",
-    mode
-  );
-
-
   alert(
     `${selectedMode}\n\n` +
-    "O módulo de conversação será aberto aqui."
+    "O módulo completo de conversação será integrado ao Motor de Conversação."
   );
 
 }
 
 
 /* =========================================================
-   20. PERFIL
+   49. PERFIL
    ========================================================= */
 
 function openProfile() {
 
   const user =
     APP_STATE.user;
-
 
   alert(
 
@@ -1532,7 +3684,7 @@ function openProfile() {
 
 
 /* =========================================================
-   21. XP
+   50. XP
    ========================================================= */
 
 function addXP(
@@ -1545,7 +3697,6 @@ function addXP(
       amount
     );
 
-
   if (
     !Number.isFinite(
       value
@@ -1557,19 +3708,10 @@ function addXP(
 
   }
 
-
-  const oldXP =
-    Number(
-      APP_STATE.user.xp || 0
-    );
-
-
-  APP_STATE.user.xp =
-    oldXP +
+  APP_STATE.user.xp +=
     Math.floor(
       value
     );
-
 
   saveUserData();
 
@@ -1577,11 +3719,9 @@ function addXP(
 
   checkAchievements();
 
-
   console.log(
     `XP +${Math.floor(value)} (${reason})`
   );
-
 
   return Math.floor(
     value
@@ -1591,7 +3731,7 @@ function addXP(
 
 
 /* =========================================================
-   22. NÍVEL DE XP
+   51. NÍVEL XP
    ========================================================= */
 
 function getXPLevel() {
@@ -1601,69 +3741,15 @@ function getXPLevel() {
       APP_STATE.user.xp || 0
     );
 
-
-  if (xp >= 5000) {
-
-    return 10;
-
-  }
-
-
-  if (xp >= 4000) {
-
-    return 9;
-
-  }
-
-
-  if (xp >= 3000) {
-
-    return 8;
-
-  }
-
-
-  if (xp >= 2000) {
-
-    return 7;
-
-  }
-
-
-  if (xp >= 1500) {
-
-    return 6;
-
-  }
-
-
-  if (xp >= 1000) {
-
-    return 5;
-
-  }
-
-
-  if (xp >= 700) {
-
-    return 4;
-
-  }
-
-
-  if (xp >= 400) {
-
-    return 3;
-
-  }
-
-
-  if (xp >= 200) {
-
-    return 2;
-
-  }
-
+  if (xp >= 5000) return 10;
+  if (xp >= 4000) return 9;
+  if (xp >= 3000) return 8;
+  if (xp >= 2000) return 7;
+  if (xp >= 1500) return 6;
+  if (xp >= 1000) return 5;
+  if (xp >= 700) return 4;
+  if (xp >= 400) return 3;
+  if (xp >= 200) return 2;
 
   return 1;
 
@@ -1671,7 +3757,7 @@ function getXPLevel() {
 
 
 /* =========================================================
-   23. SEQUÊNCIA
+   52. STREAK
    ========================================================= */
 
 function updateStreak() {
@@ -1681,10 +3767,8 @@ function updateStreak() {
       new Date()
     );
 
-
   const lastDate =
     APP_STATE.user.lastStudyDate;
-
 
   if (!lastDate) {
 
@@ -1709,7 +3793,6 @@ function updateStreak() {
         today
       );
 
-
     if (
       difference === 1
     ) {
@@ -1728,10 +3811,8 @@ function updateStreak() {
 
   }
 
-
   APP_STATE.user.lastStudyDate =
     today;
-
 
   saveUserData();
 
@@ -1743,7 +3824,7 @@ function updateStreak() {
 
 
 /* =========================================================
-   24. TEMPO DE ESTUDO
+   53. TEMPO DE ESTUDO
    ========================================================= */
 
 function addStudyMinutes(
@@ -1754,7 +3835,6 @@ function addStudyMinutes(
     Number(
       minutes
     );
-
 
   if (
     !Number.isFinite(
@@ -1767,9 +3847,7 @@ function addStudyMinutes(
 
   }
 
-
   normalizeDailyData();
-
 
   const roundedMinutes =
     Math.max(
@@ -1779,14 +3857,11 @@ function addStudyMinutes(
       )
     );
 
-
   APP_STATE.user.dailyMinutes +=
     roundedMinutes;
 
-
   APP_STATE.user.totalStudyMinutes +=
     roundedMinutes;
-
 
   APP_STATE.user.studySessions.push({
 
@@ -1803,13 +3878,6 @@ function addStudyMinutes(
 
   });
 
-
-  /*
-    Mantemos um histórico razoável.
-    No futuro isso poderá ser substituído
-    por sincronização com banco de dados.
-  */
-
   if (
     APP_STATE.user.studySessions.length >
     500
@@ -1822,7 +3890,6 @@ function addStudyMinutes(
 
   }
 
-
   updateStreak();
 
   saveUserData();
@@ -1833,11 +3900,12 @@ function addStudyMinutes(
 
 
 /* =========================================================
-   25. CONCLUSÃO DE AULA
+   54. CONCLUSÃO DE AULA
    ========================================================= */
 
 function completeLesson(
-  lessonId
+  lessonId,
+  result = {}
 ) {
 
   if (!lessonId) {
@@ -1846,27 +3914,19 @@ function completeLesson(
 
   }
 
-
   const user =
     APP_STATE.user;
-
 
   const lesson =
     findActivity(
       lessonId
     );
 
-
   if (!lesson) {
-
-    console.warn(
-      `Aula não encontrada: ${lessonId}`
-    );
 
     return false;
 
   }
-
 
   if (
     user.completedLessons.includes(
@@ -1878,44 +3938,36 @@ function completeLesson(
 
   }
 
-
   user.completedLessons.push(
     lessonId
   );
 
-
   user.lessonsCompletedCount =
     user.completedLessons.length;
-
 
   addXP(
     APP_CONFIG.xpPerLesson,
     "lesson"
   );
 
-
   updateStreak();
 
-
   updateSkillFromLesson(
-    lesson
+    lesson,
+    result
   );
-
 
   scheduleLessonForReview(
     lesson
   );
 
-
   advanceLesson(
     lesson
   );
 
-
   saveUserData();
 
   updateInterface();
-
 
   return true;
 
@@ -1923,7 +3975,7 @@ function completeLesson(
 
 
 /* =========================================================
-   26. AVANÇAR AULA
+   55. AVANÇAR AULA
    ========================================================= */
 
 function advanceLesson(
@@ -1933,7 +3985,6 @@ function advanceLesson(
   const user =
     APP_STATE.user;
 
-
   const module =
     LESSON_CONTENT[
       user.level
@@ -1941,13 +3992,11 @@ function advanceLesson(
       user.module
     ];
 
-
   if (!module) {
 
     return;
 
   }
-
 
   const contentLessons =
     module.lessons.filter(
@@ -1955,7 +4004,6 @@ function advanceLesson(
         lesson.type ===
         "reading"
     );
-
 
   const currentIndex =
     contentLessons.findIndex(
@@ -1966,7 +4014,6 @@ function advanceLesson(
           `${user.level}-M${user.module}-L${user.lesson}`
         )
     );
-
 
   if (
     currentIndex >= 0 &&
@@ -1983,35 +4030,15 @@ function advanceLesson(
 
   }
 
-
-  /*
-    Quando a quinta aula for concluída,
-    a próxima atividade lógica será:
-
-    REVIEW
-    depois TEST
-
-    O avanço de módulo será controlado
-    pelo Motor de Curso.
-  */
-
-
-  if (
-    user.lesson >=
-    contentLessons.length
-  ) {
-
-    console.log(
-      "Aulas do módulo concluídas. Próxima etapa: revisão."
-    );
-
-  }
+  console.log(
+    "Aulas do módulo concluídas. Próxima etapa: revisão."
+  );
 
 }
 
 
 /* =========================================================
-   27. DESBLOQUEAR AULA ATUAL
+   56. DESBLOQUEAR
    ========================================================= */
 
 function unlockCurrentLesson() {
@@ -2019,16 +4046,13 @@ function unlockCurrentLesson() {
   const user =
     APP_STATE.user;
 
-
   const currentId =
     `${user.level}-M${user.module}-L${user.lesson}`;
-
 
   const lesson =
     findActivity(
       currentId
     );
-
 
   if (lesson) {
 
@@ -2037,21 +4061,16 @@ function unlockCurrentLesson() {
 
   }
 
-
-  console.log(
-    "Próxima aula:",
-    currentId
-  );
-
 }
 
 
 /* =========================================================
-   28. HABILIDADES
+   57. HABILIDADES
    ========================================================= */
 
 function updateSkillFromLesson(
-  lesson
+  lesson,
+  result = {}
 ) {
 
   if (!lesson) {
@@ -2060,58 +4079,75 @@ function updateSkillFromLesson(
 
   }
 
+  const skills =
+    APP_STATE.user.progress;
 
-  const skillMap = {
+  const type =
+    lesson.type;
 
-    reading: "reading",
+  if (
+    type === "reading"
+  ) {
 
-    listening: "listening",
-
-    speaking: "speaking",
-
-    writing: "writing",
-
-    vocabulary: "vocabulary",
-
-    grammar: "grammar"
-
-  };
-
-
-  const skill =
-    skillMap[
-      lesson.type
-    ];
-
-
-  if (!skill) {
-
-    return;
+    skills.reading =
+      Math.min(
+        100,
+        skills.reading + 5
+      );
 
   }
 
+  /*
+    Como uma aula completa trabalha várias
+    competências, o Motor já começa a desenvolver
+    mais de uma habilidade.
+  */
 
-  const current =
-    Number(
-      APP_STATE.user.progress[
-        skill
-      ] || 0
-    );
-
-
-  APP_STATE.user.progress[
-    skill
-  ] =
+  skills.vocabulary =
     Math.min(
       100,
-      current + 5
+      skills.vocabulary + 3
     );
+
+  skills.grammar =
+    Math.min(
+      100,
+      skills.grammar + 3
+    );
+
+  if (
+    Number(result.total || 0) > 0
+  ) {
+
+    const accuracy =
+      Number(result.score || 0) /
+      Number(result.total);
+
+    if (
+      accuracy >= 0.8
+    ) {
+
+      skills.reading =
+        Math.min(
+          100,
+          skills.reading + 2
+        );
+
+      skills.grammar =
+        Math.min(
+          100,
+          skills.grammar + 2
+        );
+
+    }
+
+  }
 
 }
 
 
 /* =========================================================
-   29. AGENDAMENTO DE REVISÃO
+   58. REVISÃO ESPAÇADA
    ========================================================= */
 
 function scheduleLessonForReview(
@@ -2124,7 +4160,6 @@ function scheduleLessonForReview(
 
   }
 
-
   if (
     !Array.isArray(
       APP_STATE.user.review.items
@@ -2136,7 +4171,6 @@ function scheduleLessonForReview(
 
   }
 
-
   const exists =
     APP_STATE.user.review.items
       .some(
@@ -2145,22 +4179,18 @@ function scheduleLessonForReview(
           lesson.id
       );
 
-
   if (exists) {
 
     return;
 
   }
 
-
   const tomorrow =
     new Date();
-
 
   tomorrow.setDate(
     tomorrow.getDate() + 1
   );
-
 
   APP_STATE.user.review.items.push({
 
@@ -2186,14 +4216,13 @@ function scheduleLessonForReview(
 
   });
 
-
   updateReviewCounters();
 
 }
 
 
 /* =========================================================
-   30. ATUALIZAR CONTADORES DE REVISÃO
+   59. CONTADORES DE REVISÃO
    ========================================================= */
 
 function updateReviewCounters() {
@@ -2203,11 +4232,9 @@ function updateReviewCounters() {
       new Date()
     );
 
-
   const items =
     APP_STATE.user.review.items ||
     [];
-
 
   const dueItems =
     items.filter(
@@ -2216,14 +4243,11 @@ function updateReviewCounters() {
         today
     );
 
-
   APP_STATE.user.review.due =
     dueItems.length;
 
-
   APP_STATE.user.review.weakPoints =
     APP_STATE.user.errors.length;
-
 
   saveUserData();
 
@@ -2231,7 +4255,7 @@ function updateReviewCounters() {
 
 
 /* =========================================================
-   31. CONQUISTAS
+   60. CONQUISTAS
    ========================================================= */
 
 function checkAchievements() {
@@ -2239,10 +4263,8 @@ function checkAchievements() {
   const user =
     APP_STATE.user;
 
-
   if (
-    user.completedLessons.length >=
-    1
+    user.completedLessons.length >= 1
   ) {
 
     unlockAchievement(
@@ -2251,10 +4273,8 @@ function checkAchievements() {
 
   }
 
-
   if (
-    user.streak >=
-    7
+    user.streak >= 7
   ) {
 
     unlockAchievement(
@@ -2263,10 +4283,8 @@ function checkAchievements() {
 
   }
 
-
   if (
-    user.streak >=
-    30
+    user.streak >= 30
   ) {
 
     unlockAchievement(
@@ -2275,10 +4293,8 @@ function checkAchievements() {
 
   }
 
-
   if (
-    user.conversations.length >=
-    1
+    user.conversations.length >= 1
   ) {
 
     unlockAchievement(
@@ -2287,10 +4303,8 @@ function checkAchievements() {
 
   }
 
-
   if (
-    user.xp >=
-    1000
+    user.xp >= 1000
   ) {
 
     unlockAchievement(
@@ -2299,10 +4313,8 @@ function checkAchievements() {
 
   }
 
-
   if (
-    user.completedLessons.length >=
-    10
+    user.completedLessons.length >= 10
   ) {
 
     unlockAchievement(
@@ -2324,7 +4336,6 @@ function unlockAchievement(
 
   }
 
-
   if (
     !APP_STATE.user.achievements.includes(
       id
@@ -2334,7 +4345,6 @@ function unlockAchievement(
     APP_STATE.user.achievements.push(
       id
     );
-
 
     saveUserData();
 
@@ -2346,7 +4356,7 @@ function unlockAchievement(
 
 
 /* =========================================================
-   32. ATUALIZAÇÃO DA INTERFACE
+   61. INTERFACE
    ========================================================= */
 
 function updateInterface() {
@@ -2356,7 +4366,6 @@ function updateInterface() {
     return;
 
   }
-
 
   updateReviewCounters();
 
@@ -2382,7 +4391,7 @@ function updateInterface() {
 
 
 /* =========================================================
-   33. NOME DO USUÁRIO
+   62. NOME
    ========================================================= */
 
 function updateUserName() {
@@ -2392,27 +4401,20 @@ function updateUserName() {
       "welcomeName"
     );
 
-
   if (!element) {
 
     return;
 
   }
 
-
-  const name =
-    APP_STATE.user.name ||
-    "Aluno";
-
-
   element.textContent =
-    `Olá, ${name}! 👋`;
+    `Olá, ${APP_STATE.user.name || "Aluno"}! 👋`;
 
 }
 
 
 /* =========================================================
-   34. NÍVEL
+   63. NÍVEL
    ========================================================= */
 
 function updateLevel() {
@@ -2420,72 +4422,33 @@ function updateLevel() {
   const user =
     APP_STATE.user;
 
+  setText(
+    "currentLevel",
+    user.level
+  );
 
-  const levelElement =
-    document.getElementById(
-      "currentLevel"
-    );
+  setText(
+    "currentModule",
+    user.module
+  );
 
-
-  const moduleElement =
-    document.getElementById(
-      "currentModule"
-    );
-
-
-  const lessonElement =
-    document.getElementById(
-      "currentLesson"
-    );
-
-
-  if (levelElement) {
-
-    levelElement.textContent =
-      user.level;
-
-  }
-
-
-  if (moduleElement) {
-
-    moduleElement.textContent =
-      user.module;
-
-  }
-
-
-  if (lessonElement) {
-
-    lessonElement.textContent =
-      user.lesson;
-
-  }
-
+  setText(
+    "currentLesson",
+    user.lesson
+  );
 
   const progress =
     calculateLevelProgress();
 
-
-  const text =
-    document.getElementById(
-      "levelProgressText"
-    );
-
+  setText(
+    "levelProgressText",
+    `${progress}%`
+  );
 
   const bar =
     document.getElementById(
       "levelProgressBar"
     );
-
-
-  if (text) {
-
-    text.textContent =
-      `${progress}%`;
-
-  }
-
 
   if (bar) {
 
@@ -2498,7 +4461,7 @@ function updateLevel() {
 
 
 /* =========================================================
-   35. PROGRESSO DO NÍVEL
+   64. PROGRESSO DO NÍVEL
    ========================================================= */
 
 function calculateLevelProgress() {
@@ -2506,12 +4469,10 @@ function calculateLevelProgress() {
   const user =
     APP_STATE.user;
 
-
   const course =
     COURSE[
       user.level
     ];
-
 
   if (!course) {
 
@@ -2519,20 +4480,9 @@ function calculateLevelProgress() {
 
   }
 
-
   const totalLessons =
     course.modules *
     course.lessonsPerModule;
-
-
-  if (
-    totalLessons <= 0
-  ) {
-
-    return 0;
-
-  }
-
 
   const completed =
     user.completedLessons.filter(
@@ -2545,7 +4495,6 @@ function calculateLevelProgress() {
         )
     ).length;
 
-
   return Math.min(
 
     100,
@@ -2554,8 +4503,7 @@ function calculateLevelProgress() {
       (
         completed /
         totalLessons
-      ) *
-      100
+      ) * 100
     )
 
   );
@@ -2564,7 +4512,7 @@ function calculateLevelProgress() {
 
 
 /* =========================================================
-   36. XP NA INTERFACE
+   65. XP
    ========================================================= */
 
 function updateXPDisplay() {
@@ -2574,7 +4522,6 @@ function updateXPDisplay() {
       "#xpDisplay span"
     );
 
-
   if (element) {
 
     element.textContent =
@@ -2582,25 +4529,16 @@ function updateXPDisplay() {
 
   }
 
-
-  const levelElement =
-    document.getElementById(
-      "xpLevel"
-    );
-
-
-  if (levelElement) {
-
-    levelElement.textContent =
-      getXPLevel();
-
-  }
+  setText(
+    "xpLevel",
+    getXPLevel()
+  );
 
 }
 
 
 /* =========================================================
-   37. STREAK NA INTERFACE
+   66. STREAK
    ========================================================= */
 
 function updateStreakDisplay() {
@@ -2609,7 +4547,6 @@ function updateStreakDisplay() {
     document.querySelector(
       "#streakDisplay span"
     );
-
 
   if (element) {
 
@@ -2622,30 +4559,26 @@ function updateStreakDisplay() {
 
 
 /* =========================================================
-   38. META DIÁRIA
+   67. META
    ========================================================= */
 
 function updateDailyGoal() {
 
   normalizeDailyData();
 
-
   const user =
     APP_STATE.user;
-
 
   const minutes =
     Number(
       user.dailyMinutes || 0
     );
 
-
   const goal =
     Number(
       user.dailyGoal ||
       APP_CONFIG.dailyGoalMinutes
     );
-
 
   const percent =
     goal > 0
@@ -2655,46 +4588,25 @@ function updateDailyGoal() {
             (
               minutes /
               goal
-            ) *
-            100
+            ) * 100
           )
         )
       : 0;
 
+  setText(
+    "dailyGoalText",
+    `${minutes} / ${goal} min`
+  );
 
-  const text =
-    document.getElementById(
-      "dailyGoalText"
-    );
-
-
-  const percentElement =
-    document.getElementById(
-      "dailyGoalPercent"
-    );
-
+  setText(
+    "dailyGoalPercent",
+    `${percent}%`
+  );
 
   const bar =
     document.getElementById(
       "dailyGoalBar"
     );
-
-
-  if (text) {
-
-    text.textContent =
-      `${minutes} / ${goal} min`;
-
-  }
-
-
-  if (percentElement) {
-
-    percentElement.textContent =
-      `${percent}%`;
-
-  }
-
 
   if (bar) {
 
@@ -2707,7 +4619,7 @@ function updateDailyGoal() {
 
 
 /* =========================================================
-   39. HABILIDADES
+   68. HABILIDADES
    ========================================================= */
 
 function updateSkills() {
@@ -2715,42 +4627,35 @@ function updateSkills() {
   const skills =
     APP_STATE.user.progress;
 
-
   setText(
     "skillReading",
     `${skills.reading}%`
   );
-
 
   setText(
     "skillListening",
     `${skills.listening}%`
   );
 
-
   setText(
     "skillSpeaking",
     `${skills.speaking}%`
   );
-
 
   setText(
     "skillWriting",
     `${skills.writing}%`
   );
 
-
   setText(
     "skillVocabulary",
     `${skills.vocabulary}%`
   );
 
-
   setText(
     "skillGrammar",
     `${skills.grammar}%`
   );
-
 
   updateWeakPoint();
 
@@ -2758,7 +4663,7 @@ function updateSkills() {
 
 
 /* =========================================================
-   40. PONTO FRACO
+   69. PONTO FRACO
    ========================================================= */
 
 function updateWeakPoint() {
@@ -2766,12 +4671,10 @@ function updateWeakPoint() {
   const progress =
     APP_STATE.user.progress;
 
-
   const entries =
     Object.entries(
       progress
     );
-
 
   entries.sort(
     (a, b) =>
@@ -2779,10 +4682,8 @@ function updateWeakPoint() {
       Number(b[1])
   );
 
-
   const weakest =
     entries[0];
-
 
   const names = {
 
@@ -2806,61 +4707,42 @@ function updateWeakPoint() {
 
   };
 
-
-  const title =
-    document.getElementById(
-      "mainWeakPoint"
-    );
-
-
-  const description =
-    document.getElementById(
-      "mainWeakPointDescription"
-    );
-
-
   if (!weakest) {
 
     return;
 
   }
 
+  setText(
+    "mainWeakPoint",
+    names[
+      weakest[0]
+    ] || weakest[0]
+  );
 
-  if (title) {
+  setText(
 
-    title.textContent =
-      names[
-        weakest[0]
-      ] ||
-      weakest[0];
+    "mainWeakPointDescription",
 
-  }
+    `Seu desempenho atual está em ${weakest[1]}%. Vamos reforçar essa habilidade.`
 
-
-  if (description) {
-
-    description.textContent =
-      `Seu desempenho atual está em ${weakest[1]}%. Vamos reforçar essa habilidade.`;
-
-  }
+  );
 
 }
 
 
 /* =========================================================
-   41. REVISÃO NA INTERFACE
+   70. REVISÃO NA INTERFACE
    ========================================================= */
 
 function updateReview() {
 
   updateReviewCounters();
 
-
   setText(
     "reviewDueCount",
     APP_STATE.user.review.due
   );
-
 
   setText(
     "reviewWeakCount",
@@ -2871,7 +4753,7 @@ function updateReview() {
 
 
 /* =========================================================
-   42. CAMINHO DO CURSO
+   71. CAMINHO DO CURSO
    ========================================================= */
 
 function updateCoursePath() {
@@ -2881,31 +4763,26 @@ function updateCoursePath() {
       "coursePath"
     );
 
-
   if (!container) {
 
     return;
 
   }
 
-
   container.innerHTML =
     "";
-
 
   Object.keys(
     COURSE
   ).forEach(
     level => {
 
-      const levelElement =
+      container.appendChild(
+
         createLevelElement(
           level
-        );
+        )
 
-
-      container.appendChild(
-        levelElement
       );
 
     }
@@ -2915,7 +4792,7 @@ function updateCoursePath() {
 
 
 /* =========================================================
-   43. ELEMENTO DE NÍVEL
+   72. NÍVEL DO CURSO
    ========================================================= */
 
 function createLevelElement(
@@ -2927,26 +4804,21 @@ function createLevelElement(
       "article"
     );
 
-
   wrapper.className =
     "course-level";
-
 
   const course =
     COURSE[
       level
     ];
 
-
   const header =
     document.createElement(
       "div"
     );
 
-
   header.className =
     "course-level-header";
-
 
   header.innerHTML = `
 
@@ -2968,15 +4840,14 @@ function createLevelElement(
 
   `;
 
-
   wrapper.appendChild(
     header
   );
 
-
   for (
     let moduleNumber = 1;
-    moduleNumber <= course.modules;
+    moduleNumber <=
+      course.modules;
     moduleNumber++
   ) {
 
@@ -2991,14 +4862,13 @@ function createLevelElement(
 
   }
 
-
   return wrapper;
 
 }
 
 
 /* =========================================================
-   44. ELEMENTO DE MÓDULO
+   73. MÓDULO
    ========================================================= */
 
 function createModuleElement(
@@ -3011,17 +4881,14 @@ function createModuleElement(
       "div"
     );
 
-
   moduleCard.className =
     "module-card";
-
 
   const isCurrent =
     level ===
       APP_STATE.user.level &&
     moduleNumber ===
       APP_STATE.user.module;
-
 
   const moduleData =
     LESSON_CONTENT[
@@ -3030,22 +4897,19 @@ function createModuleElement(
       moduleNumber
     ];
 
-
   let lessons =
     moduleData?.lessons ||
     [];
 
-
   if (!lessons.length) {
 
     lessons =
-      createPlaceholderLessons(
+      createModuleLessons(
         level,
         moduleNumber
       );
 
   }
-
 
   const completed =
     lessons.filter(
@@ -3055,7 +4919,6 @@ function createModuleElement(
             lesson.id
           )
     ).length;
-
 
   moduleCard.innerHTML = `
 
@@ -3075,7 +4938,6 @@ function createModuleElement(
 
   `;
 
-
   if (
     !isCurrent &&
     level !==
@@ -3087,12 +4949,10 @@ function createModuleElement(
 
   }
 
-
   const lessonList =
     moduleCard.querySelector(
       ".lesson-list"
     );
-
 
   lessons.forEach(
     lesson => {
@@ -3108,100 +4968,13 @@ function createModuleElement(
     }
   );
 
-
   return moduleCard;
 
 }
 
 
 /* =========================================================
-   45. AULAS PLACEHOLDER
-   ========================================================= */
-
-function createPlaceholderLessons(
-  level,
-  moduleNumber
-) {
-
-  const lessons =
-    [];
-
-
-  for (
-    let i = 1;
-    i <= 5;
-    i++
-  ) {
-
-    lessons.push({
-
-      id:
-        `${level}-M${moduleNumber}-L${i}`,
-
-      title:
-        `Aula ${i}`,
-
-      description:
-        "Conteúdo disponível em breve.",
-
-      type:
-        "reading",
-
-      status:
-        "locked"
-
-    });
-
-  }
-
-
-  lessons.push({
-
-    id:
-      `${level}-M${moduleNumber}-REVIEW`,
-
-    title:
-      "Revisão Geral",
-
-    description:
-      "Revisão do módulo.",
-
-    type:
-      "review",
-
-    status:
-      "locked"
-
-  });
-
-
-  lessons.push({
-
-    id:
-      `${level}-M${moduleNumber}-TEST`,
-
-    title:
-      "Avaliação",
-
-    description:
-      "Avaliação do módulo.",
-
-    type:
-      "test",
-
-    status:
-      "locked"
-
-  });
-
-
-  return lessons;
-
-}
-
-
-/* =========================================================
-   46. ELEMENTO DE AULA
+   74. ELEMENTO DE AULA
    ========================================================= */
 
 function createLessonElement(
@@ -3213,14 +4986,11 @@ function createLessonElement(
       "button"
     );
 
-
   element.type =
     "button";
 
-
   element.className =
     "lesson-item";
-
 
   const completed =
     APP_STATE.user.completedLessons
@@ -3228,21 +4998,17 @@ function createLessonElement(
         lesson.id
       );
 
-
   const isCurrent =
     lesson.id ===
     `${APP_STATE.user.level}-M${APP_STATE.user.module}-L${APP_STATE.user.lesson}`;
-
 
   const isReview =
     lesson.type ===
     "review";
 
-
   const isTest =
     lesson.type ===
     "test";
-
 
   const isUnlocked =
     completed ||
@@ -3250,10 +5016,8 @@ function createLessonElement(
     lesson.status ===
       "current";
 
-
   let icon =
     "🔒";
-
 
   if (completed) {
 
@@ -3283,7 +5047,6 @@ function createLessonElement(
 
   }
 
-
   element.innerHTML = `
 
     <span class="lesson-icon">
@@ -3308,14 +5071,11 @@ function createLessonElement(
 
   `;
 
-
   element.addEventListener(
     "click",
     function () {
 
-      if (
-        !isUnlocked
-      ) {
+      if (!isUnlocked) {
 
         alert(
           "Esta atividade ainda está bloqueada."
@@ -3324,7 +5084,6 @@ function createLessonElement(
         return;
 
       }
-
 
       if (isReview) {
 
@@ -3336,7 +5095,6 @@ function createLessonElement(
 
       }
 
-
       if (isTest) {
 
         startTest(
@@ -3347,7 +5105,6 @@ function createLessonElement(
 
       }
 
-
       startLesson(
         lesson
       );
@@ -3355,14 +5112,13 @@ function createLessonElement(
     }
   );
 
-
   return element;
 
 }
 
 
 /* =========================================================
-   47. REVISÃO ESPECÍFICA
+   75. REVISÃO ESPECÍFICA
    ========================================================= */
 
 function startReviewActivity(
@@ -3374,25 +5130,18 @@ function startReviewActivity(
     lesson.id
   );
 
-
   startReview();
 
 }
 
 
 /* =========================================================
-   48. TESTE
+   76. TESTE
    ========================================================= */
 
 function startTest(
   lesson
 ) {
-
-  console.log(
-    "Teste:",
-    lesson
-  );
-
 
   APP_STATE.currentSession = {
 
@@ -3410,17 +5159,16 @@ function startTest(
 
   };
 
-
   alert(
     `Avaliação selecionada:\n\n${lesson.title}\n\n` +
-    "O Motor de Testes será responsável por carregar as questões."
+    "O Motor de Testes será integrado nesta estrutura."
   );
 
 }
 
 
 /* =========================================================
-   49. CONQUISTAS NA INTERFACE
+   77. CONQUISTAS
    ========================================================= */
 
 function updateAchievements() {
@@ -3428,95 +5176,85 @@ function updateAchievements() {
   const achievements =
     APP_STATE.user.achievements;
 
-
-  const cards =
-    document.querySelectorAll(
+  document
+    .querySelectorAll(
       ".achievement-card"
-    );
+    )
+    .forEach(
+      card => {
 
-
-  cards.forEach(
-    card => {
-
-      const title =
-        card.querySelector(
-          "strong"
-        )?.textContent;
-
-
-      let unlocked =
-        false;
-
-
-      if (
-        title ===
-        "Primeira aula"
-      ) {
-
-        unlocked =
-          achievements.includes(
-            "firstLesson"
-          );
-
-      }
-
-
-      if (
-        title ===
-        "7 dias"
-      ) {
-
-        unlocked =
-          achievements.includes(
-            "sevenDays"
-          );
-
-      }
-
-
-      if (
-        title ===
-        "Primeira conversa"
-      ) {
-
-        unlocked =
-          achievements.includes(
-            "firstConversation"
-          );
-
-      }
-
-
-      if (unlocked) {
-
-        card.classList.remove(
-          "locked"
-        );
-
-
-        const icon =
+        const title =
           card.querySelector(
-            ".achievement-icon"
+            "strong"
+          )?.textContent;
+
+        let unlocked =
+          false;
+
+        if (
+          title ===
+          "Primeira aula"
+        ) {
+
+          unlocked =
+            achievements.includes(
+              "firstLesson"
+            );
+
+        }
+
+        if (
+          title ===
+          "7 dias"
+        ) {
+
+          unlocked =
+            achievements.includes(
+              "sevenDays"
+            );
+
+        }
+
+        if (
+          title ===
+          "Primeira conversa"
+        ) {
+
+          unlocked =
+            achievements.includes(
+              "firstConversation"
+            );
+
+        }
+
+        if (unlocked) {
+
+          card.classList.remove(
+            "locked"
           );
 
+          const icon =
+            card.querySelector(
+              ".achievement-icon"
+            );
 
-        if (icon) {
+          if (icon) {
 
-          icon.textContent =
-            "🏆";
+            icon.textContent =
+              "🏆";
+
+          }
 
         }
 
       }
-
-    }
-  );
+    );
 
 }
 
 
 /* =========================================================
-   50. UTILITÁRIO DE TEXTO
+   78. TEXTO
    ========================================================= */
 
 function setText(
@@ -3529,7 +5267,6 @@ function setText(
       id
     );
 
-
   if (element) {
 
     element.textContent =
@@ -3541,7 +5278,7 @@ function setText(
 
 
 /* =========================================================
-   51. DATAS
+   79. DATAS
    ========================================================= */
 
 function getDateKey(
@@ -3551,7 +5288,6 @@ function getDateKey(
   const year =
     date.getFullYear();
 
-
   const month =
     String(
       date.getMonth() + 1
@@ -3560,7 +5296,6 @@ function getDateKey(
       "0"
     );
 
-
   const day =
     String(
       date.getDate()
@@ -3568,7 +5303,6 @@ function getDateKey(
       2,
       "0"
     );
-
 
   return `${year}-${month}-${day}`;
 
@@ -3585,17 +5319,14 @@ function daysBetween(
       `${dateA}T00:00:00`
     );
 
-
   const b =
     new Date(
       `${dateB}T00:00:00`
     );
 
-
   const difference =
     b.getTime() -
     a.getTime();
-
 
   return Math.round(
 
@@ -3613,7 +5344,7 @@ function daysBetween(
 
 
 /* =========================================================
-   52. REGISTRO DE ERRO
+   80. REGISTRO DE ERROS
    ========================================================= */
 
 function registerError(
@@ -3629,7 +5360,6 @@ function registerError(
     return;
 
   }
-
 
   const error = {
 
@@ -3666,20 +5396,16 @@ function registerError(
 
   };
 
-
   APP_STATE.user.errors.push(
     error
   );
 
-
   APP_STATE.user.review.weakPoints =
     APP_STATE.user.errors.length;
-
 
   saveUserData();
 
   updateReview();
-
 
   return error;
 
@@ -3687,7 +5413,7 @@ function registerError(
 
 
 /* =========================================================
-   53. REGISTRAR VOCABULÁRIO
+   81. VOCABULÁRIO
    ========================================================= */
 
 function registerVocabulary(
@@ -3701,13 +5427,12 @@ function registerVocabulary(
 
   }
 
-
   const key =
     String(
       word
-    ).trim()
-    .toLowerCase();
-
+    )
+      .trim()
+      .toLowerCase();
 
   if (!key) {
 
@@ -3715,12 +5440,10 @@ function registerVocabulary(
 
   }
 
-
   const existing =
     APP_STATE.user.vocabulary[
       key
     ] || {};
-
 
   APP_STATE.user.vocabulary[
     key
@@ -3775,14 +5498,13 @@ function registerVocabulary(
 
   };
 
-
   saveUserData();
 
 }
 
 
 /* =========================================================
-   54. REGISTRAR GRAMÁTICA
+   82. GRAMÁTICA
    ========================================================= */
 
 function registerGrammar(
@@ -3796,18 +5518,15 @@ function registerGrammar(
 
   }
 
-
   const key =
     String(
       topic
     ).trim();
 
-
   const existing =
     APP_STATE.user.grammar[
       key
     ] || {};
-
 
   APP_STATE.user.grammar[
     key
@@ -3847,14 +5566,13 @@ function registerGrammar(
 
   };
 
-
   saveUserData();
 
 }
 
 
 /* =========================================================
-   55. REGISTRAR CONVERSAÇÃO
+   83. CONVERSAÇÃO
    ========================================================= */
 
 function completeConversation(
@@ -3868,7 +5586,6 @@ function completeConversation(
       `conversation-${Date.now()}`,
 
     mode:
-
       mode,
 
     date:
@@ -3886,29 +5603,23 @@ function completeConversation(
 
   };
 
-
   APP_STATE.user.conversations.push(
     record
   );
 
-
   APP_STATE.user.conversationsCompletedCount =
     APP_STATE.user.conversations.length;
-
 
   addXP(
     APP_CONFIG.xpPerConversation,
     "conversation"
   );
 
-
   updateStreak();
-
 
   saveUserData();
 
   updateInterface();
-
 
   return record;
 
@@ -3916,7 +5627,7 @@ function completeConversation(
 
 
 /* =========================================================
-   56. CONCLUIR REVISÃO
+   84. CONCLUIR REVISÃO
    ========================================================= */
 
 function completeReview(
@@ -3928,7 +5639,6 @@ function completeReview(
     return;
 
   }
-
 
   if (
     !APP_STATE.user.completedReviews
@@ -3942,21 +5652,17 @@ function completeReview(
         reviewId
       );
 
-
     APP_STATE.user.reviewCompletedCount =
       APP_STATE.user.completedReviews.length;
-
 
     addXP(
       APP_CONFIG.xpPerReview,
       "review"
     );
 
-
     updateStreak();
 
   }
-
 
   updateReviewCounters();
 
@@ -3968,7 +5674,7 @@ function completeReview(
 
 
 /* =========================================================
-   57. CONCLUIR TESTE
+   85. CONCLUIR TESTE
    ========================================================= */
 
 function completeTest(
@@ -3982,19 +5688,15 @@ function completeTest(
 
   }
 
-
   const alreadyCompleted =
     APP_STATE.user.completedTests
       .some(
         test =>
           typeof test ===
             "string"
-            ? test ===
-              testId
-            : test.id ===
-              testId
+            ? test === testId
+            : test.id === testId
       );
-
 
   if (
     !alreadyCompleted
@@ -4019,21 +5721,17 @@ function completeTest(
 
       });
 
-
     APP_STATE.user.testsCompletedCount =
       APP_STATE.user.completedTests.length;
-
 
     addXP(
       APP_CONFIG.xpPerTest,
       "test"
     );
 
-
     updateStreak();
 
   }
-
 
   saveUserData();
 
@@ -4043,18 +5741,15 @@ function completeTest(
 
 
 /* =========================================================
-   58. RESET LOCAL
+   86. RESET
    ========================================================= */
 
 function resetLocalData() {
 
   const confirmation =
     confirm(
-
       "Isso apagará todo o progresso local deste dispositivo. Continuar?"
-
     );
-
 
   if (!confirmation) {
 
@@ -4062,11 +5757,9 @@ function resetLocalData() {
 
   }
 
-
   localStorage.removeItem(
     APP_CONFIG.storageKey
   );
-
 
   location.reload();
 
@@ -4074,7 +5767,7 @@ function resetLocalData() {
 
 
 /* =========================================================
-   59. EXPORTAR DADOS
+   87. EXPORTAR
    ========================================================= */
 
 function exportUserData() {
@@ -4086,51 +5779,40 @@ function exportUserData() {
       2
     );
 
-
   const blob =
     new Blob(
-      [
-        data
-      ],
+      [data],
       {
         type:
           "application/json"
       }
     );
 
-
   const url =
     URL.createObjectURL(
       blob
     );
-
 
   const link =
     document.createElement(
       "a"
     );
 
-
   link.href =
     url;
-
 
   link.download =
     `english-family-${getDateKey(
       new Date()
     )}.json`;
 
-
   document.body.appendChild(
     link
   );
 
-
   link.click();
 
-
   link.remove();
-
 
   URL.revokeObjectURL(
     url
@@ -4140,7 +5822,7 @@ function exportUserData() {
 
 
 /* =========================================================
-   60. IMPORTAR DADOS
+   88. IMPORTAR
    ========================================================= */
 
 function importUserData(
@@ -4157,7 +5839,6 @@ function importUserData(
           )
         : jsonData;
 
-
     if (
       !imported ||
       typeof imported !==
@@ -4170,13 +5851,11 @@ function importUserData(
 
     }
 
-
     APP_STATE.user =
       mergeObjects(
         DEFAULT_USER,
         imported
       );
-
 
     normalizeUserData();
 
@@ -4186,16 +5865,16 @@ function importUserData(
 
     saveUserData();
 
-
     return true;
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
       "Erro ao importar dados:",
       error
     );
-
 
     return false;
 
@@ -4205,12 +5884,10 @@ function importUserData(
 
 
 /* =========================================================
-   61. API PÚBLICA DO APP
+   89. API PÚBLICA
    ========================================================= */
 
 window.EnglishFamily = {
-
-  /* ---------- USUÁRIO ---------- */
 
   getUser() {
 
@@ -4218,15 +5895,11 @@ window.EnglishFamily = {
 
   },
 
-
   getState() {
 
     return APP_STATE;
 
   },
-
-
-  /* ---------- STORAGE ---------- */
 
   save() {
 
@@ -4234,20 +5907,17 @@ window.EnglishFamily = {
 
   },
 
-
   reset() {
 
     resetLocalData();
 
   },
 
-
   exportData() {
 
     exportUserData();
 
   },
-
 
   importData(
     data
@@ -4259,9 +5929,6 @@ window.EnglishFamily = {
 
   },
 
-
-  /* ---------- NAVEGAÇÃO ---------- */
-
   navigate(
     section
   ) {
@@ -4272,15 +5939,11 @@ window.EnglishFamily = {
 
   },
 
-
-  /* ---------- AULAS ---------- */
-
   getCurrentLesson() {
 
     return getCurrentLesson();
 
   },
-
 
   startLesson(
     lesson
@@ -4292,19 +5955,17 @@ window.EnglishFamily = {
 
   },
 
-
   completeLesson(
-    id
+    id,
+    result
   ) {
 
     return completeLesson(
-      id
+      id,
+      result
     );
 
   },
-
-
-  /* ---------- XP ---------- */
 
   addXP(
     amount,
@@ -4318,15 +5979,11 @@ window.EnglishFamily = {
 
   },
 
-
   getXPLevel() {
 
     return getXPLevel();
 
   },
-
-
-  /* ---------- ESTUDO ---------- */
 
   addStudyMinutes(
     minutes
@@ -4338,22 +5995,17 @@ window.EnglishFamily = {
 
   },
 
-
   updateStreak() {
 
     updateStreak();
 
   },
 
-
-  /* ---------- REVISÃO ---------- */
-
   startReview() {
 
     startReview();
 
   },
-
 
   completeReview(
     id
@@ -4365,9 +6017,6 @@ window.EnglishFamily = {
 
   },
 
-
-  /* ---------- TESTES ---------- */
-
   startTest(
     lesson
   ) {
@@ -4377,7 +6026,6 @@ window.EnglishFamily = {
     );
 
   },
-
 
   completeTest(
     id,
@@ -4391,9 +6039,6 @@ window.EnglishFamily = {
 
   },
 
-
-  /* ---------- CONVERSAÇÃO ---------- */
-
   startConversation(
     mode
   ) {
@@ -4403,7 +6048,6 @@ window.EnglishFamily = {
     );
 
   },
-
 
   completeConversation(
     mode,
@@ -4417,9 +6061,6 @@ window.EnglishFamily = {
 
   },
 
-
-  /* ---------- ERROS ---------- */
-
   registerError(
     data
   ) {
@@ -4429,9 +6070,6 @@ window.EnglishFamily = {
     );
 
   },
-
-
-  /* ---------- VOCABULÁRIO ---------- */
 
   registerVocabulary(
     word,
@@ -4445,9 +6083,6 @@ window.EnglishFamily = {
 
   },
 
-
-  /* ---------- GRAMÁTICA ---------- */
-
   registerGrammar(
     topic,
     data
@@ -4460,9 +6095,6 @@ window.EnglishFamily = {
 
   },
 
-
-  /* ---------- INTERFACE ---------- */
-
   refresh() {
 
     updateInterface();
@@ -4473,5 +6105,5 @@ window.EnglishFamily = {
 
 
 /* =========================================================
-   62. FIM DO APP.JS
+   90. FIM DO APP.JS
    ========================================================= */
