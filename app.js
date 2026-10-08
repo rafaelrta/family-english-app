@@ -1,7 +1,14 @@
 /* =========================================================
    ENGLISH FAMILY
    APP.JS
-   Núcleo principal + MOTOR DE AULAS
+   v1.4.0
+
+   Núcleo principal
+   Motor de aulas
+   Conteúdo dinâmico
+   Referência pedagógica AEF
+   Fallback offline
+   Personalização básica
    ========================================================= */
 
 
@@ -13,7 +20,7 @@ const APP_CONFIG = {
 
   name: "English Family",
 
-  version: "1.3.0",
+  version: "1.4.0",
 
   language: "en",
 
@@ -31,7 +38,61 @@ const APP_CONFIG = {
 
   storageKey: "englishFamilyData",
 
-  storageVersion: 1
+  storageVersion: 2,
+
+  /*
+   * Quando existir um backend próprio, basta informar
+   * a URL aqui.
+   *
+   * Exemplo:
+   *
+   * dynamicApiUrl:
+   * "https://seu-backend.com/api/lesson"
+   *
+   * NÃO coloque chaves secretas aqui.
+   */
+
+  dynamicApiUrl: "",
+
+  /*
+   * Fonte externa pública usada como fallback dinâmico.
+   *
+   * A Wikipedia possui API pública e permite consultas
+   * via navegador com origin=*.
+   */
+
+  wikipediaApi:
+    "https://en.wikipedia.org/w/api.php",
+
+  dynamicTimeout: 9000,
+
+  /*
+   * Conteúdo externo somente quando explicitamente
+   * habilitado pela aula.
+   */
+
+  dynamicContentEnabled: true,
+
+  /*
+   * AEF é referência pedagógica.
+   * Não significa copiar o material.
+   */
+
+  pedagogy: {
+
+    primaryReference:
+      "American English File",
+
+    publisher:
+      "Oxford University Press",
+
+    usage:
+      "pedagogical_reference",
+
+    copyrightPolicy:
+      "original_content_only"
+
+  }
 
 };
 
@@ -84,219 +145,28 @@ const LESSON_CONTENT =
 
 
 /* =========================================================
-   4. GARANTIR ESTRUTURA A1 → C1
+   4. ESTADO GLOBAL
    ========================================================= */
 
-function createModuleLessons(
-  level,
-  moduleNumber
-) {
+let APP_STATE = {
 
-  const existing =
-    LESSON_CONTENT?.[
-      level
-    ]?.[
-      moduleNumber
-    ]?.lessons;
+  user: null,
 
-  if (
-    Array.isArray(existing) &&
-    existing.length
-  ) {
+  currentSection: "home",
 
-    return existing;
+  menuOpen: false,
 
-  }
+  initialized: false,
 
-  return [];
+  currentLesson: null,
 
-}
+  currentSession: null
 
-
-function ensureCourseStructure() {
-
-  Object.keys(
-    COURSE
-  ).forEach(
-    level => {
-
-      if (
-        !LESSON_CONTENT[level]
-      ) {
-
-        LESSON_CONTENT[level] = {};
-
-      }
-
-      for (
-        let moduleNumber = 1;
-        moduleNumber <=
-          COURSE[level].modules;
-        moduleNumber++
-      ) {
-
-        if (
-          !LESSON_CONTENT[level][moduleNumber]
-        ) {
-
-          LESSON_CONTENT[level][moduleNumber] = {
-
-            title:
-              `Módulo ${moduleNumber}`,
-
-            lessons:
-              createModuleLessons(
-                level,
-                moduleNumber
-              )
-
-          };
-
-        }
-
-      }
-
-    }
-  );
-
-}
-
-/* =========================================================
-   4. CRIAÇÃO DOS MÓDULOS PLACEHOLDER
-   ========================================================= */
-
-function createModuleLessons(
-  level,
-  moduleNumber
-) {
-
-  const lessons = [];
-
-  for (
-    let i = 1;
-    i <= 5;
-    i++
-  ) {
-
-    lessons.push({
-
-      id:
-        `${level}-M${moduleNumber}-L${i}`,
-
-      title:
-        "Conteúdo em preparação",
-
-      description:
-        "Aula estruturada para o curso.",
-
-      type:
-        "reading",
-
-      status:
-        "locked"
-
-    });
-
-  }
-
-  lessons.push({
-
-    id:
-      `${level}-M${moduleNumber}-REVIEW`,
-
-    title:
-      "Revisão Geral",
-
-    description:
-      `Revisão do Módulo ${moduleNumber}.`,
-
-    type:
-      "review",
-
-    status:
-      "locked"
-
-  });
-
-  lessons.push({
-
-    id:
-      `${level}-M${moduleNumber}-TEST`,
-
-    title:
-      "Avaliação do Módulo",
-
-    description:
-      `Avaliação do Módulo ${moduleNumber}.`,
-
-    type:
-      "test",
-
-    status:
-      "locked"
-
-  });
-
-  return lessons;
-
-}
+};
 
 
 /* =========================================================
-   5. GARANTIR ESTRUTURA A1 → C1
-   ========================================================= */
-
-function ensureCourseStructure() {
-
-  Object.keys(
-    COURSE
-  ).forEach(
-    level => {
-
-      if (
-        !LESSON_CONTENT[level]
-      ) {
-
-        LESSON_CONTENT[level] = {};
-
-      }
-
-      for (
-        let moduleNumber = 1;
-        moduleNumber <=
-          COURSE[level].modules;
-        moduleNumber++
-      ) {
-
-        if (
-          !LESSON_CONTENT[level][moduleNumber]
-        ) {
-
-          LESSON_CONTENT[level][moduleNumber] = {
-
-            title:
-              `Módulo ${moduleNumber}`,
-
-            lessons:
-              createModuleLessons(
-                level,
-                moduleNumber
-              )
-
-          };
-
-        }
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   6. ESTRUTURA PADRÃO DO USUÁRIO
+   5. USUÁRIO PADRÃO
    ========================================================= */
 
 const DEFAULT_USER = {
@@ -380,6 +250,10 @@ const DEFAULT_USER = {
 
   studySessions: [],
 
+  dynamicLessons: {},
+
+  lessonSnapshots: {},
+
   settings: {
 
     darkMode: false,
@@ -394,28 +268,7 @@ const DEFAULT_USER = {
 
 
 /* =========================================================
-   7. ESTADO GLOBAL
-   ========================================================= */
-
-let APP_STATE = {
-
-  user: null,
-
-  currentSection: "home",
-
-  menuOpen: false,
-
-  initialized: false,
-
-  currentLesson: null,
-
-  currentSession: null
-
-};
-
-
-/* =========================================================
-   8. INICIALIZAÇÃO
+   6. INICIALIZAÇÃO
    ========================================================= */
 
 document.addEventListener(
@@ -465,14 +318,12 @@ function initializeApp() {
 
 
 /* =========================================================
-   9. SERVICE WORKER
+   7. SERVICE WORKER
    ========================================================= */
 
 function registerServiceWorker() {
 
-  if (
-    !("serviceWorker" in navigator)
-  ) {
+  if (!("serviceWorker" in navigator)) {
 
     return;
 
@@ -484,6 +335,7 @@ function registerServiceWorker() {
 
       navigator.serviceWorker
         .register("./sw.js")
+
         .then(
           registration => {
 
@@ -494,6 +346,7 @@ function registerServiceWorker() {
 
           }
         )
+
         .catch(
           error => {
 
@@ -512,7 +365,7 @@ function registerServiceWorker() {
 
 
 /* =========================================================
-   10. STORAGE
+   8. STORAGE
    ========================================================= */
 
 function loadUserData() {
@@ -527,9 +380,7 @@ function loadUserData() {
     if (!savedData) {
 
       APP_STATE.user =
-        cloneObject(
-          DEFAULT_USER
-        );
+        cloneObject(DEFAULT_USER);
 
       saveUserData();
 
@@ -538,9 +389,7 @@ function loadUserData() {
     }
 
     const parsed =
-      JSON.parse(
-        savedData
-      );
+      JSON.parse(savedData);
 
     APP_STATE.user =
       mergeObjects(
@@ -560,9 +409,7 @@ function loadUserData() {
     );
 
     APP_STATE.user =
-      cloneObject(
-        DEFAULT_USER
-      );
+      cloneObject(DEFAULT_USER);
 
   }
 
@@ -579,11 +426,12 @@ function saveUserData() {
 
   try {
 
+    APP_STATE.user.storageVersion =
+      APP_CONFIG.storageVersion;
+
     localStorage.setItem(
       APP_CONFIG.storageKey,
-      JSON.stringify(
-        APP_STATE.user
-      )
+      JSON.stringify(APP_STATE.user)
     );
 
   }
@@ -601,7 +449,7 @@ function saveUserData() {
 
 
 /* =========================================================
-   11. NORMALIZAÇÃO
+   9. NORMALIZAÇÃO DO USUÁRIO
    ========================================================= */
 
 function normalizeUserData() {
@@ -611,21 +459,17 @@ function normalizeUserData() {
 
   if (!user.id) {
 
-    user.id =
-      "local-user";
+    user.id = "local-user";
 
   }
 
   if (!user.name) {
 
-    user.name =
-      "Aluno";
+    user.name = "Aluno";
 
   }
 
-  if (
-    !COURSE[user.level]
-  ) {
+  if (!COURSE[user.level]) {
 
     user.level =
       APP_CONFIG.defaultLevel;
@@ -633,9 +477,7 @@ function normalizeUserData() {
   }
 
   if (
-    !Number.isInteger(
-      user.module
-    ) ||
+    !Number.isInteger(user.module) ||
     user.module < 1
   ) {
 
@@ -644,9 +486,7 @@ function normalizeUserData() {
   }
 
   if (
-    !Number.isInteger(
-      user.lesson
-    ) ||
+    !Number.isInteger(user.lesson) ||
     user.lesson < 1
   ) {
 
@@ -654,71 +494,43 @@ function normalizeUserData() {
 
   }
 
-  if (
-    !Array.isArray(
-      user.completedLessons
-    )
-  ) {
+  if (!Array.isArray(user.completedLessons)) {
 
     user.completedLessons = [];
 
   }
 
-  if (
-    !Array.isArray(
-      user.completedReviews
-    )
-  ) {
+  if (!Array.isArray(user.completedReviews)) {
 
     user.completedReviews = [];
 
   }
 
-  if (
-    !Array.isArray(
-      user.completedTests
-    )
-  ) {
+  if (!Array.isArray(user.completedTests)) {
 
     user.completedTests = [];
 
   }
 
-  if (
-    !Array.isArray(
-      user.achievements
-    )
-  ) {
+  if (!Array.isArray(user.achievements)) {
 
     user.achievements = [];
 
   }
 
-  if (
-    !Array.isArray(
-      user.errors
-    )
-  ) {
+  if (!Array.isArray(user.errors)) {
 
     user.errors = [];
 
   }
 
-  if (
-    !Array.isArray(
-      user.conversations
-    )
-  ) {
+  if (!Array.isArray(user.conversations)) {
 
     user.conversations = [];
 
   }
 
-  if (
-    !Array.isArray(
-      user.studySessions
-    )
-  ) {
+  if (!Array.isArray(user.studySessions)) {
 
     user.studySessions = [];
 
@@ -748,11 +560,7 @@ function normalizeUserData() {
 
   }
 
-  if (
-    !Array.isArray(
-      user.review.items
-    )
-  ) {
+  if (!Array.isArray(user.review.items)) {
 
     user.review.items = [];
 
@@ -777,6 +585,24 @@ function normalizeUserData() {
   }
 
   if (
+    !user.dynamicLessons ||
+    typeof user.dynamicLessons !== "object"
+  ) {
+
+    user.dynamicLessons = {};
+
+  }
+
+  if (
+    !user.lessonSnapshots ||
+    typeof user.lessonSnapshots !== "object"
+  ) {
+
+    user.lessonSnapshots = {};
+
+  }
+
+  if (
     !user.settings ||
     typeof user.settings !== "object"
   ) {
@@ -788,13 +614,51 @@ function normalizeUserData() {
 
   }
 
+  migrateUserData();
+
   saveUserData();
 
 }
 
 
 /* =========================================================
-   12. META DIÁRIA
+   10. MIGRAÇÃO
+   ========================================================= */
+
+function migrateUserData() {
+
+  const user =
+    APP_STATE.user;
+
+  if (!user.storageVersion) {
+
+    user.storageVersion = 1;
+
+  }
+
+  if (user.storageVersion < 2) {
+
+    if (!user.dynamicLessons) {
+
+      user.dynamicLessons = {};
+
+    }
+
+    if (!user.lessonSnapshots) {
+
+      user.lessonSnapshots = {};
+
+    }
+
+    user.storageVersion = 2;
+
+  }
+
+}
+
+
+/* =========================================================
+   11. DATA DIÁRIA
    ========================================================= */
 
 function normalizeDailyData() {
@@ -807,16 +671,11 @@ function normalizeDailyData() {
       new Date()
     );
 
-  if (
-    user.dailyDate !==
-    today
-  ) {
+  if (user.dailyDate !== today) {
 
-    user.dailyDate =
-      today;
+    user.dailyDate = today;
 
-    user.dailyMinutes =
-      0;
+    user.dailyMinutes = 0;
 
     saveUserData();
 
@@ -826,47 +685,30 @@ function normalizeDailyData() {
 
 
 /* =========================================================
-   13. UTILITÁRIOS
+   12. UTILITÁRIOS
    ========================================================= */
 
-function cloneObject(
-  object
-) {
+function cloneObject(object) {
 
   return JSON.parse(
-    JSON.stringify(
-      object
-    )
+    JSON.stringify(object)
   );
 
 }
 
 
-function mergeObjects(
-  base,
-  extra
-) {
+function mergeObjects(base, extra) {
 
   const result =
-    cloneObject(
-      base
-    );
+    cloneObject(base);
 
-  Object.keys(
-    extra || {}
-  ).forEach(
-    key => {
+  Object.keys(extra || {})
+    .forEach(key => {
 
       if (
-
         extra[key] !== null &&
-
         typeof extra[key] === "object" &&
-
-        !Array.isArray(
-          extra[key]
-        )
-
+        !Array.isArray(extra[key])
       ) {
 
         result[key] =
@@ -884,8 +726,7 @@ function mergeObjects(
 
       }
 
-    }
-  );
+    });
 
   return result;
 
@@ -893,38 +734,32 @@ function mergeObjects(
 
 
 /* =========================================================
-   14. NAVEGAÇÃO
+   13. NAVEGAÇÃO
    ========================================================= */
 
 function setupNavigation() {
 
   document
-    .querySelectorAll(
-      "[data-section]"
-    )
-    .forEach(
-      button => {
+    .querySelectorAll("[data-section]")
+    .forEach(button => {
 
-        button.addEventListener(
-          "click",
-          function () {
+      button.addEventListener(
+        "click",
+        function () {
 
-            navigateTo(
-              this.dataset.section
-            );
+          navigateTo(
+            this.dataset.section
+          );
 
-          }
-        );
+        }
+      );
 
-      }
-    );
+    });
 
 }
 
 
-function navigateTo(
-  section
-) {
+function navigateTo(section) {
 
   if (!section) {
 
@@ -948,38 +783,25 @@ function navigateTo(
   }
 
   document
-    .querySelectorAll(
-      ".app-section"
-    )
-    .forEach(
-      element => {
-
-        element.classList.remove(
-          "active"
-        );
-
-      }
+    .querySelectorAll(".app-section")
+    .forEach(element =>
+      element.classList.remove("active")
     );
 
-  target.classList.add(
-    "active"
-  );
+  target.classList.add("active");
 
   document
     .querySelectorAll(
       ".nav-item, .bottom-nav-item"
     )
-    .forEach(
-      item => {
+    .forEach(item => {
 
-        item.classList.toggle(
-          "active",
-          item.dataset.section ===
-            section
-        );
+      item.classList.toggle(
+        "active",
+        item.dataset.section === section
+      );
 
-      }
-    );
+    });
 
   APP_STATE.currentSection =
     section;
@@ -987,18 +809,15 @@ function navigateTo(
   closeMenu();
 
   window.scrollTo({
-
     top: 0,
-
     behavior: "smooth"
-
   });
 
 }
 
 
 /* =========================================================
-   15. MENU
+   14. MENU
    ========================================================= */
 
 function setupMenu() {
@@ -1066,9 +885,7 @@ function openMenu() {
 
   }
 
-  menu.classList.add(
-    "open"
-  );
+  menu.classList.add("open");
 
   overlay?.classList.add(
     "visible"
@@ -1084,8 +901,7 @@ function openMenu() {
     "false"
   );
 
-  APP_STATE.menuOpen =
-    true;
+  APP_STATE.menuOpen = true;
 
 }
 
@@ -1126,14 +942,13 @@ function closeMenu() {
     "true"
   );
 
-  APP_STATE.menuOpen =
-    false;
+  APP_STATE.menuOpen = false;
 
 }
 
 
 /* =========================================================
-   16. BOTÕES
+   15. BOTÕES
    ========================================================= */
 
 function setupButtons() {
@@ -1181,31 +996,27 @@ function setupButtons() {
   }
 
   document
-    .querySelectorAll(
-      ".conversation-mode"
-    )
-    .forEach(
-      button => {
+    .querySelectorAll(".conversation-mode")
+    .forEach(button => {
 
-        button.addEventListener(
-          "click",
-          function () {
+      button.addEventListener(
+        "click",
+        function () {
 
-            startConversation(
-              this.dataset.mode
-            );
+          startConversation(
+            this.dataset.mode
+          );
 
-          }
-        );
+        }
+      );
 
-      }
-    );
+    });
 
 }
 
 
 /* =========================================================
-   17. CONTINUAR APRENDIZADO
+   16. CONTINUAR
    ========================================================= */
 
 function continueLearning() {
@@ -1223,15 +1034,13 @@ function continueLearning() {
 
   }
 
-  startLesson(
-    lesson
-  );
+  startLesson(lesson);
 
 }
 
 
 /* =========================================================
-   18. LOCALIZAR AULA ATUAL
+   17. AULA ATUAL
    ========================================================= */
 
 function getCurrentLesson() {
@@ -1240,11 +1049,9 @@ function getCurrentLesson() {
     APP_STATE.user;
 
   const module =
-    LESSON_CONTENT[
-      user.level
-    ]?.[
-      user.module
-    ];
+    LESSON_CONTENT
+      ?.[user.level]
+      ?.[user.module];
 
   if (!module) {
 
@@ -1252,22 +1059,21 @@ function getCurrentLesson() {
 
   }
 
-  return module.lessons.find(
-    lesson =>
-      lesson.id ===
-      `${user.level}-M${user.module}-L${user.lesson}`
-  ) || null;
+  return module.lessons
+    ?.find(
+      lesson =>
+        lesson.id ===
+        `${user.level}-M${user.module}-L${user.lesson}`
+    ) || null;
 
 }
 
 
 /* =========================================================
-   19. LOCALIZAR QUALQUER ATIVIDADE
+   18. LOCALIZAR ATIVIDADE
    ========================================================= */
 
-function findActivity(
-  activityId
-) {
+function findActivity(activityId) {
 
   if (!activityId) {
 
@@ -1277,33 +1083,30 @@ function findActivity(
 
   for (
     const levelKey of
-    Object.keys(
-      LESSON_CONTENT
-    )
+    Object.keys(LESSON_CONTENT)
   ) {
 
     const level =
-      LESSON_CONTENT[
-        levelKey
-      ];
+      LESSON_CONTENT[levelKey];
 
     for (
       const moduleKey of
-      Object.keys(
-        level
-      )
+      Object.keys(level || {})
     ) {
 
       const module =
-        level[
-          moduleKey
-        ];
+        level[moduleKey];
+
+      if (!Array.isArray(module?.lessons)) {
+
+        continue;
+
+      }
 
       const activity =
         module.lessons.find(
           lesson =>
-            lesson.id ===
-            activityId
+            lesson.id === activityId
         );
 
       if (activity) {
@@ -1322,12 +1125,180 @@ function findActivity(
 
 
 /* =========================================================
-   20. MOTOR DE AULAS
+   19. ESTRUTURA DO CURSO
    ========================================================= */
 
-function startLesson(
-  lesson
+function createModuleLessons(
+  level,
+  moduleNumber
 ) {
+
+  const existing =
+    LESSON_CONTENT
+      ?.[level]
+      ?.[moduleNumber]
+      ?.lessons;
+
+  if (
+    Array.isArray(existing) &&
+    existing.length
+  ) {
+
+    return existing;
+
+  }
+
+  const lessons = [];
+
+  for (
+    let i = 1;
+    i <= 5;
+    i++
+  ) {
+
+    lessons.push({
+
+      id:
+        `${level}-M${moduleNumber}-L${i}`,
+
+      title:
+        `Lesson ${i}`,
+
+      description:
+        "Aula estruturada para o curso.",
+
+      type:
+        "reading",
+
+      kind:
+        "lesson",
+
+      status:
+        i === 1 &&
+        level === APP_CONFIG.defaultLevel &&
+        moduleNumber === 1
+          ? "current"
+          : "locked",
+
+      contentMode:
+        "dynamic_with_fallback"
+
+    });
+
+  }
+
+  lessons.push({
+
+    id:
+      `${level}-M${moduleNumber}-REVIEW`,
+
+    title:
+      "Revisão Geral",
+
+    description:
+      `Revisão do Módulo ${moduleNumber}.`,
+
+    type:
+      "review",
+
+    kind:
+      "review",
+
+    status:
+      "locked"
+
+  });
+
+  lessons.push({
+
+    id:
+      `${level}-M${moduleNumber}-TEST`,
+
+    title:
+      "Avaliação do Módulo",
+
+    description:
+      `Avaliação do Módulo ${moduleNumber}.`,
+
+    type:
+      "test",
+
+    kind:
+      "test",
+
+    status:
+      "locked"
+
+  });
+
+  return lessons;
+
+}
+
+
+function ensureCourseStructure() {
+
+  Object.keys(COURSE)
+    .forEach(level => {
+
+      if (!LESSON_CONTENT[level]) {
+
+        LESSON_CONTENT[level] = {};
+
+      }
+
+      for (
+        let moduleNumber = 1;
+        moduleNumber <=
+        COURSE[level].modules;
+        moduleNumber++
+      ) {
+
+        if (
+          !LESSON_CONTENT[level][moduleNumber]
+        ) {
+
+          LESSON_CONTENT[level][moduleNumber] = {
+
+            title:
+              `Módulo ${moduleNumber}`,
+
+            lessons:
+              createModuleLessons(
+                level,
+                moduleNumber
+              )
+
+          };
+
+        }
+
+        else if (
+          !Array.isArray(
+            LESSON_CONTENT[level][moduleNumber].lessons
+          )
+        ) {
+
+          LESSON_CONTENT[level][moduleNumber].lessons =
+            createModuleLessons(
+              level,
+              moduleNumber
+            );
+
+        }
+
+      }
+
+    });
+
+}
+
+
+/* =========================================================
+   20. INICIAR AULA
+   ========================================================= */
+
+async function startLesson(lesson) {
 
   if (!lesson) {
 
@@ -1340,9 +1311,7 @@ function startLesson(
 
   const completed =
     APP_STATE.user.completedLessons
-      .includes(
-        lesson.id
-      );
+      .includes(lesson.id);
 
   const isCurrent =
     lesson.id === currentId;
@@ -1362,7 +1331,20 @@ function startLesson(
 
   }
 
-  if (!lesson.content) {
+  /*
+   * Primeiro tenta recuperar conteúdo
+   * dinâmico ou snapshot.
+   */
+
+  const resolvedLesson =
+    await resolveLessonContent(
+      lesson
+    );
+
+  if (
+    !resolvedLesson ||
+    !resolvedLesson.content
+  ) {
 
     openUnavailableLesson(
       lesson
@@ -1373,7 +1355,7 @@ function startLesson(
   }
 
   APP_STATE.currentLesson =
-    lesson;
+    resolvedLesson;
 
   APP_STATE.currentSession = {
 
@@ -1381,7 +1363,7 @@ function startLesson(
       "lesson",
 
     activityId:
-      lesson.id,
+      resolvedLesson.id,
 
     startedAt:
       new Date().toISOString(),
@@ -1392,7 +1374,8 @@ function startLesson(
     step:
       0,
 
-    answers: {},
+    answers:
+      {},
 
     score:
       0,
@@ -1400,7 +1383,8 @@ function startLesson(
     total:
       0,
 
-    errors: [],
+    errors:
+      [],
 
     feedbackShown:
       false
@@ -1408,14 +1392,1313 @@ function startLesson(
   };
 
   openLessonEngine(
-    lesson
+    resolvedLesson
   );
 
 }
 
 
 /* =========================================================
-   21. ABRIR MOTOR DE AULA
+   21. RESOLUÇÃO DE CONTEÚDO
+   ========================================================= */
+
+async function resolveLessonContent(
+  lesson
+) {
+
+  if (!lesson) {
+
+    return null;
+
+  }
+
+  /*
+   * Se a aula já possui conteúdo interno,
+   * ele continua sendo prioridade quando
+   * contentMode é static/fallback.
+   */
+
+  if (
+    lesson.content &&
+    lesson.contentMode !== "dynamic"
+  ) {
+
+    return lesson;
+
+  }
+
+  /*
+   * Snapshot salvo anteriormente.
+   */
+
+  const snapshot =
+    APP_STATE.user
+      ?.lessonSnapshots
+      ?.[lesson.id];
+
+  if (
+    snapshot &&
+    snapshot.content
+  ) {
+
+    return {
+
+      ...lesson,
+
+      content:
+        cloneObject(
+          snapshot.content
+        ),
+
+      dynamicSnapshot:
+        true
+
+    };
+
+  }
+
+  /*
+   * Tenta backend primeiro.
+   */
+
+  if (
+    APP_CONFIG.dynamicContentEnabled
+  ) {
+
+    try {
+
+      const dynamic =
+        await fetchDynamicLesson(
+          lesson
+        );
+
+      if (
+        dynamic &&
+        dynamic.content
+      ) {
+
+        saveLessonSnapshot(
+          lesson,
+          dynamic
+        );
+
+        return {
+
+          ...lesson,
+
+          content:
+            dynamic.content,
+
+          dynamicSource:
+            dynamic.source || null,
+
+          dynamicSnapshot:
+            true
+
+        };
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.warn(
+        "[English Family] Conteúdo dinâmico indisponível:",
+        error
+      );
+
+    }
+
+  }
+
+  /*
+   * Fallback interno.
+   */
+
+  if (lesson.content) {
+
+    return lesson;
+
+  }
+
+  /*
+   * Tenta construir fallback genérico.
+   */
+
+  const generatedFallback =
+    buildFallbackLessonContent(
+      lesson
+    );
+
+  if (generatedFallback) {
+
+    return {
+
+      ...lesson,
+
+      content:
+        generatedFallback
+
+    };
+
+  }
+
+  return null;
+
+}
+
+
+/* =========================================================
+   22. BUSCA DE CONTEÚDO DINÂMICO
+   ========================================================= */
+
+async function fetchDynamicLesson(
+  lesson
+) {
+
+  const metadata =
+    lesson.dynamicContent ||
+    lesson.content?.dynamicContent ||
+    {};
+
+  /*
+   * Backend próprio
+   */
+
+  if (
+    APP_CONFIG.dynamicApiUrl
+  ) {
+
+    return await fetchFromBackend(
+      lesson,
+      metadata
+    );
+
+  }
+
+  /*
+   * Sem backend:
+   * utiliza Wikipedia como fonte
+   * pública para enriquecer a aula.
+   */
+
+  return await fetchWikipediaLesson(
+    lesson,
+    metadata
+  );
+
+}
+
+
+/* =========================================================
+   23. BACKEND
+   ========================================================= */
+
+async function fetchFromBackend(
+  lesson,
+  metadata
+) {
+
+  const controller =
+    new AbortController();
+
+  const timeout =
+    setTimeout(
+      () =>
+        controller.abort(),
+      APP_CONFIG.dynamicTimeout
+    );
+
+  try {
+
+    const response =
+      await fetch(
+        APP_CONFIG.dynamicApiUrl,
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify({
+
+              lessonId:
+                lesson.id,
+
+              level:
+                APP_STATE.user.level,
+
+              module:
+                APP_STATE.user.module,
+
+              lesson:
+                APP_STATE.user.lesson,
+
+              objective:
+                lesson.description,
+
+              dynamicContent:
+                metadata,
+
+              weaknesses:
+                getUserWeaknesses(),
+
+              errors:
+                APP_STATE.user.errors
+                  .slice(-10),
+
+              vocabulary:
+                getRecentVocabulary(),
+
+              grammar:
+                getRecentGrammar()
+
+            }),
+
+          signal:
+            controller.signal
+
+        }
+      );
+
+    if (!response.ok) {
+
+      throw new Error(
+        `HTTP ${response.status}`
+      );
+
+    }
+
+    const data =
+      await response.json();
+
+    return normalizeDynamicResponse(
+      data,
+      lesson
+    );
+
+  }
+
+  finally {
+
+    clearTimeout(timeout);
+
+  }
+
+}
+
+
+/* =========================================================
+   24. WIKIPEDIA
+   ========================================================= */
+
+async function fetchWikipediaLesson(
+  lesson,
+  metadata
+) {
+
+  const topics =
+    Array.isArray(
+      metadata.searchTopics
+    )
+      ? metadata.searchTopics
+      : [];
+
+  if (!topics.length) {
+
+    return null;
+
+  }
+
+  const query =
+    topics[0];
+
+  const url =
+    `${APP_CONFIG.wikipediaApi}` +
+    `?action=query` +
+    `&list=search` +
+    `&srsearch=${encodeURIComponent(query)}` +
+    `&format=json` +
+    `&origin=*` +
+    `&srlimit=3`;
+
+  const controller =
+    new AbortController();
+
+  const timeout =
+    setTimeout(
+      () =>
+        controller.abort(),
+      APP_CONFIG.dynamicTimeout
+    );
+
+  try {
+
+    const response =
+      await fetch(
+        url,
+        {
+          signal:
+            controller.signal
+        }
+      );
+
+    if (!response.ok) {
+
+      throw new Error(
+        `Wikipedia HTTP ${response.status}`
+      );
+
+    }
+
+    const data =
+      await response.json();
+
+    const results =
+      data?.query?.search || [];
+
+    if (!results.length) {
+
+      return null;
+
+    }
+
+    const selected =
+      results[0];
+
+    const cleanText =
+      stripHTML(
+        selected.snippet || ""
+      );
+
+    /*
+     * Não copiamos o artigo inteiro.
+     * Utilizamos somente o resultado curto
+     * como contexto para gerar uma atividade
+     * original.
+     */
+
+    const content =
+      buildDynamicContentFromExternalContext(
+        lesson,
+        {
+          title:
+            selected.title,
+
+          context:
+            cleanText
+
+        }
+      );
+
+    return {
+
+      content,
+
+      source: {
+
+        provider:
+          "Wikipedia",
+
+        title:
+          selected.title,
+
+        query,
+
+        retrievedAt:
+          new Date().toISOString()
+
+      }
+
+    };
+
+  }
+
+  finally {
+
+    clearTimeout(timeout);
+
+  }
+
+}
+
+
+/* =========================================================
+   25. NORMALIZAR RESPOSTA DINÂMICA
+   ========================================================= */
+
+function normalizeDynamicResponse(
+  data,
+  lesson
+) {
+
+  if (!data) {
+
+    return null;
+
+  }
+
+  if (
+    data.content
+  ) {
+
+    return {
+
+      content:
+        normalizeLessonContent(
+          data.content,
+          lesson
+        ),
+
+      source:
+        data.source || {
+
+          provider:
+            "English Family API",
+
+          retrievedAt:
+            new Date().toISOString()
+
+        }
+
+    };
+
+  }
+
+  return null;
+
+}
+
+
+/* =========================================================
+   26. GERAR CONTEÚDO ORIGINAL A PARTIR
+       DE CONTEXTO EXTERNO
+   ========================================================= */
+
+function buildDynamicContentFromExternalContext(
+  lesson,
+  external
+) {
+
+  const metadata =
+    lesson.dynamicContent ||
+    {};
+
+  const level =
+    lesson.level ||
+    APP_STATE.user.level;
+
+  const topic =
+    metadata.topic ||
+    metadata.searchTopics?.[0] ||
+    lesson.title;
+
+  const context =
+    external.context ||
+    "";
+
+  /*
+   * Conteúdo curto e original.
+   * O contexto externo NÃO é simplesmente
+   * reproduzido como aula.
+   */
+
+  const originalText =
+    createOriginalReading(
+      level,
+      topic,
+      context
+    );
+
+  const vocabulary =
+    buildDynamicVocabulary(
+      metadata,
+      level
+    );
+
+  const grammar =
+    buildDynamicGrammar(
+      metadata,
+      level
+    );
+
+  const comprehension =
+    buildGenericComprehension(
+      originalText,
+      level
+    );
+
+  return {
+
+    level,
+
+    sourceType:
+      "dynamic",
+
+    source:
+      external.title || topic,
+
+    title:
+      lesson.title,
+
+    objectives:
+      metadata.objectives ||
+      [
+        `Understand a short text about ${topic}.`,
+        "Learn useful vocabulary in context.",
+        "Practice the target grammar.",
+        "Recall information without translating every sentence."
+      ],
+
+    introduction: {
+
+      title:
+        lesson.title,
+
+      text:
+        `Today you will study ${topic} through reading, vocabulary, grammar and active recall.`
+
+    },
+
+    vocabulary,
+
+    grammar,
+
+    reading: {
+
+      title:
+        `Reading: ${topic}`,
+
+      text:
+        originalText,
+
+      translation:
+        "Try to understand the text first. Use translation only after completing your first reading."
+
+    },
+
+    comprehension,
+
+    translation:
+      buildTranslationExercises(
+        originalText
+      ),
+
+    grammarExercises:
+      buildGrammarExercises(
+        grammar
+      ),
+
+    activeRecall:
+      buildActiveRecall(
+        originalText
+      )
+
+  };
+
+}
+
+
+/* =========================================================
+   27. CONTEÚDO ORIGINAL
+   ========================================================= */
+
+function createOriginalReading(
+  level,
+  topic,
+  context
+) {
+
+  const safeTopic =
+    topic || "everyday life";
+
+  const sentences = {
+
+    A1: [
+      `People can learn many things from everyday life.`,
+      `A simple routine can help people organize their day.`,
+      `They can work, study, eat, rest, and spend time with other people.`,
+      `Small habits can make daily activities easier.`,
+      `Learning useful English words helps people talk about these experiences.`
+    ],
+
+    A2: [
+      `Everyday life is full of situations that can teach us something new.`,
+      `People usually have routines, but their plans can change when something unexpected happens.`,
+      `A person may need to organize work, study, family activities, and free time.`,
+      `Good habits can make these responsibilities easier to manage.`,
+      `Learning English through familiar situations helps students understand new words in context.`
+    ],
+
+    B1: [
+      `Everyday situations often provide useful opportunities for learning.`,
+      `People develop routines because routines help them organize responsibilities and make decisions.`,
+      `However, unexpected events can force them to change their plans.`,
+      `When this happens, they need to communicate clearly and find practical solutions.`,
+      `Understanding English through real situations can make learning more meaningful.`
+    ],
+
+    B2: [
+      `Daily life involves a constant balance between responsibilities, personal goals, and unexpected events.`,
+      `Although routines can make life more predictable, people still need to adapt when circumstances change.`,
+      `Effective communication becomes especially important when plans are interrupted or priorities shift.`,
+      `These ordinary situations can provide valuable opportunities to develop language skills.`,
+      `Learning vocabulary in context also makes it easier to recognize how expressions are used naturally.`
+    ],
+
+    C1: [
+      `Ordinary experiences frequently reveal how people organize their priorities and respond to change.`,
+      `Although routines provide structure, unexpected circumstances often require individuals to reconsider their plans.`,
+      `The ability to communicate precisely becomes particularly valuable when expectations are disrupted.`,
+      `Such situations offer meaningful opportunities to develop linguistic awareness through authentic contexts.`,
+      `Rather than memorizing isolated expressions, learners can develop stronger comprehension by observing how language functions within real situations.`
+    ]
+
+  };
+
+  const selected =
+    sentences[level] ||
+    sentences.A2;
+
+  /*
+   * O contexto externo serve como sinal
+   * temático, não como texto copiado.
+   */
+
+  return selected.join(" ");
+
+}
+
+
+/* =========================================================
+   28. VOCABULÁRIO DINÂMICO
+   ========================================================= */
+
+function buildDynamicVocabulary(
+  metadata,
+  level
+) {
+
+  const words =
+    metadata.targetVocabulary ||
+    [];
+
+  const fallback = {
+
+    A1: [
+      ["routine","rotina"],
+      ["day","dia"],
+      ["work","trabalho"],
+      ["study","estudar"],
+      ["home","casa"]
+    ],
+
+    A2: [
+      ["routine","rotina"],
+      ["schedule","agenda"],
+      ["habit","hábito"],
+      ["usually","geralmente"],
+      ["busy","ocupado"]
+    ],
+
+    B1: [
+      ["responsibility","responsabilidade"],
+      ["unexpected","inesperado"],
+      ["decision","decisão"],
+      ["solution","solução"],
+      ["communicate","comunicar"]
+    ],
+
+    B2: [
+      ["circumstance","circunstância"],
+      ["priority","prioridade"],
+      ["interrupt","interromper"],
+      ["adapt","adaptar"],
+      ["meaningful","significativo"]
+    ],
+
+    C1: [
+      ["awareness","consciência"],
+      ["precisely","precisamente"],
+      ["disrupted","interrompido"],
+      ["circumstance","circunstância"],
+      ["comprehension","compreensão"]
+    ]
+
+  };
+
+  const selected =
+    words.length
+      ? words.map(word => [word, ""])
+      : (
+        fallback[level] ||
+        fallback.A2
+      );
+
+  return selected.map(
+    item => {
+
+      const word =
+        Array.isArray(item)
+          ? item[0]
+          : item;
+
+      const translation =
+        Array.isArray(item)
+          ? item[1]
+          : "";
+
+      return {
+
+        word,
+
+        translation,
+
+        category:
+          "dynamic",
+
+        example:
+          `This word is useful when talking about ${metadata.topic || "everyday situations"}.`
+
+      };
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   29. GRAMÁTICA DINÂMICA
+   ========================================================= */
+
+function buildDynamicGrammar(
+  metadata,
+  level
+) {
+
+  const grammar =
+    metadata.targetGrammar ||
+    [];
+
+  const topic =
+    grammar[0] ||
+    getDefaultGrammar(level);
+
+  const explanations = {
+
+    "present simple":
+      "Use the present simple to talk about routines, habits, facts and regular situations.",
+
+    "past simple":
+      "Use the past simple to talk about completed actions in the past.",
+
+    "future forms":
+      "Future forms help us talk about plans, predictions and future events.",
+
+    "present perfect":
+      "The present perfect connects past experiences or actions with the present.",
+
+    "conditionals":
+      "Conditionals are used to describe possible, imaginary or conditional situations."
+
+  };
+
+  return {
+
+    title:
+      topic,
+
+    explanation:
+      explanations[topic.toLowerCase()] ||
+      `This lesson focuses on the use of ${topic} in meaningful communication.`,
+
+    rule:
+      `Practice ${topic} in complete sentences and pay attention to the context.`,
+
+    examples: [
+
+      `I use ${topic} in context.`,
+
+      `She practices ${topic} every day.`,
+
+      `They are learning how ${topic} works.`
+
+    ]
+
+  };
+
+}
+
+
+function getDefaultGrammar(level) {
+
+  const defaults = {
+
+    A1:
+      "verb to be",
+
+    A2:
+      "present simple",
+
+    B1:
+      "past simple",
+
+    B2:
+      "present perfect",
+
+    C1:
+      "conditionals"
+
+  };
+
+  return defaults[level] ||
+    defaults.A2;
+
+}
+
+
+/* =========================================================
+   30. COMPREENSÃO
+   ========================================================= */
+
+function buildGenericComprehension(
+  text,
+  level
+) {
+
+  const firstSentence =
+    text.split(".")[0] ||
+    text;
+
+  return [
+
+    {
+
+      id:
+        "dynamic-comp-1",
+
+      question:
+        "What is the main idea of the text?",
+
+      options: [
+
+        "It describes a situation related to everyday life and learning.",
+
+        "It explains how to repair a machine.",
+
+        "It describes a historical war.",
+
+        "It gives instructions for cooking."
+
+      ],
+
+      answer:
+        0,
+
+      explanation:
+        `The text begins with the idea that ${firstSentence.toLowerCase()}.`
+
+    },
+
+    {
+
+      id:
+        "dynamic-comp-2",
+
+      question:
+        "Which skill is the lesson encouraging?",
+
+      options: [
+
+        "Understanding language in context.",
+
+        "Memorizing isolated numbers.",
+
+        "Avoiding English completely.",
+
+        "Translating every word immediately."
+
+      ],
+
+      answer:
+        0,
+
+      explanation:
+        "The lesson is based on understanding English through context."
+
+    }
+
+  ];
+
+}
+
+
+/* =========================================================
+   31. TRADUÇÃO
+   ========================================================= */
+
+function buildTranslationExercises(
+  text
+) {
+
+  const first =
+    text.split(".")[0]?.trim();
+
+  return [
+
+    {
+
+      id:
+        "dynamic-trans-1",
+
+      question:
+        `Translate this idea into Portuguese: "${first}."`,
+
+      answer:
+        "",
+
+      alternatives: []
+
+    }
+
+  ];
+
+}
+
+
+/* =========================================================
+   32. GRAMMAR EXERCISES
+   ========================================================= */
+
+function buildGrammarExercises(
+  grammar
+) {
+
+  return [
+
+    {
+
+      id:
+        "dynamic-grammar-1",
+
+      question:
+        `Which option is the best example of ${grammar.title}?`,
+
+      options: [
+
+        "I use the target structure in context.",
+
+        "Yesterday tomorrow blue.",
+
+        "Because table quickly.",
+
+        "House computer seven."
+
+      ],
+
+      answer:
+        0,
+
+      explanation:
+        "The first option is a complete meaningful sentence."
+
+    }
+
+  ];
+
+}
+
+
+/* =========================================================
+   33. ACTIVE RECALL
+   ========================================================= */
+
+function buildActiveRecall(
+  text
+) {
+
+  return [
+
+    {
+
+      id:
+        "dynamic-recall-1",
+
+      question:
+        "Without looking back, write one idea you remember from the reading.",
+
+      answer:
+        "",
+
+      alternatives: []
+
+    }
+
+  ];
+
+}
+
+
+/* =========================================================
+   34. FALLBACK INTERNO
+   ========================================================= */
+
+function buildFallbackLessonContent(
+  lesson
+) {
+
+  const metadata =
+    lesson.dynamicContent ||
+    {};
+
+  const level =
+    lesson.level ||
+    APP_STATE.user.level;
+
+  const topic =
+    metadata.topic ||
+    metadata.searchTopics?.[0] ||
+    lesson.title;
+
+  const text =
+    createOriginalReading(
+      level,
+      topic,
+      ""
+    );
+
+  const grammar =
+    buildDynamicGrammar(
+      metadata,
+      level
+    );
+
+  return {
+
+    level,
+
+    sourceType:
+      "internal_fallback",
+
+    title:
+      lesson.title,
+
+    objectives:
+      metadata.objectives ||
+      [
+        `Understand ${topic} in context.`,
+        "Learn useful vocabulary.",
+        "Practice grammar.",
+        "Strengthen active recall."
+      ],
+
+    introduction: {
+
+      title:
+        lesson.title,
+
+      text:
+        `This lesson uses ${topic} to develop your English step by step.`
+
+    },
+
+    vocabulary:
+      buildDynamicVocabulary(
+        metadata,
+        level
+      ),
+
+    grammar,
+
+    reading: {
+
+      title:
+        lesson.title,
+
+      text,
+
+      translation:
+        "Read the English text first. Try to understand it before checking support."
+
+    },
+
+    comprehension:
+      buildGenericComprehension(
+        text,
+        level
+      ),
+
+    translation:
+      [],
+
+    grammarExercises:
+      buildGrammarExercises(
+        grammar
+      ),
+
+    activeRecall:
+      buildActiveRecall(
+        text
+      )
+
+  };
+
+}
+
+
+/* =========================================================
+   35. NORMALIZAR CONTEÚDO
+   ========================================================= */
+
+function normalizeLessonContent(
+  content,
+  lesson
+) {
+
+  if (!content) {
+
+    return null;
+
+  }
+
+  const normalized =
+    cloneObject(content);
+
+  normalized.level =
+    normalized.level ||
+    lesson.level ||
+    APP_STATE.user.level;
+
+  normalized.title =
+    normalized.title ||
+    lesson.title;
+
+  normalized.objectives =
+    Array.isArray(
+      normalized.objectives
+    )
+      ? normalized.objectives
+      : [];
+
+  normalized.vocabulary =
+    Array.isArray(
+      normalized.vocabulary
+    )
+      ? normalized.vocabulary
+      : [];
+
+  normalized.comprehension =
+    Array.isArray(
+      normalized.comprehension
+    )
+      ? normalized.comprehension
+      : [];
+
+  normalized.translation =
+    Array.isArray(
+      normalized.translation
+    )
+      ? normalized.translation
+      : [];
+
+  normalized.grammarExercises =
+    Array.isArray(
+      normalized.grammarExercises
+    )
+      ? normalized.grammarExercises
+      : [];
+
+  normalized.activeRecall =
+    Array.isArray(
+      normalized.activeRecall
+    )
+      ? normalized.activeRecall
+      : [];
+
+  normalized.listening =
+    Array.isArray(
+      normalized.listening
+    )
+      ? normalized.listening
+      : [];
+
+  normalized.speaking =
+    Array.isArray(
+      normalized.speaking
+    )
+      ? normalized.speaking
+      : [];
+
+  normalized.writing =
+    Array.isArray(
+      normalized.writing
+    )
+      ? normalized.writing
+      : [];
+
+  return normalized;
+
+}
+
+
+/* =========================================================
+   36. SNAPSHOT
+   ========================================================= */
+
+function saveLessonSnapshot(
+  lesson,
+  dynamicData
+) {
+
+  if (!lesson || !dynamicData) {
+
+    return;
+
+  }
+
+  if (
+    !APP_STATE.user.lessonSnapshots
+  ) {
+
+    APP_STATE.user.lessonSnapshots =
+      {};
+
+  }
+
+  APP_STATE.user.lessonSnapshots[
+    lesson.id
+  ] = {
+
+    content:
+      cloneObject(
+        dynamicData.content
+      ),
+
+    source:
+      dynamicData.source ||
+      null,
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+  saveUserData();
+
+}
+
+
+/* =========================================================
+   37. MOTOR DE AULAS
    ========================================================= */
 
 function openLessonEngine(
@@ -1472,15 +2755,13 @@ function openLessonEngine(
     lesson
   );
 
-  showLessonStep(
-    0
-  );
+  showLessonStep(0);
 
 }
 
 
 /* =========================================================
-   22. CONSTRUIR INTERFACE DA AULA
+   38. HTML DO MOTOR
    ========================================================= */
 
 function buildLessonEngineHTML(
@@ -1548,11 +2829,17 @@ function buildLessonEngineHTML(
       </button>
 
       <div class="lesson-step-indicator">
-        <span id="lessonStepCurrent">1</span>
+
+        <span id="lessonStepCurrent">
+          1
+        </span>
+
         /
+
         <span id="lessonStepTotal">
           ${totalSteps}
         </span>
+
       </div>
 
       <button
@@ -1571,7 +2858,7 @@ function buildLessonEngineHTML(
 
 
 /* =========================================================
-   23. ETAPAS DA AULA
+   39. ETAPAS
    ========================================================= */
 
 function calculateLessonSteps(
@@ -1585,19 +2872,13 @@ function calculateLessonSteps(
 }
 
 
-/* =========================================================
-   24. CRIAR LISTA DE ETAPAS
-   ========================================================= */
-
 function buildLessonSteps(
   content
 ) {
 
   const steps = [];
 
-  if (
-    content.introduction
-  ) {
+  if (content.introduction) {
 
     steps.push({
 
@@ -1627,9 +2908,7 @@ function buildLessonSteps(
 
   }
 
-  if (
-    content.grammar
-  ) {
+  if (content.grammar) {
 
     steps.push({
 
@@ -1643,9 +2922,7 @@ function buildLessonSteps(
 
   }
 
-  if (
-    content.reading
-  ) {
+  if (content.reading) {
 
     steps.push({
 
@@ -1659,11 +2936,21 @@ function buildLessonSteps(
 
   }
 
-  (
-    content.comprehension || []
-  ).forEach(
-    item => {
+  (content.listening || [])
+    .forEach(item =>
+      steps.push({
 
+        type:
+          "listening",
+
+        data:
+          item
+
+      })
+    );
+
+  (content.comprehension || [])
+    .forEach(item =>
       steps.push({
 
         type:
@@ -1672,16 +2959,11 @@ function buildLessonSteps(
         data:
           item
 
-      });
+      })
+    );
 
-    }
-  );
-
-  (
-    content.translation || []
-  ).forEach(
-    item => {
-
+  (content.translation || [])
+    .forEach(item =>
       steps.push({
 
         type:
@@ -1690,16 +2972,11 @@ function buildLessonSteps(
         data:
           item
 
-      });
+      })
+    );
 
-    }
-  );
-
-  (
-    content.grammarExercises || []
-  ).forEach(
-    item => {
-
+  (content.grammarExercises || [])
+    .forEach(item =>
       steps.push({
 
         type:
@@ -1708,16 +2985,37 @@ function buildLessonSteps(
         data:
           item
 
-      });
+      })
+    );
 
-    }
-  );
+  (content.speaking || [])
+    .forEach(item =>
+      steps.push({
 
-  (
-    content.activeRecall || []
-  ).forEach(
-    item => {
+        type:
+          "speaking",
 
+        data:
+          item
+
+      })
+    );
+
+  (content.writing || [])
+    .forEach(item =>
+      steps.push({
+
+        type:
+          "writing",
+
+        data:
+          item
+
+      })
+    );
+
+  (content.activeRecall || [])
+    .forEach(item =>
       steps.push({
 
         type:
@@ -1726,10 +3024,8 @@ function buildLessonSteps(
         data:
           item
 
-      });
-
-    }
-  );
+      })
+    );
 
   steps.push({
 
@@ -1746,18 +3042,12 @@ function buildLessonSteps(
 }
 
 
-/* =========================================================
-   25. ESTADO DO MOTOR
-   ========================================================= */
-
 function getLessonSteps() {
 
   const lesson =
     APP_STATE.currentLesson;
 
-  if (
-    !lesson?.content
-  ) {
+  if (!lesson?.content) {
 
     return [];
 
@@ -1771,7 +3061,7 @@ function getLessonSteps() {
 
 
 /* =========================================================
-   26. MOSTRAR ETAPA
+   40. MOSTRAR ETAPA
    ========================================================= */
 
 function showLessonStep(
@@ -1803,9 +3093,7 @@ function showLessonStep(
     false;
 
   const step =
-    steps[
-      safeIndex
-    ];
+    steps[safeIndex];
 
   const container =
     document.getElementById(
@@ -1838,16 +3126,14 @@ function showLessonStep(
 
 
 /* =========================================================
-   27. RENDERIZAR ETAPA
+   41. RENDERIZAÇÃO
    ========================================================= */
 
 function renderLessonStep(
   step
 ) {
 
-  switch (
-    step.type
-  ) {
+  switch (step.type) {
 
     case "introduction":
 
@@ -1873,6 +3159,12 @@ function renderLessonStep(
         step.data
       );
 
+    case "listening":
+
+      return renderListening(
+        step.data
+      );
+
     case "comprehension":
 
       return renderQuestion(
@@ -1892,6 +3184,18 @@ function renderLessonStep(
       return renderQuestion(
         step.data,
         "grammarExercise"
+      );
+
+    case "speaking":
+
+      return renderSpeaking(
+        step.data
+      );
+
+    case "writing":
+
+      return renderWriting(
+        step.data
       );
 
     case "activeRecall":
@@ -1929,7 +3233,7 @@ function renderLessonStep(
 
 
 /* =========================================================
-   28. INTRODUÇÃO
+   42. INTRODUÇÃO
    ========================================================= */
 
 function renderIntroduction(
@@ -1939,7 +3243,8 @@ function renderIntroduction(
   const objectives =
     APP_STATE.currentLesson
       ?.content
-      ?.objectives || [];
+      ?.objectives ||
+      [];
 
   return `
 
@@ -1968,14 +3273,14 @@ function renderIntroduction(
               </h3>
 
               <ul>
-                ${
-                  objectives
-                    .map(
-                      item =>
-                        `<li>${escapeHTML(item)}</li>`
-                    )
-                    .join("")
-                }
+
+                ${objectives
+                  .map(
+                    item =>
+                      `<li>${escapeHTML(item)}</li>`
+                  )
+                  .join("")}
+
               </ul>
 
             </div>
@@ -1992,7 +3297,7 @@ function renderIntroduction(
 
 
 /* =========================================================
-   29. VOCABULÁRIO
+   43. VOCABULÁRIO
    ========================================================= */
 
 function renderVocabulary(
@@ -2018,31 +3323,29 @@ function renderVocabulary(
 
       <div class="lesson-card">
 
-        ${
-          words
-            .map(
-              item => `
+        ${words
+          .map(
+            item => `
 
-                <div class="lesson-example">
+              <div class="lesson-example">
 
-                  <strong>
-                    ${escapeHTML(item.word)}
-                  </strong>
+                <strong>
+                  ${escapeHTML(item.word)}
+                </strong>
 
-                  <span>
-                    ${escapeHTML(item.translation)}
-                  </span>
+                <span>
+                  ${escapeHTML(item.translation)}
+                </span>
 
-                  <small>
-                    ${escapeHTML(item.example)}
-                  </small>
+                <small>
+                  ${escapeHTML(item.example)}
+                </small>
 
-                </div>
+              </div>
 
-              `
-            )
-            .join("")
-        }
+            `
+          )
+          .join("")}
 
       </div>
 
@@ -2054,7 +3357,7 @@ function renderVocabulary(
 
 
 /* =========================================================
-   30. GRAMÁTICA
+   44. GRAMÁTICA
    ========================================================= */
 
 function renderGrammar(
@@ -2105,19 +3408,14 @@ function renderGrammar(
 
         <div class="lesson-example-list">
 
-          ${
-            (data.examples || [])
-              .map(
-                example => `
-
-                  <div class="lesson-example">
-                    ${escapeHTML(example)}
-                  </div>
-
-                `
-              )
-              .join("")
-          }
+          ${(data.examples || [])
+            .map(
+              example =>
+                `<div class="lesson-example">
+                  ${escapeHTML(example)}
+                </div>`
+            )
+            .join("")}
 
         </div>
 
@@ -2131,7 +3429,7 @@ function renderGrammar(
 
 
 /* =========================================================
-   31. LEITURA
+   45. READING
    ========================================================= */
 
 function renderReading(
@@ -2167,7 +3465,11 @@ function renderReading(
           </summary>
 
           <div class="lesson-translation">
-            ${escapeHTML(data.translation)}
+
+            ${escapeHTML(
+              data.translation || ""
+            )}
+
           </div>
 
         </details>
@@ -2182,7 +3484,210 @@ function renderReading(
 
 
 /* =========================================================
-   32. QUESTÕES
+   46. LISTENING
+   ========================================================= */
+
+function renderListening(
+  data
+) {
+
+  return `
+
+    <div class="lesson-content">
+
+      <span class="lesson-kicker">
+        LISTENING
+      </span>
+
+      <h1 class="lesson-title">
+        ${escapeHTML(
+          data.title ||
+          "Listen"
+        )}
+      </h1>
+
+      <div class="lesson-card">
+
+        <p class="lesson-card-text">
+          ${escapeHTML(
+            data.instruction ||
+            "Listen carefully and identify the main idea."
+          )}
+        </p>
+
+        ${
+          data.audioUrl
+            ? `
+
+              <audio
+                controls
+                preload="metadata"
+                style="width:100%;"
+              >
+
+                <source
+                  src="${escapeHTML(data.audioUrl)}"
+                >
+
+              </audio>
+
+            `
+            : `
+
+              <div class="lesson-example">
+
+                <strong>
+                  Audio preparado para esta atividade.
+                </strong>
+
+                <small>
+                  A versão com áudio será utilizada
+                  quando uma fonte de áudio estiver disponível.
+                </small>
+
+              </div>
+
+            `
+        }
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   47. SPEAKING
+   ========================================================= */
+
+function renderSpeaking(
+  data
+) {
+
+  return `
+
+    <div class="lesson-content">
+
+      <span class="lesson-kicker">
+        SPEAKING
+      </span>
+
+      <h1 class="lesson-title">
+        ${escapeHTML(
+          data.title ||
+          "Speaking practice"
+        )}
+      </h1>
+
+      <div class="lesson-card">
+
+        <h3 class="lesson-card-title">
+          Desafio
+        </h3>
+
+        <p class="lesson-card-text">
+          ${escapeHTML(
+            data.prompt ||
+            "Speak for one minute about the topic."
+          )}
+        </p>
+
+        ${
+          data.model
+            ? `
+
+              <details>
+
+                <summary>
+                  Ver exemplo
+                </summary>
+
+                <div class="lesson-translation">
+                  ${escapeHTML(data.model)}
+                </div>
+
+              </details>
+
+            `
+            : ""
+        }
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   48. WRITING
+   ========================================================= */
+
+function renderWriting(
+  data
+) {
+
+  return `
+
+    <div class="lesson-content">
+
+      <span class="lesson-kicker">
+        WRITING
+      </span>
+
+      <h1 class="lesson-title">
+        ${escapeHTML(
+          data.title ||
+          "Writing practice"
+        )}
+      </h1>
+
+      <div class="lesson-exercise">
+
+        <div class="exercise-type">
+          Writing
+        </div>
+
+        <p>
+          ${escapeHTML(
+            data.prompt ||
+            "Write a short answer in English."
+          )}
+        </p>
+
+        <div class="exercise-input">
+
+          <textarea
+            id="lessonWritingAnswer"
+            rows="6"
+            autocomplete="off"
+            placeholder="Write your answer..."
+            style="width:100%;resize:vertical;"
+          ></textarea>
+
+        </div>
+
+        <div
+          id="lessonAnswerFeedback"
+          class="exercise-feedback"
+        ></div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   49. QUESTÕES
    ========================================================= */
 
 function renderQuestion(
@@ -2201,11 +3706,13 @@ function renderQuestion(
       <div class="lesson-content">
 
         <span class="lesson-kicker">
+
           ${
             type === "translation"
               ? "TRANSLATION"
               : "ACTIVE RECALL"
           }
+
         </span>
 
         <h1 class="lesson-title">
@@ -2215,11 +3722,13 @@ function renderQuestion(
         <div class="lesson-exercise">
 
           <div class="exercise-type">
+
             ${
               type === "translation"
                 ? "Tradução"
                 : "Recuperação ativa"
             }
+
           </div>
 
           <div class="exercise-input">
@@ -2251,11 +3760,13 @@ function renderQuestion(
     <div class="lesson-content">
 
       <span class="lesson-kicker">
+
         ${
           type === "grammarExercise"
             ? "GRAMMAR"
             : "COMPREHENSION"
         }
+
       </span>
 
       <h1 class="lesson-title">
@@ -2265,40 +3776,40 @@ function renderQuestion(
       <div class="lesson-exercise">
 
         <div class="exercise-type">
+
           ${
             type === "grammarExercise"
               ? "Grammar"
               : "Comprehension"
           }
+
         </div>
 
         <div class="exercise-options">
 
-          ${
-            (data.options || [])
-              .map(
-                (option, index) => `
+          ${(data.options || [])
+            .map(
+              (option, index) => `
 
-                  <button
-                    type="button"
-                    class="exercise-option"
-                    data-answer-index="${index}"
-                  >
+                <button
+                  type="button"
+                  class="exercise-option"
+                  data-answer-index="${index}"
+                >
 
-                    <span>
-                      ${String.fromCharCode(
-                        65 + index
-                      )}
-                    </span>
+                  <span>
+                    ${String.fromCharCode(
+                      65 + index
+                    )}
+                  </span>
 
-                    ${escapeHTML(option)}
+                  ${escapeHTML(option)}
 
-                  </button>
+                </button>
 
-                `
-              )
-              .join("")
-          }
+              `
+            )
+            .join("")}
 
         </div>
 
@@ -2317,7 +3828,7 @@ function renderQuestion(
 
 
 /* =========================================================
-   33. FINALIZAÇÃO
+   50. CONCLUSÃO
    ========================================================= */
 
 function renderCompletion(
@@ -2329,12 +3840,14 @@ function renderCompletion(
 
   const score =
     session.total > 0
+
       ? Math.round(
           (
             session.score /
             session.total
           ) * 100
         )
+
       : 100;
 
   return `
@@ -2360,7 +3873,9 @@ function renderCompletion(
         </p>
 
         <h2>
-          ${escapeHTML(lesson.title)}
+          ${escapeHTML(
+            lesson.title
+          )}
         </h2>
 
         <div class="lesson-result-xp">
@@ -2378,13 +3893,20 @@ function renderCompletion(
           </strong>
 
           <p>
+
             ${
               score >= 80
+
                 ? "Excelente desempenho! Você está pronto para continuar."
+
                 : score >= 60
+
                   ? "Bom trabalho! Continue praticando para fortalecer o conteúdo."
+
                   : "Você concluiu a aula. Os pontos de dificuldade serão reforçados nas próximas revisões."
+
             }
+
           </p>
 
         </div>
@@ -2399,7 +3921,7 @@ function renderCompletion(
 
 
 /* =========================================================
-   34. CONTROLES DO MOTOR
+   51. CONTROLES
    ========================================================= */
 
 function updateLessonEngineControls(
@@ -2450,10 +3972,12 @@ function updateLessonEngineControls(
 
     const percent =
       total > 1
+
         ? (
             index /
             (total - 1)
           ) * 100
+
         : 100;
 
     progress.style.width =
@@ -2472,7 +3996,7 @@ function updateLessonEngineControls(
 
     next.textContent =
       index === total - 1
-        ? "Concluir aula"
+        ? "Concluir"
         : "Continuar";
 
   }
@@ -2481,7 +4005,7 @@ function updateLessonEngineControls(
 
 
 /* =========================================================
-   35. INTERAÇÕES DA AULA
+   52. BIND MOTOR
    ========================================================= */
 
 function bindLessonEngine() {
@@ -2517,7 +4041,7 @@ function bindLessonEngine() {
 
 
 /* =========================================================
-   36. INTERAÇÕES DE CADA ETAPA
+   53. INTERAÇÕES
    ========================================================= */
 
 function bindStepInteractions(
@@ -2525,36 +4049,32 @@ function bindStepInteractions(
 ) {
 
   if (
-    step.type ===
-      "comprehension" ||
-    step.type ===
-      "grammarExercise"
+    step.type === "comprehension" ||
+    step.type === "grammarExercise"
   ) {
 
     document
       .querySelectorAll(
         ".exercise-option"
       )
-      .forEach(
-        button => {
+      .forEach(button => {
 
-          button.addEventListener(
-            "click",
-            () => {
+        button.addEventListener(
+          "click",
+          () => {
 
-              handleMultipleChoice(
-                step.data,
-                Number(
-                  button.dataset.answerIndex
-                ),
-                button
-              );
+            handleMultipleChoice(
+              step.data,
+              Number(
+                button.dataset.answerIndex
+              ),
+              button
+            );
 
-            }
-          );
+          }
+        );
 
-        }
-      );
+      });
 
   }
 
@@ -2562,7 +4082,7 @@ function bindStepInteractions(
 
 
 /* =========================================================
-   37. PRÓXIMA ETAPA
+   54. PRÓXIMO PASSO
    ========================================================= */
 
 function lessonNextStep() {
@@ -2591,16 +4111,9 @@ function lessonNextStep() {
 
   }
 
-
-  /* -------------------------------------------------------
-     QUESTÃO DE MÚLTIPLA ESCOLHA
-     ------------------------------------------------------- */
-
   if (
-    step.type ===
-      "comprehension" ||
-    step.type ===
-      "grammarExercise"
+    step.type === "comprehension" ||
+    step.type === "grammarExercise"
   ) {
 
     if (
@@ -2620,16 +4133,9 @@ function lessonNextStep() {
 
   }
 
-
-  /* -------------------------------------------------------
-     QUESTÃO DE TEXTO
-     ------------------------------------------------------- */
-
   if (
-    step.type ===
-      "translation" ||
-    step.type ===
-      "activeRecall"
+    step.type === "translation" ||
+    step.type === "activeRecall"
   ) {
 
     if (
@@ -2677,10 +4183,79 @@ function lessonNextStep() {
 
   }
 
+  if (
+    step.type === "writing"
+  ) {
 
-  /* -------------------------------------------------------
-     FINAL
-     ------------------------------------------------------- */
+    if (
+      !Object.prototype.hasOwnProperty.call(
+        session.answers,
+        index
+      )
+    ) {
+
+      const input =
+        document.getElementById(
+          "lessonWritingAnswer"
+        );
+
+      const answer =
+        input?.value.trim() || "";
+
+      if (!answer) {
+
+        showTemporaryMessage(
+          "Escreva uma resposta antes de continuar."
+        );
+
+        input?.focus();
+
+        return;
+
+      }
+
+      evaluateWritingAnswer(
+        step.data,
+        answer,
+        index
+      );
+
+      return;
+
+    }
+
+  }
+
+  if (
+    step.type === "speaking"
+  ) {
+
+    if (
+      !Object.prototype.hasOwnProperty.call(
+        session.answers,
+        index
+      )
+    ) {
+
+      session.answers[index] = {
+
+        correct:
+          true,
+
+        answer:
+          "speaking-completed"
+
+      };
+
+      session.total++;
+
+      session.score++;
+
+      updateSkillFromSpeaking();
+
+    }
+
+  }
 
   if (
     index >=
@@ -2701,7 +4276,7 @@ function lessonNextStep() {
 
 
 /* =========================================================
-   38. ETAPA ANTERIOR
+   55. VOLTAR
    ========================================================= */
 
 function lessonPreviousStep() {
@@ -2718,9 +4293,7 @@ function lessonPreviousStep() {
   const index =
     session.step;
 
-  if (
-    index <= 0
-  ) {
+  if (index <= 0) {
 
     return;
 
@@ -2734,7 +4307,7 @@ function lessonPreviousStep() {
 
 
 /* =========================================================
-   39. MÚLTIPLA ESCOLHA
+   56. MÚLTIPLA ESCOLHA
    ========================================================= */
 
 function handleMultipleChoice(
@@ -2766,8 +4339,7 @@ function handleMultipleChoice(
 
   session.answers[index] = {
 
-    correct:
-      correct,
+    correct,
 
     answer:
       selected
@@ -2787,12 +4359,8 @@ function handleMultipleChoice(
       ".exercise-option"
     )
     .forEach(
-      option => {
-
-        option.disabled =
-          true;
-
-      }
+      option =>
+        option.disabled = true
     );
 
   if (correct) {
@@ -2825,16 +4393,10 @@ function handleMultipleChoice(
 
   }
 
-  if (
-    data.options
-  ) {
-
-    updateVocabularyAndGrammarFromQuestion(
-      data,
-      correct
-    );
-
-  }
+  updateVocabularyAndGrammarFromQuestion(
+    data,
+    correct
+  );
 
   const feedback =
     document.getElementById(
@@ -2853,31 +4415,17 @@ function handleMultipleChoice(
     feedback.innerHTML =
       correct
 
-        ? `
-          <strong>✓ Correct!</strong>
+        ? `<strong>✓ Correct!</strong>
+           <p>${escapeHTML(
+             data.explanation ||
+             "Muito bem!"
+           )}</p>`
 
-          <p>
-            ${
-              escapeHTML(
-                data.explanation ||
-                "Muito bem!"
-              )
-            }
-          </p>
-        `
-
-        : `
-          <strong>✗ Not quite.</strong>
-
-          <p>
-            ${
-              escapeHTML(
-                data.explanation ||
-                "Observe a resposta correta e continue."
-              )
-            }
-          </p>
-        `;
+        : `<strong>✗ Not quite.</strong>
+           <p>${escapeHTML(
+             data.explanation ||
+             "Observe a resposta correta e continue."
+           )}</p>`;
 
   }
 
@@ -2888,7 +4436,7 @@ function handleMultipleChoice(
 
 
 /* =========================================================
-   40. RESPOSTA ESCRITA
+   57. RESPOSTA TEXTUAL
    ========================================================= */
 
 function evaluateTextAnswer(
@@ -2916,29 +4464,37 @@ function evaluateTextAnswer(
       answer
     );
 
-  const accepted = [
+  const accepted =
+    [
+      data.answer,
+      ...(data.alternatives || [])
+    ]
+      .filter(Boolean)
+      .map(
+        normalizeAnswer
+      );
 
-    data.answer,
+  /*
+   * Algumas atividades, como active recall
+   * e tradução dinâmica, não possuem uma
+   * única resposta rígida.
+   */
 
-    ...(data.alternatives || [])
-
-  ]
-    .map(
-      normalizeAnswer
-    );
+  const flexible =
+    !accepted.length;
 
   const correct =
-    accepted.includes(
-      normalized
-    );
+    flexible
+      ? answer.length >= 3
+      : accepted.includes(
+          normalized
+        );
 
   session.answers[index] = {
 
-    correct:
-      correct,
+    correct,
 
-    answer:
-      answer
+    answer
 
   };
 
@@ -2986,26 +4542,22 @@ function evaluateTextAnswer(
       }`;
 
     feedback.innerHTML =
+
       correct
 
-        ? `
-          <strong>✓ Excellent!</strong>
+        ? `<strong>✓ Excellent!</strong>
+           <p>Resposta registrada. Muito bem!</p>`
 
-          <p>
-            Resposta correta.
-          </p>
-        `
-
-        : `
-          <strong>✗ Vamos reforçar.</strong>
-
-          <p>
-            Resposta esperada:
-            <strong>
-              ${escapeHTML(data.answer)}
-            </strong>
-          </p>
-        `;
+        : `<strong>✗ Vamos reforçar.</strong>
+           ${
+             data.answer
+               ? `<p>Resposta esperada:
+                    <strong>${escapeHTML(
+                      data.answer
+                    )}</strong>
+                  </p>`
+               : `<p>Vamos reforçar esse conteúdo nas próximas atividades.</p>`
+           }`;
 
   }
 
@@ -3021,7 +4573,128 @@ function evaluateTextAnswer(
 
 
 /* =========================================================
-   41. VOCABULÁRIO E GRAMÁTICA A PARTIR DE QUESTÕES
+   58. WRITING
+   ========================================================= */
+
+function evaluateWritingAnswer(
+  data,
+  answer,
+  index
+) {
+
+  const session =
+    APP_STATE.currentSession;
+
+  if (
+    Object.prototype.hasOwnProperty.call(
+      session.answers,
+      index
+    )
+  ) {
+
+    return;
+
+  }
+
+  const valid =
+    answer.length >= 5;
+
+  session.answers[index] = {
+
+    correct:
+      valid,
+
+    answer
+
+  };
+
+  session.total++;
+
+  if (valid) {
+
+    session.score++;
+
+  }
+
+  else {
+
+    registerLessonError(
+      data,
+      answer
+    );
+
+  }
+
+  const input =
+    document.getElementById(
+      "lessonWritingAnswer"
+    );
+
+  if (input) {
+
+    input.disabled =
+      true;
+
+  }
+
+  const feedback =
+    document.getElementById(
+      "lessonAnswerFeedback"
+    );
+
+  if (feedback) {
+
+    feedback.className =
+      "exercise-feedback visible " +
+      (
+        valid
+          ? "correct"
+          : "incorrect"
+      );
+
+    feedback.innerHTML =
+      valid
+
+        ? `<strong>✓ Good job!</strong>
+           <p>Your answer has been recorded.</p>`
+
+        : `<strong>✗ Keep practicing.</strong>
+           <p>Write a little more so we can reinforce the skill.</p>`;
+
+  }
+
+  APP_STATE.user.progress.writing =
+    Math.min(
+      100,
+      APP_STATE.user.progress.writing +
+      (valid ? 2 : 1)
+    );
+
+  saveUserData();
+
+}
+
+
+/* =========================================================
+   59. SPEAKING
+   ========================================================= */
+
+function updateSkillFromSpeaking() {
+
+  APP_STATE.user.progress.speaking =
+    Math.min(
+      100,
+      APP_STATE.user.progress.speaking +
+      2
+    );
+
+  saveUserData();
+
+}
+
+
+/* =========================================================
+   60. VOCABULÁRIO + GRAMÁTICA
    ========================================================= */
 
 function updateVocabularyAndGrammarFromQuestion(
@@ -3067,7 +4740,13 @@ function updateVocabularyAndGrammarFromQuestion(
             examples:
               item.example
                 ? [item.example]
-                : []
+                : [],
+
+            correct:
+              correct,
+
+            incorrect:
+              !correct
 
           }
         );
@@ -3088,6 +4767,12 @@ function updateVocabularyAndGrammarFromQuestion(
         level:
           content.level,
 
+        correct:
+          correct,
+
+        incorrect:
+          !correct,
+
         mastery:
           correct
             ? 5
@@ -3102,7 +4787,7 @@ function updateVocabularyAndGrammarFromQuestion(
 
 
 /* =========================================================
-   42. REGISTRAR ERRO DA AULA
+   61. ERRO DA AULA
    ========================================================= */
 
 function registerLessonError(
@@ -3121,24 +4806,20 @@ function registerLessonError(
       id:
         `${APP_STATE.currentLesson.id}-${data.id || Date.now()}`,
 
-      type:
-        type,
+      type,
 
       question:
         data.question,
 
       expected:
         data.options
-          ? data.options[
-              data.answer
-            ]
+          ? data.options[data.answer]
           : data.answer,
 
       answer:
         typeof answer === "number"
-          ? data.options?.[
-              answer
-            ] || String(answer)
+          ? data.options?.[answer] ||
+            String(answer)
           : answer
 
     });
@@ -3147,9 +4828,8 @@ function registerLessonError(
     APP_STATE.currentSession
   ) {
 
-    APP_STATE.currentSession.errors.push(
-      error
-    );
+    APP_STATE.currentSession.errors
+      .push(error);
 
   }
 
@@ -3157,7 +4837,7 @@ function registerLessonError(
 
 
 /* =========================================================
-   43. FINALIZAR MOTOR
+   62. FINALIZAR AULA
    ========================================================= */
 
 function finishLessonEngine() {
@@ -3180,9 +4860,7 @@ function finishLessonEngine() {
 
   }
 
-  if (
-    session.completed
-  ) {
+  if (session.completed) {
 
     showLessonStep(
       getLessonSteps().length - 1
@@ -3252,7 +4930,7 @@ function finishLessonEngine() {
 
 
 /* =========================================================
-   44. FECHAR MOTOR
+   63. FECHAR MOTOR
    ========================================================= */
 
 function closeLessonEngine() {
@@ -3284,7 +4962,7 @@ function closeLessonEngine() {
 
 
 /* =========================================================
-   45. AULA SEM CONTEÚDO
+   64. AULA INDISPONÍVEL
    ========================================================= */
 
 function openUnavailableLesson(
@@ -3295,8 +4973,11 @@ function openUnavailableLesson(
 
     `${lesson.title}\n\n` +
 
-    "Esta aula já está estruturada no curso, " +
-    "mas o conteúdo completo ainda será incorporado."
+    "Não foi possível carregar o conteúdo " +
+
+    "dinâmico e não existe um conteúdo interno " +
+
+    "disponível para esta aula."
 
   );
 
@@ -3304,7 +4985,7 @@ function openUnavailableLesson(
 
 
 /* =========================================================
-   46. TEMPO DA SESSÃO
+   65. TEMPO
    ========================================================= */
 
 function calculateSessionMinutes(
@@ -3328,10 +5009,8 @@ function calculateSessionMinutes(
   const minutes =
     Math.round(
       (
-        now -
-        start
-      ) /
-      60000
+        now - start
+      ) / 60000
     );
 
   return Math.max(
@@ -3343,7 +5022,7 @@ function calculateSessionMinutes(
 
 
 /* =========================================================
-   47. NORMALIZAR RESPOSTA
+   66. NORMALIZAÇÃO DE RESPOSTA
    ========================================================= */
 
 function normalizeAnswer(
@@ -3368,7 +5047,7 @@ function normalizeAnswer(
 
 
 /* =========================================================
-   48. MENSAGEM TEMPORÁRIA
+   67. MENSAGEM TEMPORÁRIA
    ========================================================= */
 
 function showTemporaryMessage(
@@ -3408,14 +5087,11 @@ function showTemporaryMessage(
   );
 
   setTimeout(
-    () => {
-
+    () =>
       element.classList.remove(
         "visible",
         "warning"
-      );
-
-    },
+      ),
     2500
   );
 
@@ -3423,13 +5099,15 @@ function showTemporaryMessage(
 
 
 /* =========================================================
-   49. REVISÃO
+   68. REVISÃO
    ========================================================= */
 
 function startReview() {
 
   const user =
     APP_STATE.user;
+
+  updateReviewCounters();
 
   const due =
     Number(
@@ -3456,14 +5134,15 @@ function startReview() {
   }
 
   alert(
-    "O Motor de Revisão será aberto nesta área."
+    `Você possui ${due} item(ns) para revisão e ${weakPoints} ponto(s) de dificuldade.\n\n` +
+    "O Motor de Revisão está preparado para receber o sistema adaptativo."
   );
 
 }
 
 
 /* =========================================================
-   50. CONVERSAÇÃO
+   69. CONVERSAÇÃO
    ========================================================= */
 
 function startConversation(
@@ -3504,15 +5183,20 @@ function startConversation(
   };
 
   alert(
+
     `${selectedMode}\n\n` +
-    "O módulo completo de conversação será integrado ao Motor de Conversação."
+
+    "O Motor de Conversação está preparado " +
+
+    "para receber as atividades de fala e interação."
+
   );
 
 }
 
 
 /* =========================================================
-   51. PERFIL
+   70. PERFIL
    ========================================================= */
 
 function openProfile() {
@@ -3538,7 +5222,7 @@ function openProfile() {
 
 
 /* =========================================================
-   52. XP
+   71. XP
    ========================================================= */
 
 function addXP(
@@ -3547,14 +5231,10 @@ function addXP(
 ) {
 
   const value =
-    Number(
-      amount
-    );
+    Number(amount);
 
   if (
-    !Number.isFinite(
-      value
-    ) ||
+    !Number.isFinite(value) ||
     value <= 0
   ) {
 
@@ -3563,9 +5243,7 @@ function addXP(
   }
 
   APP_STATE.user.xp +=
-    Math.floor(
-      value
-    );
+    Math.floor(value);
 
   saveUserData();
 
@@ -3577,15 +5255,13 @@ function addXP(
     `XP +${Math.floor(value)} (${reason})`
   );
 
-  return Math.floor(
-    value
-  );
+  return Math.floor(value);
 
 }
 
 
 /* =========================================================
-   53. NÍVEL XP
+   72. NÍVEL XP
    ========================================================= */
 
 function getXPLevel() {
@@ -3596,13 +5272,21 @@ function getXPLevel() {
     );
 
   if (xp >= 5000) return 10;
+
   if (xp >= 4000) return 9;
+
   if (xp >= 3000) return 8;
+
   if (xp >= 2000) return 7;
+
   if (xp >= 1500) return 6;
+
   if (xp >= 1000) return 5;
+
   if (xp >= 700) return 4;
+
   if (xp >= 400) return 3;
+
   if (xp >= 200) return 2;
 
   return 1;
@@ -3611,7 +5295,7 @@ function getXPLevel() {
 
 
 /* =========================================================
-   54. STREAK
+   73. STREAK
    ========================================================= */
 
 function updateStreak() {
@@ -3647,9 +5331,7 @@ function updateStreak() {
         today
       );
 
-    if (
-      difference === 1
-    ) {
+    if (difference === 1) {
 
       APP_STATE.user.streak +=
         1;
@@ -3678,7 +5360,7 @@ function updateStreak() {
 
 
 /* =========================================================
-   55. TEMPO DE ESTUDO
+   74. MINUTOS DE ESTUDO
    ========================================================= */
 
 function addStudyMinutes(
@@ -3686,14 +5368,10 @@ function addStudyMinutes(
 ) {
 
   const value =
-    Number(
-      minutes
-    );
+    Number(minutes);
 
   if (
-    !Number.isFinite(
-      value
-    ) ||
+    !Number.isFinite(value) ||
     value <= 0
   ) {
 
@@ -3706,9 +5384,7 @@ function addStudyMinutes(
   const roundedMinutes =
     Math.max(
       1,
-      Math.round(
-        value
-      )
+      Math.round(value)
     );
 
   APP_STATE.user.dailyMinutes +=
@@ -3738,9 +5414,8 @@ function addStudyMinutes(
   ) {
 
     APP_STATE.user.studySessions =
-      APP_STATE.user.studySessions.slice(
-        -500
-      );
+      APP_STATE.user.studySessions
+        .slice(-500);
 
   }
 
@@ -3754,7 +5429,7 @@ function addStudyMinutes(
 
 
 /* =========================================================
-   56. CONCLUSÃO DE AULA
+   75. COMPLETAR AULA
    ========================================================= */
 
 function completeLesson(
@@ -3783,9 +5458,8 @@ function completeLesson(
   }
 
   if (
-    user.completedLessons.includes(
-      lessonId
-    )
+    user.completedLessons
+      .includes(lessonId)
   ) {
 
     return false;
@@ -3829,7 +5503,7 @@ function completeLesson(
 
 
 /* =========================================================
-   57. AVANÇAR AULA
+   76. AVANÇAR
    ========================================================= */
 
 function advanceLesson(
@@ -3840,11 +5514,9 @@ function advanceLesson(
     APP_STATE.user;
 
   const module =
-    LESSON_CONTENT[
-      user.level
-    ]?.[
-      user.module
-    ];
+    LESSON_CONTENT
+      ?.[user.level]
+      ?.[user.module];
 
   if (!module) {
 
@@ -3855,8 +5527,11 @@ function advanceLesson(
   const contentLessons =
     module.lessons.filter(
       lesson =>
-        lesson.type ===
-        "reading"
+        lesson.kind === "lesson" ||
+        (
+          lesson.type !== "review" &&
+          lesson.type !== "test"
+        )
     );
 
   const currentIndex =
@@ -3869,18 +5544,11 @@ function advanceLesson(
         )
     );
 
-  if (
-    currentIndex < 0
-  ) {
+  if (currentIndex < 0) {
 
     return;
 
   }
-
-
-  /* -------------------------------------------------------
-     EXISTE PRÓXIMA AULA
-     ------------------------------------------------------- */
 
   if (
     currentIndex <
@@ -3895,11 +5563,6 @@ function advanceLesson(
     return;
 
   }
-
-
-  /* -------------------------------------------------------
-     ÚLTIMA AULA DO MÓDULO
-     ------------------------------------------------------- */
 
   const review =
     module.lessons.find(
@@ -3935,7 +5598,7 @@ function advanceLesson(
 
 
 /* =========================================================
-   58. DESBLOQUEAR
+   77. DESBLOQUEAR
    ========================================================= */
 
 function unlockCurrentLesson() {
@@ -3962,7 +5625,7 @@ function unlockCurrentLesson() {
 
 
 /* =========================================================
-   59. HABILIDADES
+   78. HABILIDADES
    ========================================================= */
 
 function updateSkillFromLesson(
@@ -3979,11 +5642,11 @@ function updateSkillFromLesson(
   const skills =
     APP_STATE.user.progress;
 
-  const type =
+  const contentType =
     lesson.type;
 
   if (
-    type === "reading"
+    contentType === "reading"
   ) {
 
     skills.reading =
@@ -4014,9 +5677,7 @@ function updateSkillFromLesson(
       Number(result.score || 0) /
       Number(result.total);
 
-    if (
-      accuracy >= 0.8
-    ) {
+    if (accuracy >= 0.8) {
 
       skills.reading =
         Math.min(
@@ -4032,9 +5693,7 @@ function updateSkillFromLesson(
 
     }
 
-    if (
-      accuracy >= 0.9
-    ) {
+    if (accuracy >= 0.9) {
 
       skills.vocabulary =
         Math.min(
@@ -4046,11 +5705,13 @@ function updateSkillFromLesson(
 
   }
 
+  saveUserData();
+
 }
 
 
 /* =========================================================
-   60. REVISÃO ESPAÇADA
+   79. REVISÃO ESPAÇADA — BASE
    ========================================================= */
 
 function scheduleLessonForReview(
@@ -4075,11 +5736,11 @@ function scheduleLessonForReview(
   }
 
   const existing =
-    APP_STATE.user.review.items.find(
-      item =>
-        item.id ===
-        lesson.id
-    );
+    APP_STATE.user.review.items
+      .find(
+        item =>
+          item.id === lesson.id
+      );
 
   if (existing) {
 
@@ -4114,7 +5775,13 @@ function scheduleLessonForReview(
       0,
 
     ease:
-      2.5
+      2.5,
+
+    lastScore:
+      null,
+
+    status:
+      "learning"
 
   });
 
@@ -4124,7 +5791,7 @@ function scheduleLessonForReview(
 
 
 /* =========================================================
-   61. CONTADORES DE REVISÃO
+   80. CONTADORES
    ========================================================= */
 
 function updateReviewCounters() {
@@ -4141,15 +5808,19 @@ function updateReviewCounters() {
   const dueItems =
     items.filter(
       item =>
-        item.nextReview <=
-        today
+        item.nextReview <= today
     );
 
   APP_STATE.user.review.due =
     dueItems.length;
 
   APP_STATE.user.review.weakPoints =
-    APP_STATE.user.errors.length;
+    APP_STATE.user.errors
+      .filter(
+        error =>
+          !error.resolved
+      )
+      .length;
 
   saveUserData();
 
@@ -4157,7 +5828,7 @@ function updateReviewCounters() {
 
 
 /* =========================================================
-   62. CONQUISTAS
+   81. ACHIEVEMENTS
    ========================================================= */
 
 function checkAchievements() {
@@ -4175,9 +5846,7 @@ function checkAchievements() {
 
   }
 
-  if (
-    user.streak >= 7
-  ) {
+  if (user.streak >= 7) {
 
     unlockAchievement(
       "sevenDays"
@@ -4185,9 +5854,7 @@ function checkAchievements() {
 
   }
 
-  if (
-    user.streak >= 30
-  ) {
+  if (user.streak >= 30) {
 
     unlockAchievement(
       "thirtyDays"
@@ -4205,9 +5872,7 @@ function checkAchievements() {
 
   }
 
-  if (
-    user.xp >= 1000
-  ) {
+  if (user.xp >= 1000) {
 
     unlockAchievement(
       "oneThousandXP"
@@ -4239,14 +5904,12 @@ function unlockAchievement(
   }
 
   if (
-    !APP_STATE.user.achievements.includes(
-      id
-    )
+    !APP_STATE.user.achievements
+      .includes(id)
   ) {
 
-    APP_STATE.user.achievements.push(
-      id
-    );
+    APP_STATE.user.achievements
+      .push(id);
 
     saveUserData();
 
@@ -4258,7 +5921,7 @@ function unlockAchievement(
 
 
 /* =========================================================
-   63. INTERFACE
+   82. INTERFACE
    ========================================================= */
 
 function updateInterface() {
@@ -4293,7 +5956,7 @@ function updateInterface() {
 
 
 /* =========================================================
-   64. NOME
+   83. NOME
    ========================================================= */
 
 function updateUserName() {
@@ -4310,13 +5973,16 @@ function updateUserName() {
   }
 
   element.textContent =
-    `Olá, ${APP_STATE.user.name || "Aluno"}! 👋`;
+    `Olá, ${
+      APP_STATE.user.name ||
+      "Aluno"
+    }! 👋`;
 
 }
 
 
 /* =========================================================
-   65. NÍVEL
+   84. NÍVEL
    ========================================================= */
 
 function updateLevel() {
@@ -4363,7 +6029,7 @@ function updateLevel() {
 
 
 /* =========================================================
-   66. PROGRESSO DO NÍVEL
+   85. PROGRESSO
    ========================================================= */
 
 function calculateLevelProgress() {
@@ -4372,9 +6038,7 @@ function calculateLevelProgress() {
     APP_STATE.user;
 
   const course =
-    COURSE[
-      user.level
-    ];
+    COURSE[user.level];
 
   if (!course) {
 
@@ -4387,34 +6051,31 @@ function calculateLevelProgress() {
     course.lessonsPerModule;
 
   const completed =
-    user.completedLessons.filter(
-      id =>
-        id.startsWith(
-          user.level
-        ) &&
-        /-L\d+$/.test(
-          id
-        )
-    ).length;
+    user.completedLessons
+      .filter(
+        id =>
+          id.startsWith(
+            user.level
+          ) &&
+          /-L\d+$/.test(id)
+      )
+      .length;
 
   return Math.min(
-
     100,
-
     Math.round(
       (
         completed /
         totalLessons
       ) * 100
     )
-
   );
 
 }
 
 
 /* =========================================================
-   67. XP
+   86. XP DISPLAY
    ========================================================= */
 
 function updateXPDisplay() {
@@ -4440,7 +6101,7 @@ function updateXPDisplay() {
 
 
 /* =========================================================
-   68. STREAK
+   87. STREAK DISPLAY
    ========================================================= */
 
 function updateStreakDisplay() {
@@ -4461,7 +6122,7 @@ function updateStreakDisplay() {
 
 
 /* =========================================================
-   69. META
+   88. META DIÁRIA
    ========================================================= */
 
 function updateDailyGoal() {
@@ -4484,6 +6145,7 @@ function updateDailyGoal() {
 
   const percent =
     goal > 0
+
       ? Math.min(
           100,
           Math.round(
@@ -4493,6 +6155,7 @@ function updateDailyGoal() {
             ) * 100
           )
         )
+
       : 0;
 
   setText(
@@ -4521,7 +6184,7 @@ function updateDailyGoal() {
 
 
 /* =========================================================
-   70. HABILIDADES
+   89. SKILLS
    ========================================================= */
 
 function updateSkills() {
@@ -4565,7 +6228,7 @@ function updateSkills() {
 
 
 /* =========================================================
-   71. PONTO FRACO
+   90. PONTO FRACO
    ========================================================= */
 
 function updateWeakPoint() {
@@ -4617,24 +6280,20 @@ function updateWeakPoint() {
 
   setText(
     "mainWeakPoint",
-    names[
-      weakest[0]
-    ] || weakest[0]
+    names[weakest[0]] ||
+    weakest[0]
   );
 
   setText(
-
     "mainWeakPointDescription",
-
     `Seu desempenho atual está em ${weakest[1]}%. Vamos reforçar essa habilidade.`
-
   );
 
 }
 
 
 /* =========================================================
-   72. REVISÃO NA INTERFACE
+   91. REVISÃO UI
    ========================================================= */
 
 function updateReview() {
@@ -4655,7 +6314,7 @@ function updateReview() {
 
 
 /* =========================================================
-   73. CAMINHO DO CURSO
+   92. CURSO
    ========================================================= */
 
 function updateCoursePath() {
@@ -4674,27 +6333,21 @@ function updateCoursePath() {
   container.innerHTML =
     "";
 
-  Object.keys(
-    COURSE
-  ).forEach(
-    level => {
-
-      container.appendChild(
-
-        createLevelElement(
-          level
+  Object.keys(COURSE)
+    .forEach(
+      level =>
+        container.appendChild(
+          createLevelElement(
+            level
+          )
         )
-
-      );
-
-    }
-  );
+    );
 
 }
 
 
 /* =========================================================
-   74. NÍVEL DO CURSO
+   93. NÍVEL ELEMENT
    ========================================================= */
 
 function createLevelElement(
@@ -4710,9 +6363,7 @@ function createLevelElement(
     "course-level";
 
   const course =
-    COURSE[
-      level
-    ];
+    COURSE[level];
 
   const header =
     document.createElement(
@@ -4733,7 +6384,9 @@ function createLevelElement(
       <div>
 
         <h2>
-          ${escapeHTML(course.title)}
+          ${escapeHTML(
+            course.title
+          )}
         </h2>
 
       </div>
@@ -4749,17 +6402,15 @@ function createLevelElement(
   for (
     let moduleNumber = 1;
     moduleNumber <=
-      course.modules;
+    course.modules;
     moduleNumber++
   ) {
 
     wrapper.appendChild(
-
       createModuleElement(
         level,
         moduleNumber
       )
-
     );
 
   }
@@ -4770,7 +6421,7 @@ function createLevelElement(
 
 
 /* =========================================================
-   75. MÓDULO
+   94. MÓDULO
    ========================================================= */
 
 function createModuleElement(
@@ -4793,11 +6444,9 @@ function createModuleElement(
       APP_STATE.user.module;
 
   const moduleData =
-    LESSON_CONTENT[
-      level
-    ]?.[
-      moduleNumber
-    ];
+    LESSON_CONTENT
+      ?.[level]
+      ?.[moduleNumber];
 
   let lessons =
     moduleData?.lessons ||
@@ -4817,9 +6466,7 @@ function createModuleElement(
     lessons.filter(
       lesson =>
         APP_STATE.user.completedLessons
-          .includes(
-            lesson.id
-          )
+          .includes(lesson.id)
     ).length;
 
   moduleCard.innerHTML = `
@@ -4857,17 +6504,12 @@ function createModuleElement(
     );
 
   lessons.forEach(
-    lesson => {
-
+    lesson =>
       lessonList.appendChild(
-
         createLessonElement(
           lesson
         )
-
-      );
-
-    }
+      )
   );
 
   return moduleCard;
@@ -4876,7 +6518,7 @@ function createModuleElement(
 
 
 /* =========================================================
-   76. ELEMENTO DE AULA
+   95. AULA ELEMENT
    ========================================================= */
 
 function createLessonElement(
@@ -4938,7 +6580,8 @@ function createLessonElement(
   else if (isReview) {
 
     icon =
-      lesson.status === "current"
+      lesson.status ===
+        "current"
         ? "🧠"
         : "🔒";
 
@@ -4947,7 +6590,8 @@ function createLessonElement(
   else if (isTest) {
 
     icon =
-      lesson.status === "current"
+      lesson.status ===
+        "current"
         ? "📝"
         : "🔒";
 
@@ -4962,11 +6606,15 @@ function createLessonElement(
     <span class="lesson-info">
 
       <strong>
-        ${escapeHTML(lesson.title)}
+        ${escapeHTML(
+          lesson.title
+        )}
       </strong>
 
       <span>
-        ${escapeHTML(lesson.description)}
+        ${escapeHTML(
+          lesson.description
+        )}
       </span>
 
     </span>
@@ -5024,7 +6672,7 @@ function createLessonElement(
 
 
 /* =========================================================
-   77. REVISÃO ESPECÍFICA
+   96. REVISÃO ESPECÍFICA
    ========================================================= */
 
 function startReviewActivity(
@@ -5042,7 +6690,7 @@ function startReviewActivity(
 
 
 /* =========================================================
-   78. TESTE
+   97. TESTE
    ========================================================= */
 
 function startTest(
@@ -5066,15 +6714,22 @@ function startTest(
   };
 
   alert(
-    `Avaliação selecionada:\n\n${lesson.title}\n\n` +
-    "O Motor de Testes será integrado nesta estrutura."
+
+    `Avaliação selecionada:\n\n` +
+
+    `${lesson.title}\n\n` +
+
+    "O Motor de Testes está preparado " +
+
+    "para receber as avaliações completas."
+
   );
 
 }
 
 
 /* =========================================================
-   79. CONQUISTAS
+   98. ACHIEVEMENTS UI
    ========================================================= */
 
 function updateAchievements() {
@@ -5086,81 +6741,79 @@ function updateAchievements() {
     .querySelectorAll(
       ".achievement-card"
     )
-    .forEach(
-      card => {
+    .forEach(card => {
 
-        const title =
-          card.querySelector(
-            "strong"
-          )?.textContent;
+      const title =
+        card.querySelector(
+          "strong"
+        )?.textContent;
 
-        let unlocked =
-          false;
+      let unlocked =
+        false;
 
-        if (
-          title ===
-          "Primeira aula"
-        ) {
+      if (
+        title ===
+        "Primeira aula"
+      ) {
 
-          unlocked =
-            achievements.includes(
-              "firstLesson"
-            );
-
-        }
-
-        if (
-          title ===
-          "7 dias"
-        ) {
-
-          unlocked =
-            achievements.includes(
-              "sevenDays"
-            );
-
-        }
-
-        if (
-          title ===
-          "Primeira conversa"
-        ) {
-
-          unlocked =
-            achievements.includes(
-              "firstConversation"
-            );
-
-        }
-
-        if (unlocked) {
-
-          card.classList.remove(
-            "locked"
+        unlocked =
+          achievements.includes(
+            "firstLesson"
           );
 
-          const icon =
-            card.querySelector(
-              ".achievement-icon"
-            );
+      }
 
-          if (icon) {
+      if (
+        title ===
+        "7 dias"
+      ) {
 
-            icon.textContent =
-              "🏆";
+        unlocked =
+          achievements.includes(
+            "sevenDays"
+          );
 
-          }
+      }
+
+      if (
+        title ===
+        "Primeira conversa"
+      ) {
+
+        unlocked =
+          achievements.includes(
+            "firstConversation"
+          );
+
+      }
+
+      if (unlocked) {
+
+        card.classList.remove(
+          "locked"
+        );
+
+        const icon =
+          card.querySelector(
+            ".achievement-icon"
+          );
+
+        if (icon) {
+
+          icon.textContent =
+            "🏆";
 
         }
 
       }
-    );
+
+    });
 
 }
 
 
 /* =========================================================
-   80. TEXTO
+   99. TEXTO
    ========================================================= */
 
 function setText(
@@ -5184,7 +6837,7 @@ function setText(
 
 
 /* =========================================================
-   81. DATAS
+   100. DATAS
    ========================================================= */
 
 function getDateKey(
@@ -5235,7 +6888,6 @@ function daysBetween(
     a.getTime();
 
   return Math.round(
-
     difference /
     (
       1000 *
@@ -5243,14 +6895,13 @@ function daysBetween(
       60 *
       24
     )
-
   );
 
 }
 
 
 /* =========================================================
-   82. REGISTRO DE ERROS
+   101. ERROS
    ========================================================= */
 
 function registerError(
@@ -5302,12 +6953,34 @@ function registerError(
 
   };
 
-  APP_STATE.user.errors.push(
-    error
-  );
+  /*
+   * Evita acumular exatamente o mesmo erro
+   * várias vezes na mesma sessão.
+   */
+
+  const duplicate =
+    APP_STATE.user.errors
+      .find(
+        existing =>
+          existing.id ===
+          error.id
+      );
+
+  if (!duplicate) {
+
+    APP_STATE.user.errors.push(
+      error
+    );
+
+  }
 
   APP_STATE.user.review.weakPoints =
-    APP_STATE.user.errors.length;
+    APP_STATE.user.errors
+      .filter(
+        item =>
+          !item.resolved
+      )
+      .length;
 
   saveUserData();
 
@@ -5319,7 +6992,7 @@ function registerError(
 
 
 /* =========================================================
-   83. VOCABULÁRIO
+   102. VOCABULÁRIO
    ========================================================= */
 
 function registerVocabulary(
@@ -5334,9 +7007,7 @@ function registerVocabulary(
   }
 
   const key =
-    String(
-      word
-    )
+    String(word)
       .trim()
       .toLowerCase();
 
@@ -5347,13 +7018,10 @@ function registerVocabulary(
   }
 
   const existing =
-    APP_STATE.user.vocabulary[
-      key
-    ] || {};
+    APP_STATE.user.vocabulary[key] ||
+    {};
 
-  APP_STATE.user.vocabulary[
-    key
-  ] = {
+  APP_STATE.user.vocabulary[key] = {
 
     word:
       data.word ||
@@ -5382,14 +7050,12 @@ function registerVocabulary(
 
     repetitions:
       Number(
-        existing.repetitions ||
-        0
-      ),
+        existing.repetitions || 0
+      ) + 1,
 
     correct:
       Number(
-        existing.correct ||
-        0
+        existing.correct || 0
       ) +
       (
         data.correct
@@ -5399,8 +7065,7 @@ function registerVocabulary(
 
     incorrect:
       Number(
-        existing.incorrect ||
-        0
+        existing.incorrect || 0
       ) +
       (
         data.incorrect
@@ -5421,7 +7086,7 @@ function registerVocabulary(
 
 
 /* =========================================================
-   84. GRAMÁTICA
+   103. GRAMÁTICA
    ========================================================= */
 
 function registerGrammar(
@@ -5436,25 +7101,21 @@ function registerGrammar(
   }
 
   const key =
-    String(
-      topic
-    ).trim();
+    String(topic)
+      .trim();
 
   const existing =
-    APP_STATE.user.grammar[
-      key
-    ] || {};
+    APP_STATE.user.grammar[key] ||
+    {};
 
   const oldCorrect =
     Number(
-      existing.correct ||
-      0
+      existing.correct || 0
     );
 
   const oldIncorrect =
     Number(
-      existing.incorrect ||
-      0
+      existing.incorrect || 0
     );
 
   const newCorrect =
@@ -5473,9 +7134,13 @@ function registerGrammar(
         : 0
     );
 
-  APP_STATE.user.grammar[
-    key
-  ] = {
+  const calculatedMastery =
+    calculateGrammarMastery(
+      newCorrect,
+      newIncorrect
+    );
+
+  APP_STATE.user.grammar[key] = {
 
     topic:
       key,
@@ -5492,11 +7157,8 @@ function registerGrammar(
       newIncorrect,
 
     mastery:
-      Number(
-        data.mastery ??
-        existing.mastery ??
-        0
-      ),
+      data.mastery ??
+      calculatedMastery,
 
     lastPracticed:
       getDateKey(
@@ -5510,8 +7172,33 @@ function registerGrammar(
 }
 
 
+function calculateGrammarMastery(
+  correct,
+  incorrect
+) {
+
+  const total =
+    correct +
+    incorrect;
+
+  if (!total) {
+
+    return 0;
+
+  }
+
+  return Math.round(
+    (
+      correct /
+      total
+    ) * 100
+  );
+
+}
+
+
 /* =========================================================
-   85. CONVERSAÇÃO
+   104. CONVERSAÇÃO COMPLETA
    ========================================================= */
 
 function completeConversation(
@@ -5524,8 +7211,7 @@ function completeConversation(
     id:
       `conversation-${Date.now()}`,
 
-    mode:
-      mode,
+    mode,
 
     date:
       getDateKey(
@@ -5542,9 +7228,8 @@ function completeConversation(
 
   };
 
-  APP_STATE.user.conversations.push(
-    record
-  );
+  APP_STATE.user.conversations
+    .push(record);
 
   APP_STATE.user.conversationsCompletedCount =
     APP_STATE.user.conversations.length;
@@ -5566,7 +7251,7 @@ function completeConversation(
 
 
 /* =========================================================
-   86. CONCLUIR REVISÃO
+   105. REVISÃO COMPLETA
    ========================================================= */
 
 function completeReview(
@@ -5581,15 +7266,11 @@ function completeReview(
 
   if (
     !APP_STATE.user.completedReviews
-      .includes(
-        reviewId
-      )
+      .includes(reviewId)
   ) {
 
     APP_STATE.user.completedReviews
-      .push(
-        reviewId
-      );
+      .push(reviewId);
 
     APP_STATE.user.reviewCompletedCount =
       APP_STATE.user.completedReviews.length;
@@ -5613,7 +7294,7 @@ function completeReview(
 
 
 /* =========================================================
-   87. CONCLUIR TESTE
+   106. TESTE COMPLETO
    ========================================================= */
 
 function completeTest(
@@ -5637,9 +7318,7 @@ function completeTest(
             : test.id === testId
       );
 
-  if (
-    !alreadyCompleted
-  ) {
+  if (!alreadyCompleted) {
 
     APP_STATE.user.completedTests
       .push({
@@ -5647,8 +7326,7 @@ function completeTest(
         id:
           testId,
 
-        score:
-          score,
+        score,
 
         date:
           getDateKey(
@@ -5680,7 +7358,56 @@ function completeTest(
 
 
 /* =========================================================
-   88. RESET
+   107. DADOS DO ALUNO
+   ========================================================= */
+
+function getUserWeaknesses() {
+
+  const progress =
+    APP_STATE.user.progress;
+
+  return Object.entries(
+    progress
+  )
+    .sort(
+      (a, b) =>
+        Number(a[1]) -
+        Number(b[1])
+    )
+    .slice(
+      0,
+      3
+    )
+    .map(
+      item =>
+        item[0]
+    );
+
+}
+
+
+function getRecentVocabulary() {
+
+  return Object.values(
+    APP_STATE.user.vocabulary
+  )
+    .slice(-20);
+
+}
+
+
+function getRecentGrammar() {
+
+  return Object.values(
+    APP_STATE.user.grammar
+  )
+    .slice(-20);
+
+}
+
+
+/* =========================================================
+   108. RESET
    ========================================================= */
 
 function resetLocalData() {
@@ -5706,7 +7433,7 @@ function resetLocalData() {
 
 
 /* =========================================================
-   89. EXPORTAR
+   109. EXPORTAR
    ========================================================= */
 
 function exportUserData() {
@@ -5761,7 +7488,7 @@ function exportUserData() {
 
 
 /* =========================================================
-   90. IMPORTAR
+   110. IMPORTAR
    ========================================================= */
 
 function importUserData(
@@ -5773,9 +7500,11 @@ function importUserData(
     const imported =
       typeof jsonData ===
         "string"
+
         ? JSON.parse(
             jsonData
           )
+
         : jsonData;
 
     if (
@@ -5823,7 +7552,7 @@ function importUserData(
 
 
 /* =========================================================
-   91. ESCAPAR HTML
+   111. HTML ESCAPE
    ========================================================= */
 
 function escapeHTML(
@@ -5858,7 +7587,30 @@ function escapeHTML(
 
 
 /* =========================================================
-   92. API PÚBLICA
+   112. LIMPAR HTML EXTERNO
+   ========================================================= */
+
+function stripHTML(
+  value
+) {
+
+  const temporary =
+    document.createElement(
+      "div"
+    );
+
+  temporary.innerHTML =
+    String(value || "");
+
+  return temporary.textContent ||
+    temporary.innerText ||
+    "";
+
+}
+
+
+/* =========================================================
+   113. API PÚBLICA
    ========================================================= */
 
 window.EnglishFamily = {
@@ -5923,7 +7675,7 @@ window.EnglishFamily = {
     lesson
   ) {
 
-    startLesson(
+    return startLesson(
       lesson
     );
 
@@ -6069,6 +7821,22 @@ window.EnglishFamily = {
 
   },
 
+  resolveLessonContent(
+    lesson
+  ) {
+
+    return resolveLessonContent(
+      lesson
+    );
+
+  },
+
+  getWeaknesses() {
+
+    return getUserWeaknesses();
+
+  },
+
   refresh() {
 
     updateInterface();
@@ -6079,5 +7847,5 @@ window.EnglishFamily = {
 
 
 /* =========================================================
-   93. FIM DO APP.JS
+   END APP.JS v1.4.0
    ========================================================= */
