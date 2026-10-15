@@ -1,7 +1,7 @@
 /* =========================================================
    ENGLISH FAMILY
    APP.JS
-   v1.4.0
+   v1.5.1
 
    Núcleo principal
    Motor de aulas
@@ -20,7 +20,7 @@ const APP_CONFIG = {
 
   name: "English Family",
 
-  version: "1.5.0",
+  version: "1.5.1",
 
   language: "en",
 
@@ -5924,7 +5924,7 @@ function unlockAchievement(
    82. INTERFACE
    ========================================================= */
 
-function updateInterface() {
+function efxOriginalUpdateInterface() {
 
   if (!APP_STATE.user) {
 
@@ -7847,11 +7847,11 @@ window.EnglishFamily = {
 
 
 /* =========================================================
-   END APP.JS v1.4.0
+   END APP.JS v1.5.1
    ========================================================= */
 
 /* =========================================================
-   ENGLISH FAMILY v1.5.0 — PERFIS FAMILIARES E ATIVIDADES
+   ENGLISH FAMILY v1.5.1 — PERFIS FAMILIARES E ATIVIDADES
    Perfis locais neste navegador; não é autenticação de servidor.
    ========================================================= */
 
@@ -7974,4 +7974,225 @@ function startReview(){
   for(const id of completed.slice().reverse()){const m=String(id).match(/^(A1|A2|B1|B2|C1)-M(\d+)-L(\d+)/);if(!m)continue;const level=m[1],mi=Number(m[2])-1,li=Number(m[3])-1;const item=LESSON_CONTENT[level]?.[mi+1]?.lessons?.[li];if(item){target=item;break;}}
   if(!target){alert("Conclua pelo menos uma aula para iniciar revisões personalizadas.");return;}
   startLesson(target);
+}
+
+/* =========================================================
+   ENGLISH FAMILY v1.5.1 — CORREÇÕES INTEGRADAS
+   Navegação completa, curso desbloqueado, revisão, conversação
+   Gemini por perfil e configurações funcionais.
+   ========================================================= */
+
+function efxInjectStyles() {
+  if (document.getElementById('efxStyles')) return;
+  const style = document.createElement('style');
+  style.id = 'efxStyles';
+  style.textContent = `
+    .efx-overlay{position:fixed;inset:0;z-index:100050;background:rgba(14,31,24,.68);display:grid;place-items:center;padding:14px}
+    .efx-panel{width:min(100%,760px);max-height:min(92vh,900px);overflow:auto;background:#fff;color:#1f2937;border-radius:22px;padding:clamp(18px,4vw,30px);box-shadow:0 24px 80px #0003}
+    .efx-panel h2{font-size:clamp(22px,4vw,30px);margin:4px 0 8px;color:#152b20}.efx-muted{color:#687568;line-height:1.5;font-size:14px}
+    .efx-field{display:grid;gap:7px;margin:14px 0}.efx-field label{font-weight:750;font-size:13px}.efx-field input,.efx-field textarea,.efx-field select{width:100%;border:1px solid #d6e2d8;border-radius:12px;padding:12px;font:inherit;background:#fff;color:#17251d;box-sizing:border-box}
+    .efx-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.efx-btn{border:1px solid #d8e2da;border-radius:12px;padding:11px 15px;font:inherit;font-weight:750;cursor:pointer;background:#f6faf7;color:#254b35}.efx-btn.primary{background:#58cc02;color:#fff;border-color:#46a302}.efx-btn.danger{color:#a42323;background:#fff0f0;border-color:#ffd0d0}.efx-btn:disabled{opacity:.5;cursor:not-allowed}
+    .efx-chatlog{display:flex;flex-direction:column;gap:10px;min-height:170px;max-height:42vh;overflow:auto;padding:12px;background:#f5f8f5;border-radius:14px;margin:14px 0}.efx-msg{max-width:90%;padding:11px 13px;border-radius:14px;white-space:pre-wrap;line-height:1.5;font-size:14px}.efx-msg.assistant{align-self:flex-start;background:#e7f5e8}.efx-msg.user{align-self:flex-end;background:#dff3ff}.efx-alert{padding:12px;border-radius:12px;background:#fff5cc;color:#735500;font-size:12px;line-height:1.5;margin:12px 0}.efx-question{font-size:18px;font-weight:800;line-height:1.5;margin:20px 0}.efx-options{display:grid;gap:9px}.efx-option{border:1px solid #d8e3da;border-radius:12px;padding:13px;text-align:left;background:#fff;color:#203429;font:inherit;cursor:pointer}.efx-option:hover{background:#eff9ed;border-color:#58cc02}.efx-option:disabled{cursor:default}.efx-option.good{background:#e9f8dc;border-color:#58cc02}.efx-option.bad{background:#ffe8e8;border-color:#ff4b4b}.efx-course-level{scroll-margin-top:90px}.efx-open-level{font-size:12px;color:#16804a;font-weight:800}
+    body.efx-dark{--background:#111827;--surface:#1f2937;--surface-soft:#273449;--text:#e5e7eb;--text-dark:#f9fafb;--text-medium:#d1d5db;--text-light:#9ca3af;--border:#374151}body.efx-dark .app-header,body.efx-dark .bottom-navigation,body.efx-dark .side-menu{background:#182231;color:#f9fafb}body.efx-dark .efx-panel{background:#1f2937;color:#e5e7eb}body.efx-dark .efx-panel h2{color:#f9fafb}body.efx-dark .efx-field input,body.efx-dark .efx-field textarea,body.efx-dark .efx-field select{background:#111827;color:#f9fafb;border-color:#4b5563}
+    @media(min-width:700px){.efx-chat-compose{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:end}}
+  `;
+  document.head.appendChild(style);
+}
+
+function efxProfileId() {
+  return String(EF_ACTIVE_ACCOUNT?.id || APP_STATE.user?.id || 'local-user');
+}
+function efxGeminiKeyStorage() { return `englishFamilyGeminiKey_${efxProfileId()}`; }
+function efxGetGeminiKey() { try { return localStorage.getItem(efxGeminiKeyStorage()) || ''; } catch (_) { return ''; } }
+function efxSetGeminiKey(key) { try { if (key) localStorage.setItem(efxGeminiKeyStorage(), key.trim()); else localStorage.removeItem(efxGeminiKeyStorage()); return true; } catch (_) { return false; } }
+function efxOverlay(title, subtitle = '') {
+  efxInjectStyles();
+  document.getElementById('efxOverlay')?.remove();
+  const overlay = document.createElement('div'); overlay.id = 'efxOverlay'; overlay.className = 'efx-overlay';
+  overlay.innerHTML = `<section class="efx-panel" role="dialog" aria-modal="true"><div style="font-size:11px;font-weight:900;letter-spacing:.12em;color:#16804a">ENGLISH FAMILY</div><h2>${efSafeText(title)}</h2>${subtitle ? `<p class="efx-muted">${efSafeText(subtitle)}</p>` : ''}<div id="efxPanelBody"></div><div class="efx-row"><button type="button" class="efx-btn" id="efxClose">Fechar</button></div></section>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#efxClose').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', ev => { if (ev.target === overlay) overlay.remove(); });
+  return { overlay, body: overlay.querySelector('#efxPanelBody') };
+}
+
+// Todos os níveis e aulas ficam acessíveis, independentemente do nível escolhido no perfil.
+function updateCoursePath() {
+  const container = document.getElementById('coursePath');
+  if (!container || !APP_STATE.user) return;
+  container.innerHTML = '';
+  Object.keys(COURSE).forEach(level => {
+    const section = createLevelElement(level);
+    section.classList.add('efx-course-level');
+    const badge = section.querySelector('.course-level-badge');
+    if (badge) badge.title = `Abrir nível ${level}`;
+    const heading = section.querySelector('.course-level-header');
+    if (heading) {
+      const label = document.createElement('span'); label.className = 'efx-open-level'; label.textContent = 'ACESSO LIVRE'; heading.appendChild(label);
+    }
+    container.appendChild(section);
+  });
+}
+
+function createLessonElement(lesson) {
+  const element = document.createElement('button');
+  element.type = 'button'; element.className = 'lesson-item';
+  const completed = (APP_STATE.user.completedLessons || []).includes(lesson.id);
+  const isCurrent = lesson.id === `${APP_STATE.user.level}-M${APP_STATE.user.module}-L${APP_STATE.user.lesson}`;
+  const isReview = lesson.type === 'review'; const isTest = lesson.type === 'test';
+  const icon = completed ? '✅' : isReview ? '🧠' : isTest ? '📝' : isCurrent ? '▶️' : '📘';
+  element.innerHTML = `<span class="lesson-icon">${icon}</span><span class="lesson-info"><strong>${escapeHTML(lesson.title || lesson.id || 'Aula')}</strong><span>${escapeHTML(lesson.description || (completed ? 'Aula concluída · praticar novamente' : 'Aula disponível'))}</span></span><span class="lesson-status">${completed ? '✓' : '›'}</span>`;
+  element.addEventListener('click', () => {
+    if (isReview) { startReview(); return; }
+    if (isTest) { startTest(lesson); return; }
+    startLesson(lesson);
+  });
+  return element;
+}
+
+function setupButtons() {
+  document.getElementById('continueButton')?.addEventListener('click', continueLearning);
+  document.getElementById('startReviewButton')?.addEventListener('click', startReview);
+  document.getElementById('profileButton')?.addEventListener('click', openProfile);
+  document.querySelectorAll('.conversation-mode').forEach(button => {
+    button.addEventListener('click', () => startConversation(button.dataset.mode || 'guided'));
+  });
+  document.querySelectorAll('.setting-item').forEach((button, index) => {
+    button.addEventListener('click', () => efxOpenSetting(button.textContent.trim(), index));
+  });
+}
+
+function efxOpenSetting(label, index) {
+  const lower = label.toLocaleLowerCase('pt-BR');
+  if (lower.includes('família') || lower.includes('familia') || index === 1) {
+    if (typeof efOpenProfileMenu === 'function') efOpenProfileMenu();
+    else alert('A troca de perfil familiar estará disponível após entrar em um perfil.');
+    return;
+  }
+  if (lower.includes('notifica') || index === 2) {
+    APP_STATE.user.settings = APP_STATE.user.settings || {};
+    const enabled = APP_STATE.user.settings.notifications !== false;
+    const modal = efxOverlay('Notificações', 'Preferência salva apenas neste perfil e neste navegador.');
+    modal.body.innerHTML = `<p class="efx-muted">Lembretes de estudo: <strong>${enabled ? 'ativados' : 'desativados'}</strong>.</p><div class="efx-row"><button class="efx-btn primary" id="efxToggleNotifications">${enabled ? 'Desativar' : 'Ativar'} lembretes</button></div>`;
+    modal.body.querySelector('#efxToggleNotifications').onclick = () => { APP_STATE.user.settings.notifications = !(APP_STATE.user.settings.notifications !== false); saveUserData(); const now = APP_STATE.user.settings.notifications; modal.body.querySelector('p').innerHTML = `Lembretes de estudo: <strong>${now ? 'ativados' : 'desativados'}</strong>.`; modal.body.querySelector('#efxToggleNotifications').textContent = `${now ? 'Desativar' : 'Ativar'} lembretes`; };
+    return;
+  }
+  if (lower.includes('aparência') || lower.includes('aparencia') || index === 3) {
+    APP_STATE.user.settings = APP_STATE.user.settings || {};
+    const active = Boolean(APP_STATE.user.settings.darkMode);
+    document.body.classList.toggle('efx-dark', active);
+    const modal = efxOverlay('Aparência', 'A preferência de visual é salva neste perfil.');
+    modal.body.innerHTML = `<p class="efx-muted">Modo atual: <strong>${active ? 'escuro' : 'claro'}</strong>.</p><button class="efx-btn primary" id="efxToggleTheme">Alternar modo claro/escuro</button>`;
+    modal.body.querySelector('#efxToggleTheme').onclick = () => { const now = document.body.classList.toggle('efx-dark'); APP_STATE.user.settings.darkMode = now; saveUserData(); modal.body.querySelector('p').innerHTML = `Modo atual: <strong>${now ? 'escuro' : 'claro'}</strong>.`; };
+    return;
+  }
+  efxOpenProfileSettings();
+}
+
+function efxOpenProfileSettings() {
+  const modal = efxOverlay('Meu perfil', 'Edite o nome e o nível inicial exibido no painel. Isso não apaga seu histórico.');
+  const user = APP_STATE.user;
+  modal.body.innerHTML = `<form id="efxProfileForm"><div class="efx-field"><label for="efxProfileName">Nome</label><input id="efxProfileName" maxlength="60" required value="${efSafeText(user.name || '')}"></div><div class="efx-field"><label for="efxProfileLevel">Nível do painel</label><select id="efxProfileLevel"><option value="A1">A1 — Iniciante</option><option value="A2">A2 — Básico</option><option value="B1">B1 — Intermediário</option><option value="B2">B2 — Intermediário avançado</option><option value="C1">C1 — Avançado</option></select></div><div class="efx-row"><button class="efx-btn primary" type="submit">Salvar perfil</button><button class="efx-btn" type="button" id="efxGeminiSettings">Configurar chave Gemini</button></div></form>`;
+  modal.body.querySelector('#efxProfileLevel').value = user.level || 'A2';
+  modal.body.querySelector('#efxProfileForm').addEventListener('submit', ev => {
+    ev.preventDefault(); user.name = modal.body.querySelector('#efxProfileName').value.trim() || user.name; user.level = modal.body.querySelector('#efxProfileLevel').value; if (EF_ACTIVE_ACCOUNT) { EF_ACTIVE_ACCOUNT.name = user.name; EF_ACTIVE_ACCOUNT.level = user.level; const accounts = efReadAccounts().map(account => account.id === EF_ACTIVE_ACCOUNT.id ? { ...account, name: user.name, level: user.level, email: user.email || '' } : account); efWriteAccounts(accounts); } saveUserData(); updateInterface(); if (typeof efAddProfileButton === 'function') efAddProfileButton(); modal.overlay.remove();
+  });
+  modal.body.querySelector('#efxGeminiSettings').onclick = () => { modal.overlay.remove(); efxConfigureGeminiKey(); };
+}
+
+function efxConfigureGeminiKey(onSaved = null) {
+  const modal = efxOverlay('Chave da API Gemini', `Perfil: ${APP_STATE.user?.name || 'Aluno'}. A chave fica salva separadamente para este perfil neste navegador.`);
+  const existing = efxGetGeminiKey();
+  modal.body.innerHTML = `<div class="efx-alert">Segurança: esta versão do GitHub Pages salva a chave neste navegador. Ela não vai para o repositório, mas pode ser acessada por alguém que controle este dispositivo ou inspecione as requisições. Para proteção maior, use um backend privado.</div><form id="efxGeminiForm"><div class="efx-field"><label for="efxGeminiKey">Chave Gemini API</label><input id="efxGeminiKey" type="password" autocomplete="off" spellcheck="false" placeholder="Cole sua chave do Google AI Studio" value="${efSafeText(existing)}"></div><label style="display:flex;gap:8px;align-items:center;font-size:13px"><input id="efxShowKey" type="checkbox"> Mostrar chave</label><p class="efx-muted">Obtenha a chave em <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio — API keys</a>. Não é a senha da sua conta Google.</p><div class="efx-row"><button class="efx-btn primary" type="submit">Salvar chave neste perfil</button>${onSaved ? '<button class="efx-btn primary" type="button" id="efxSaveAndContinue">Salvar e iniciar conversa</button>' : ''}<button class="efx-btn" type="button" id="efxTestKey">Testar chave</button><button class="efx-btn danger" type="button" id="efxDeleteKey">Remover chave</button></div><p id="efxKeyStatus" class="efx-muted" aria-live="polite"></p></form>`;
+  const keyInput = modal.body.querySelector('#efxGeminiKey'); const status = modal.body.querySelector('#efxKeyStatus');
+  modal.body.querySelector('#efxShowKey').onchange = ev => keyInput.type = ev.target.checked ? 'text' : 'password';
+  modal.body.querySelector('#efxGeminiForm').onsubmit = ev => { ev.preventDefault(); const key = keyInput.value.trim(); if (!key) { status.textContent = 'Cole uma chave antes de salvar.'; return; } if (efxSetGeminiKey(key)) { status.textContent = 'Chave salva para este perfil neste navegador.'; } else status.textContent = 'Não foi possível salvar. Verifique as configurações do navegador.'; };
+  modal.body.querySelector('#efxDeleteKey').onclick = () => { efxSetGeminiKey(''); keyInput.value = ''; status.textContent = 'Chave removida deste perfil.'; };
+  const continueButton = modal.body.querySelector('#efxSaveAndContinue');
+  if (continueButton) continueButton.onclick = () => { const key = keyInput.value.trim(); if (!key) { status.textContent = 'Cole uma chave antes de continuar.'; return; } if (!efxSetGeminiKey(key)) { status.textContent = 'Não foi possível salvar a chave neste navegador.'; return; } modal.overlay.remove(); onSaved(); };
+  modal.body.querySelector('#efxTestKey').onclick = async () => { const key = keyInput.value.trim() || efxGetGeminiKey(); if (!key) { status.textContent = 'Informe uma chave primeiro.'; return; } status.textContent = 'Testando conexão…'; try { await efxGeminiRequest(key, [{ role: 'user', parts: [{ text: 'Reply with exactly: Connection successful.' }] }], 'Reply briefly in English.'); status.textContent = 'Conexão com o Gemini funcionando. Clique em salvar para guardar a chave.'; } catch (err) { status.textContent = `Falha no teste: ${err.message || 'verifique a chave e a conexão'}`; } };
+}
+
+function efxCollectReviewQuestions() {
+  const user = APP_STATE.user; const pool = []; const seen = new Set();
+  const completed = (user.completedLessons || []).slice().reverse();
+  completed.forEach(id => {
+    const match = String(id).match(/^(A1|A2|B1|B2|C1)-M(\d+)-L(\d+)/); if (!match) return;
+    const lesson = LESSON_CONTENT[match[1]]?.[Number(match[2])]?.lessons?.[Number(match[3]) - 1]; if (!lesson) return;
+    const content = lesson.content || lesson;
+    [...(content.comprehension || []), ...(content.grammarExercises || [])].forEach(q => {
+      if (!q || !Array.isArray(q.options) || q.options.length < 2 || !Number.isInteger(q.answer)) return;
+      const key = `${id}:${q.id || q.question}`; if (seen.has(key)) return; seen.add(key);
+      pool.push({ ...q, lessonId: id, lessonTitle: lesson.title || id });
+    });
+  });
+  // If a profile has completed lessons but no quiz pool is available, offer a recall prompt instead of a dead end.
+  return pool;
+}
+
+function startReview() {
+  if (!APP_STATE.user) return;
+  const questions = efxCollectReviewQuestions();
+  if (!questions.length) {
+    const modal = efxOverlay('Revisão inteligente', 'As revisões são montadas a partir das aulas já concluídas.');
+    modal.body.innerHTML = `<p class="efx-muted">${(APP_STATE.user.completedLessons || []).length ? 'Ainda não há questões de múltipla escolha disponíveis nas aulas concluídas. Você pode abrir qualquer aula e praticar novamente.' : 'Conclua uma aula para começar a criar seu histórico de revisão espaçada.'}</p><div class="efx-row"><button class="efx-btn primary" id="efxGoCourse">Abrir curso completo</button></div>`;
+    modal.body.querySelector('#efxGoCourse').onclick = () => { modal.overlay.remove(); navigateTo('learn'); };
+    return;
+  }
+  const modal = efxOverlay('Revisão inteligente', 'Pratique conteúdos das aulas concluídas. As respostas erradas ficam registradas para orientar próximas revisões.');
+  modal.body.innerHTML = `<p id="efxReviewProgress" class="efx-muted"></p><div id="efxReviewQuestion" class="efx-question"></div><div id="efxReviewOptions" class="efx-options"></div><p id="efxReviewFeedback" class="efx-muted" aria-live="polite"></p><div class="efx-row"><button class="efx-btn primary" id="efxReviewNext" disabled>Próxima questão</button></div>`;
+  let index = 0, correct = 0, answered = false; const qEl = modal.body.querySelector('#efxReviewQuestion'); const options = modal.body.querySelector('#efxReviewOptions'); const feedback = modal.body.querySelector('#efxReviewFeedback'); const next = modal.body.querySelector('#efxReviewNext'); const progress = modal.body.querySelector('#efxReviewProgress');
+  function show() {
+    answered = false; const q = questions[index]; progress.textContent = `Questão ${index + 1} de ${questions.length} · ${q.lessonTitle}`; qEl.textContent = q.question || 'Escolha a resposta correta.'; feedback.textContent = ''; next.disabled = true; next.textContent = index === questions.length - 1 ? 'Ver resultado' : 'Próxima questão'; options.innerHTML = '';
+    q.options.forEach((text, i) => { const button = document.createElement('button'); button.className = 'efx-option'; button.type = 'button'; button.textContent = text; button.onclick = () => { if (answered) return; answered = true; const good = i === q.answer; if (good) correct++; else { APP_STATE.user.errors = APP_STATE.user.errors || []; APP_STATE.user.errors.push({ lessonId: q.lessonId, question: q.question, expected: q.options[q.answer], given: text, date: new Date().toISOString(), source: 'review' }); APP_STATE.user.review.weakPoints = APP_STATE.user.errors.length; } Array.from(options.children).forEach((el, j) => { el.disabled = true; if (j === q.answer) el.classList.add('good'); else if (j === i && !good) el.classList.add('bad'); }); feedback.textContent = `${good ? 'Correto! ' : `Resposta correta: ${q.options[q.answer]}. `}${q.explanation || ''}`; next.disabled = false; saveUserData(); }; options.appendChild(button); });
+  }
+  next.onclick = () => { if (!answered) return; if (index < questions.length - 1) { index++; show(); return; } const score = Math.round(correct / questions.length * 100); const reviewId = `review-${Date.now()}`; completeReview(reviewId); modal.body.innerHTML = `<div style="text-align:center;padding:18px"><div style="font-size:42px">${score >= 70 ? '🎉' : '💪'}</div><h3 style="font-size:24px;margin:10px 0">Revisão concluída!</h3><p class="efx-muted">Você acertou ${correct} de ${questions.length} questões (${score}%). ${score >= 70 ? 'Ótimo trabalho!' : 'Continue praticando para fixar melhor.'}</p><button class="efx-btn primary" id="efxReviewDone">Voltar ao painel</button></div>`; modal.body.querySelector('#efxReviewDone').onclick = () => { modal.overlay.remove(); updateInterface(); navigateTo('review'); }; };
+  show();
+}
+
+function startConversation(mode = 'guided') {
+  const modes = { guided: 'Conversação guiada', practice: 'Prática livre', challenge: 'Desafio de conversação' };
+  const title = modes[mode] || modes.guided;
+  if (!efxGetGeminiKey()) { efxConfigureGeminiKey(() => startConversation(mode)); return; }
+  const modal = efxOverlay(title, `Nível ${APP_STATE.user?.level || 'A2'} · ${APP_STATE.user?.name || 'Aluno'}`);
+  const starter = mode === 'challenge' ? 'Challenge: You are ordering food at a café. Ask for a drink and a meal, then ask the price.' : mode === 'practice' ? 'Free practice: Tell me about your day. I will help you express your ideas naturally.' : 'Guided conversation: Let us introduce ourselves. What is your name, and what do you like doing?';
+  modal.body.innerHTML = `<div class="efx-alert">${mode === 'guided' ? 'O tutor conversa em inglês, adapta a linguagem ao seu nível e pode explicar correções em português.' : mode === 'challenge' ? 'Complete a situação proposta em inglês. Tente responder com frases completas.' : 'Converse livremente. Você pode escrever em inglês e pedir ajuda quando precisar.'}</div><div class="efx-chatlog" id="efxChatLog"><div class="efx-msg assistant">${efSafeText(starter)}</div></div><form id="efxChatForm"><div class="efx-field"><label for="efxChatInput">Sua resposta em inglês</label><textarea id="efxChatInput" rows="3" placeholder="Type your answer in English…" required></textarea></div><div class="efx-row"><button class="efx-btn primary" id="efxChatSend" type="submit">Enviar resposta</button><button class="efx-btn" type="button" id="efxChatHint">Preciso de uma dica</button><button class="efx-btn" type="button" id="efxChatKey">Configurar chave</button></div></form><p id="efxChatStatus" class="efx-muted" aria-live="polite"></p>`;
+  const log = modal.body.querySelector('#efxChatLog'); const form = modal.body.querySelector('#efxChatForm'); const input = modal.body.querySelector('#efxChatInput'); const status = modal.body.querySelector('#efxChatStatus'); const send = modal.body.querySelector('#efxChatSend');
+  const history = []; const startedAt = Date.now(); let turns = 0;
+  function addMessage(role, text) { const bubble = document.createElement('div'); bubble.className = `efx-msg ${role === 'user' ? 'user' : 'assistant'}`; bubble.textContent = text; log.appendChild(bubble); log.scrollTop = log.scrollHeight; }
+  form.addEventListener('submit', async ev => {
+    ev.preventDefault(); const text = input.value.trim(); if (!text) return; const key = efxGetGeminiKey();
+    if (!key) { status.textContent = 'Configure a chave do Gemini para usar a IA nesta conversa.'; return; }
+    addMessage('user', text); history.push({ role: 'user', parts: [{ text }] }); input.value = ''; send.disabled = true; status.textContent = 'O tutor está preparando uma resposta…';
+    try { const reply = await efxGeminiRequest(key, history, `You are a kind American English tutor in the English Family app. The learner's CEFR level is ${APP_STATE.user?.level || 'A2'}. Conversation mode: ${mode}. The opening prompt already shown to the learner is: ${starter}. Continue from that prompt naturally in English, correct at most one or two important mistakes gently, and include a short Portuguese explanation only when useful. Ask one follow-up question. For challenge mode, stay in the role-play scenario. Keep responses concise and age-appropriate. Do not claim to hear audio; the learner is typing.`); history.push({ role: 'model', parts: [{ text: reply }] }); addMessage('assistant', reply); turns++; status.textContent = 'Resposta recebida. Continue a conversa.'; }
+    catch (err) { history.pop(); status.textContent = `Não foi possível obter resposta: ${err.message || 'verifique a chave e a conexão'}`; }
+    finally { send.disabled = false; input.focus(); }
+  });
+  modal.body.querySelector('#efxChatHint').onclick = () => { input.value = mode === 'challenge' ? 'Could I have a ___, please? How much is it?' : 'I usually… / I like… because…'; input.focus(); };
+  modal.body.querySelector('#efxChatKey').onclick = () => { modal.overlay.remove(); efxConfigureGeminiKey(); };
+  modal.overlay.querySelector('#efxClose').addEventListener('click', () => { if (turns > 0) completeConversation(mode, Math.max(1, Math.round((Date.now() - startedAt) / 60000))); }, { once: true });
+}
+
+async function efxGeminiRequest(apiKey, contents, systemInstruction = '') {
+  const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+    body: JSON.stringify({ systemInstruction: { parts: [{ text: systemInstruction || 'You are a helpful English tutor.' }] }, contents, generationConfig: { temperature: 0.7, maxOutputTokens: 600 } })
+  });
+  let data; try { data = await response.json(); } catch (_) { data = {}; }
+  if (!response.ok) { const message = data?.error?.message || `Erro HTTP ${response.status}`; throw new Error(message); }
+  const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n').trim();
+  if (!text) throw new Error('A API não retornou texto. Verifique as permissões ou o limite de uso da chave.');
+  return text;
+}
+
+// Restaura o tema salvo para o perfil atual.
+function efxRestoreProfileSettings() {
+  const dark = Boolean(APP_STATE.user?.settings?.darkMode);
+  document.body.classList.toggle('efx-dark', dark);
+}
+
+// O núcleo chama updateInterface após carregar o perfil; o wrapper restaura também as preferências.
+function updateInterface() {
+  efxOriginalUpdateInterface();
+  efxRestoreProfileSettings();
 }
