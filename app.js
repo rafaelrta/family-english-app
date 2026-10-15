@@ -1334,9 +1334,10 @@ async function startLesson(lesson) {
   ) {
 
     alert(
-      `🔒 O nível ${requestedLevel} está bloqueado. ` +
-      `Seu perfil está configurado para ${profileLevel}.`
-    );
+  "O nivel " + requestedLevel +
+  " esta bloqueado. Seu perfil esta configurado para " +
+  profileLevel + "."
+);
 
     return;
 
