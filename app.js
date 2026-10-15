@@ -8196,3 +8196,159 @@ function updateInterface() {
   efxOriginalUpdateInterface();
   efxRestoreProfileSettings();
 }
+
+/* =========================================================
+   ENGLISH FAMILY — BLOQUEIO DE NÍVEIS POR PERFIL
+   Acesso ao nível atual e aos níveis anteriores.
+   ========================================================= */
+
+(function () {
+  "use strict";
+
+  const EF_LEVEL_ORDER = ["A1", "A2", "B1", "B2", "C1"];
+
+  function efNormalizeLevel(level) {
+    const normalized = String(level || "").trim().toUpperCase();
+    return EF_LEVEL_ORDER.includes(normalized) ? normalized : "A1";
+  }
+
+  function efCanAccessLevel(level) {
+    const userLevel = efNormalizeLevel(APP_STATE.user?.level);
+    const requestedLevel = efNormalizeLevel(level);
+
+    return (
+      EF_LEVEL_ORDER.indexOf(requestedLevel) <=
+      EF_LEVEL_ORDER.indexOf(userLevel)
+    );
+  }
+
+  function efGetLessonLevel(lesson) {
+    const id = String(lesson?.id || "");
+    const match = id.match(/^(A1|A2|B1|B2|C1)(?:-|$)/i);
+
+    return efNormalizeLevel(match ? match[1] : lesson?.level);
+  }
+
+  // Atualiza a apresentação dos níveis e identifica os bloqueados.
+  const efPreviousUpdateCoursePath = updateCoursePath;
+
+  updateCoursePath = function () {
+    efPreviousUpdateCoursePath();
+
+    const container = document.getElementById("coursePath");
+    if (!container) return;
+
+    container.querySelectorAll(".efx-course-level").forEach(section => {
+      const heading = section.querySelector(".course-level-header");
+      if (!heading) return;
+
+      const badge = section.querySelector(".course-level-badge");
+      const levelText = badge?.textContent || heading.textContent;
+      const match = levelText.match(/\b(A1|A2|B1|B2|C1)\b/i);
+
+      if (!match) return;
+
+      const level = efNormalizeLevel(match[1]);
+      const allowed = efCanAccessLevel(level);
+
+      section.classList.toggle("efx-level-locked", !allowed);
+
+      const label = heading.querySelector(".efx-open-level");
+      if (label) {
+        label.textContent = allowed ? "LIBERADO" : "🔒 BLOQUEADO";
+      }
+
+      if (badge) {
+        badge.title = allowed
+          ? `Acessar nível ${level}`
+          : `Nível ${level} bloqueado. Seu nível atual é ${efNormalizeLevel(APP_STATE.user?.level)}.`;
+      }
+    });
+  };
+
+  // Bloqueia aulas, revisões e provas dos níveis superiores.
+  const efPreviousCreateLessonElement = createLessonElement;
+
+  createLessonElement = function (lesson) {
+    const element = efPreviousCreateLessonElement(lesson);
+    const level = efGetLessonLevel(lesson);
+    const allowed = efCanAccessLevel(level);
+
+    if (!allowed) {
+      element.disabled = true;
+      element.classList.add("efx-lesson-locked");
+      element.title = `🔒 Disponível quando seu perfil alcançar o nível ${level}.`;
+
+      const icon = element.querySelector(".lesson-icon");
+      const status = element.querySelector(".lesson-status");
+      const description = element.querySelector(".lesson-info span");
+
+      if (icon) icon.textContent = "🔒";
+      if (status) status.textContent = "Bloqueado";
+      if (description) {
+        description.textContent = `Desbloqueia ao alcançar ${level}`;
+      }
+    }
+
+    return element;
+  };
+
+  // Proteção adicional contra tentativas de abrir uma aula bloqueada.
+  const efPreviousStartLesson = startLesson;
+
+  startLesson = function (lesson) {
+    const level = efGetLessonLevel(lesson);
+
+    if (!efCanAccessLevel(level)) {
+      alert(
+        `Este conteúdo está bloqueado.\n\n` +
+        `Seu nível atual é ${efNormalizeLevel(APP_STATE.user?.level)}. ` +
+        `Você precisa alcançar ${level} para acessar este conteúdo.`
+      );
+      return;
+    }
+
+    return efPreviousStartLesson.apply(this, arguments);
+  };
+
+  // Atualiza a tela sempre que o nível ou perfil for carregado.
+  const efPreviousRestoreProfileSettings =
+    typeof efxRestoreProfileSettings === "function"
+      ? efxRestoreProfileSettings
+      : null;
+
+  if (efPreviousRestoreProfileSettings) {
+    efxRestoreProfileSettings = function () {
+      efPreviousRestoreProfileSettings.apply(this, arguments);
+      updateCoursePath();
+    };
+  }
+
+  // Estilo visual dos conteúdos bloqueados.
+  const efLockStyle = document.createElement("style");
+  efLockStyle.id = "ef-level-lock-styles";
+  efLockStyle.textContent = `
+    .efx-level-locked {
+      opacity: 0.72;
+    }
+
+    .efx-level-locked .efx-open-level {
+      color: #b45309;
+      font-weight: 700;
+    }
+
+    .efx-lesson-locked {
+      opacity: 0.55;
+      cursor: not-allowed !important;
+    }
+
+    .efx-lesson-locked:disabled {
+      pointer-events: none;
+    }
+  `;
+  if (!document.getElementById(efLockStyle.id)) {
+    document.head.appendChild(efLockStyle);
+  }
+
+})();
+
