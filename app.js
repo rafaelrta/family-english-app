@@ -1369,9 +1369,9 @@ async function startLesson(lesson) {
 
   if (!isUnlocked) {
 
-    alert(
-      "Esta aula ainda está bloqueada."
-    );
+   alert(
+  "Esta aula ainda esta bloqueada."
+);
 
     return;
 
