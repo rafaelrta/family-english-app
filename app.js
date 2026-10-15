@@ -2909,174 +2909,127 @@ function calculateLessonSteps(
 }
 
 
-function buildLessonSteps(
-  content
-) {
+
+function buildLessonSteps(content) {
 
   const steps = [];
 
-  if (content.introduction) {
-
-    steps.push({
-
-      type:
-        "introduction",
-
-      data:
-        content.introduction
-
-    });
-
+  if (!content) {
+    return steps;
   }
 
-  if (
-    content.vocabulary?.length
-  ) {
-
+  if (content.introduction) {
     steps.push({
-
-      type:
-        "vocabulary",
-
-      data:
-        content.vocabulary
-
+      type: "introduction",
+      data: content.introduction
     });
+  }
 
+  if (Array.isArray(content.vocabulary) && content.vocabulary.length) {
+    steps.push({
+      type: "vocabulary",
+      data: content.vocabulary
+    });
   }
 
   if (content.grammar) {
-
     steps.push({
-
-      type:
-        "grammar",
-
-      data:
-        content.grammar
-
+      type: "grammar",
+      data: content.grammar
     });
-
   }
 
   if (content.reading) {
-
     steps.push({
-
-      type:
-        "reading",
-
-      data:
-        content.reading
-
+      type: "reading",
+      data: content.reading
     });
-
   }
 
-  (content.listening || [])
-    .forEach(item =>
+  // Aceita um único objeto ou uma lista de atividades.
+  const listeningItems = Array.isArray(content.listening)
+    ? content.listening
+    : content.listening
+      ? [content.listening]
+      : [];
+
+  listeningItems.forEach(item => {
+    steps.push({
+      type: "listening",
+      data: item
+    });
+  });
+
+  if (Array.isArray(content.comprehension)) {
+    content.comprehension.forEach(item => {
       steps.push({
+        type: "comprehension",
+        data: item
+      });
+    });
+  }
 
-        type:
-          "listening",
-
-        data:
-          item
-
-      })
-    );
-
-  (content.comprehension || [])
-    .forEach(item =>
+  if (Array.isArray(content.translation)) {
+    content.translation.forEach(item => {
       steps.push({
+        type: "translation",
+        data: item
+      });
+    });
+  }
 
-        type:
-          "comprehension",
-
-        data:
-          item
-
-      })
-    );
-
-  (content.translation || [])
-    .forEach(item =>
+  if (Array.isArray(content.grammarExercises)) {
+    content.grammarExercises.forEach(item => {
       steps.push({
+        type: "grammarExercise",
+        data: item
+      });
+    });
+  }
 
-        type:
-          "translation",
+  const speakingItems = Array.isArray(content.speaking)
+    ? content.speaking
+    : content.speaking
+      ? [content.speaking]
+      : [];
 
-        data:
-          item
+  speakingItems.forEach(item => {
+    steps.push({
+      type: "speaking",
+      data: item
+    });
+  });
 
-      })
-    );
+  const writingItems = Array.isArray(content.writing)
+    ? content.writing
+    : content.writing
+      ? [content.writing]
+      : [];
 
-  (content.grammarExercises || [])
-    .forEach(item =>
+  writingItems.forEach(item => {
+    steps.push({
+      type: "writing",
+      data: item
+    });
+  });
+
+  if (Array.isArray(content.activeRecall)) {
+    content.activeRecall.forEach(item => {
       steps.push({
-
-        type:
-          "grammarExercise",
-
-        data:
-          item
-
-      })
-    );
-
-  (content.speaking || [])
-    .forEach(item =>
-      steps.push({
-
-        type:
-          "speaking",
-
-        data:
-          item
-
-      })
-    );
-
-  (content.writing || [])
-    .forEach(item =>
-      steps.push({
-
-        type:
-          "writing",
-
-        data:
-          item
-
-      })
-    );
-
-  (content.activeRecall || [])
-    .forEach(item =>
-      steps.push({
-
-        type:
-          "activeRecall",
-
-        data:
-          item
-
-      })
-    );
+        type: "activeRecall",
+        data: item
+      });
+    });
+  }
 
   steps.push({
-
-    type:
-      "completion",
-
-    data:
-      null
-
+    type: "completion",
+    data: null
   });
 
   return steps;
-
 }
+
 
 
 function getLessonSteps() {
