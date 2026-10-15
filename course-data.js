@@ -770,9 +770,40 @@ function createGenericContent(
           alternatives:
             []
 
+        },
+
+        {
+          id: `${level}-M${moduleNumber}-L${lessonNumber}-A2`,
+          question: `Say or write three words connected with ${topic}.`,
+          answer: vocabulary.slice(0, 3).map(item => typeof item === "string" ? item : item.word).join(", "),
+          alternatives: []
         }
 
-      ]
+      ],
+
+    listening: {
+      title: `Listen and notice: ${topic}`,
+      text: `Read aloud slowly, then listen to yourself: ${createFallbackReading(level, topic)}`,
+      instructions: "Read once for the general idea, a second time for details, and a third time aloud."
+    },
+
+    speaking: {
+      title: `Speak about ${topic}`,
+      prompt: `Speak for 30–60 seconds about ${topic}. Use at least three words from this lesson and one target grammar structure.`,
+      model: `I want to talk about ${topic}. It is important in my daily life. I can give an example and explain why I think so.`
+    },
+
+    writing: {
+      title: `Write about ${topic}`,
+      prompt: `Write 4–8 sentences about ${topic}, using the lesson vocabulary and target grammar.`,
+      checklist: ["My ideas are clear.", "I used the target grammar.", "I checked spelling and punctuation."]
+    },
+
+    extraPractice: {
+      translationPrompt: `Translate one sentence about ${topic} into Portuguese, then translate it back into English.`,
+      reviewPrompt: `Without looking, explain ${grammar[0] || "the main grammar point"} in your own words.`,
+      realLifeTask: `Use one new expression from this lesson in a real-life sentence about ${topic}.`
+    }
 
   };
 
@@ -3491,7 +3522,7 @@ COURSE_DATA.meta = {
     "English Family",
 
   version:
-    "1.4.0",
+    "1.5.0",
 
   pedagogy:
     PEDAGOGY_REFERENCE,
@@ -3523,5 +3554,5 @@ window.ENGLISH_FAMILY_COURSE_DATA =
 
 
 /* =========================================================
-   END COURSE-DATA.JS v1.4.0
+   END COURSE-DATA.JS v1.5.0
    ========================================================= */
