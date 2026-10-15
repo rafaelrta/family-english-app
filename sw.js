@@ -1,5 +1,5 @@
-/* English Family PWA service worker v1.5.0 */
-const CACHE_NAME = "english-family-v1.5.0";
+/* English Family PWA service worker v1.5.1 */
+const CACHE_NAME = "english-family-v1.5.1";
 const APP_SHELL = ["./", "./index.html", "./style.css", "./app.js", "./course-data.js", "./manifest.json"];
 self.addEventListener("install", event => { event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", event => { event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith("english-family-") && key !== CACHE_NAME).map(key => caches.delete(key)))).then(() => self.clients.claim())); });
