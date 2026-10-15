@@ -1294,6 +1294,7 @@ function ensureCourseStructure() {
 }
 
 
+```javascript
 /* =========================================================
    20. INICIAR AULA
    ========================================================= */
@@ -1301,6 +1302,43 @@ function ensureCourseStructure() {
 async function startLesson(lesson) {
 
   if (!lesson) {
+    return;
+  }
+
+  // Identifica o nível da aula pelo seu ID.
+  const requestedLevel =
+    String(lesson.id || "")
+      .split("-")[0]
+      .toUpperCase();
+
+  // Ordem dos níveis do curso.
+  const levelOrder = {
+    A1: 1,
+    A2: 2,
+    B1: 3,
+    B2: 4,
+    C1: 5
+  };
+
+  // Nível definido para o perfil do aluno.
+  const profileLevel =
+    String(
+      APP_STATE.user?.level ||
+      "A1"
+    ).toUpperCase();
+
+  // Bloqueia níveis acima do perfil.
+  if (
+    levelOrder[requestedLevel] &&
+    levelOrder[profileLevel] &&
+    levelOrder[requestedLevel] >
+      levelOrder[profileLevel]
+  ) {
+
+    alert(
+      `🔒 O nível ${requestedLevel} está bloqueado. ` +
+      `Seu perfil está configurado para ${profileLevel}.`
+    );
 
     return;
 
@@ -1310,16 +1348,25 @@ async function startLesson(lesson) {
     `${APP_STATE.user.level}-M${APP_STATE.user.module}-L${APP_STATE.user.lesson}`;
 
   const completed =
-    APP_STATE.user.completedLessons
+    (APP_STATE.user.completedLessons || [])
       .includes(lesson.id);
 
   const isCurrent =
     lesson.id === currentId;
 
+  // Permite estudar aulas de níveis anteriores,
+  // mesmo que ainda não tenham sido concluídas.
+  const isPreviousLevel =
+    levelOrder[requestedLevel] &&
+    levelOrder[profileLevel] &&
+    levelOrder[requestedLevel] <
+      levelOrder[profileLevel];
+
   const isUnlocked =
     completed ||
     isCurrent ||
-    lesson.status === "current";
+    lesson.status === "current" ||
+    isPreviousLevel;
 
   if (!isUnlocked) {
 
@@ -1359,8 +1406,7 @@ async function startLesson(lesson) {
 
   APP_STATE.currentSession = {
 
-    type:
-      "lesson",
+    type: "lesson",
 
     activityId:
       resolvedLesson.id,
@@ -1368,26 +1414,19 @@ async function startLesson(lesson) {
     startedAt:
       new Date().toISOString(),
 
-    completed:
-      false,
+    completed: false,
 
-    step:
-      0,
+    step: 0,
 
-    answers:
-      {},
+    answers: {},
 
-    score:
-      0,
+    score: 0,
 
-    total:
-      0,
+    total: 0,
 
-    errors:
-      [],
+    errors: [],
 
-    feedbackShown:
-      false
+    feedbackShown: false
 
   };
 
@@ -1396,7 +1435,7 @@ async function startLesson(lesson) {
   );
 
 }
-
+```
 
 /* =========================================================
    21. RESOLUÇÃO DE CONTEÚDO
