@@ -20,7 +20,7 @@ const APP_CONFIG = {
 
   name: "English Family",
 
-  version: "1.4.0",
+  version: "1.5.0",
 
   language: "en",
 
@@ -38,7 +38,7 @@ const APP_CONFIG = {
 
   storageKey: "englishFamilyData",
 
-  storageVersion: 2,
+  storageVersion: 3,
 
   /*
    * Quando existir um backend próprio, basta informar
@@ -277,7 +277,7 @@ document.addEventListener(
 );
 
 
-function initializeApp() {
+function initializeCoreApp() {
 
   try {
 
@@ -7849,3 +7849,129 @@ window.EnglishFamily = {
 /* =========================================================
    END APP.JS v1.4.0
    ========================================================= */
+
+/* =========================================================
+   ENGLISH FAMILY v1.5.0 — PERFIS FAMILIARES E ATIVIDADES
+   Perfis locais neste navegador; não é autenticação de servidor.
+   ========================================================= */
+
+const EF_ACCOUNTS_KEY = "englishFamilyAccounts_v1";
+const EF_ACTIVE_KEY = "englishFamilyActiveAccount_v1";
+const EF_PENDING_PROFILE_KEY = "englishFamilyPendingProfile_v1";
+let EF_ACTIVE_ACCOUNT = null;
+let EF_AUTH_BOUND = false;
+
+function efReadAccounts() {
+  try { return JSON.parse(localStorage.getItem(EF_ACCOUNTS_KEY) || "[]"); }
+  catch (_) { return []; }
+}
+function efWriteAccounts(accounts) {
+  localStorage.setItem(EF_ACCOUNTS_KEY, JSON.stringify(accounts));
+}
+function efSafeText(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"}[c]));
+}
+async function efHashPin(pin) {
+  if (window.crypto && crypto.subtle && window.TextEncoder) {
+    const bytes = new TextEncoder().encode(String(pin));
+    const hash = await crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(hash)).map(x => x.toString(16).padStart(2,"0")).join("");
+  }
+  // Fallback apenas para compatibilidade local; não é criptografia forte.
+  let h = 2166136261;
+  for (const c of String(pin)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  return "local-" + (h >>> 0).toString(16);
+}
+function efAccountStorageKey(id) { return `englishFamilyData_profile_${id}`; }
+function efRenderAuth(message = "") {
+  let root = document.getElementById("efAuthRoot");
+  if (!root) { root = document.createElement("div"); root.id = "efAuthRoot"; document.body.appendChild(root); }
+  root.innerHTML = `
+    <style>
+      #efAuthRoot{position:fixed;inset:0;z-index:100000;background:linear-gradient(145deg,#eaf8ee,#f5fbf6 55%,#d9f1df);display:grid;place-items:center;padding:20px;overflow:auto;color:#163b2b;font-family:inherit}
+      .ef-auth-card{width:min(100%,520px);background:#fff;border:1px solid #d9eadf;border-radius:24px;padding:clamp(22px,5vw,38px);box-shadow:0 24px 70px #1c56301c}
+      .ef-auth-logo{font-size:13px;font-weight:800;letter-spacing:.12em;color:#16804a}.ef-auth-card h1{font-size:clamp(26px,5vw,34px);margin:10px 0 8px}.ef-auth-card p{line-height:1.55;color:#5c7466}.ef-auth-tabs{display:flex;gap:8px;margin:22px 0 18px}.ef-auth-tabs button,.ef-profile-switch{border:1px solid #cfe2d5;background:#f5faf6;border-radius:12px;padding:11px 14px;cursor:pointer;font-weight:700;color:#27563d}.ef-auth-tabs button.active{background:#177b46;color:#fff;border-color:#177b46}.ef-auth-field{display:grid;gap:6px;margin:13px 0}.ef-auth-field label{font-size:13px;font-weight:700}.ef-auth-field input,.ef-auth-field select{width:100%;box-sizing:border-box;border:1px solid #ccddd1;border-radius:12px;padding:13px;font:inherit;background:#fff;color:#163b2b}.ef-auth-submit{width:100%;border:0;border-radius:13px;background:#16804a;color:white;padding:14px;font:inherit;font-weight:800;cursor:pointer;margin-top:12px}.ef-auth-msg{color:#a33b2d!important;font-weight:700;min-height:1.3em}.ef-auth-note{font-size:12px!important;background:#f4f8f4;border-radius:12px;padding:11px}.ef-auth-existing{display:grid;gap:8px;margin-top:12px}.ef-auth-existing button{display:flex;justify-content:space-between;align-items:center;text-align:left;border:1px solid #d5e7da;border-radius:12px;background:#fff;padding:12px;cursor:pointer;color:#163b2b}.ef-profile-pill{position:fixed;right:16px;top:14px;z-index:9000;border:1px solid #cde2d3;background:#fff;color:#20563a;border-radius:999px;padding:9px 13px;box-shadow:0 4px 16px #0000000d;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+    </style>
+    <section class="ef-auth-card" aria-labelledby="efAuthTitle">
+      <div class="ef-auth-logo">ENGLISH FAMILY</div>
+      <h1 id="efAuthTitle">Seu inglês, no seu ritmo.</h1>
+      <p>Crie um perfil para cada pessoa da família. Cada perfil mantém seu próprio nível, aulas concluídas, pontos e revisões neste navegador.</p>
+      <div class="ef-auth-tabs"><button type="button" id="efTabLogin" class="active">Entrar</button><button type="button" id="efTabRegister">Criar perfil</button></div>
+      <div id="efAuthForm"></div><p class="ef-auth-msg" id="efAuthMessage">${efSafeText(message)}</p>
+      <p class="ef-auth-note">Importante: os perfis ficam salvos neste dispositivo/navegador. O PIN não cria uma conta online nem sincroniza automaticamente com outros aparelhos. Para uso familiar privado, não use um PIN que você reutiliza em outros serviços.</p>
+    </section>`;
+  const loginTab = root.querySelector("#efTabLogin"), registerTab = root.querySelector("#efTabRegister");
+  function showMode(mode) {
+    const registering = mode === "register";
+    loginTab.classList.toggle("active", !registering); registerTab.classList.toggle("active", registering);
+    const accounts = efReadAccounts();
+    root.querySelector("#efAuthForm").innerHTML = registering ? `
+      <form id="efRegisterForm"><div class="ef-auth-field"><label for="efName">Nome do familiar</label><input id="efName" name="name" maxlength="60" autocomplete="name" required placeholder="Ex.: Ana"></div>
+      <div class="ef-auth-field"><label for="efEmail">E-mail (opcional)</label><input id="efEmail" name="email" type="email" maxlength="120" autocomplete="email" placeholder="voce@exemplo.com"></div>
+      <div class="ef-auth-field"><label for="efPin">Crie um PIN ou senha (4 a 32 caracteres)</label><input id="efPin" name="pin" type="password" minlength="4" maxlength="32" autocomplete="new-password" required></div>
+      <div class="ef-auth-field"><label for="efLevel">Nível inicial de inglês</label><select id="efLevel" name="level"><option value="A1">A1 — Iniciante</option><option value="A2" selected>A2 — Básico</option><option value="B1">B1 — Intermediário</option><option value="B2">B2 — Intermediário avançado</option><option value="C1">C1 — Avançado</option></select></div><button class="ef-auth-submit" type="submit">Criar meu perfil</button></form>` : `
+      <form id="efLoginForm"><div class="ef-auth-field"><label for="efLoginName">Perfil</label><select id="efLoginName" name="id" required>${accounts.map(a=>`<option value="${efSafeText(a.id)}" ${a.id===localStorage.getItem(EF_PENDING_PROFILE_KEY)?"selected":""}>${efSafeText(a.name)}${a.email?` — ${efSafeText(a.email)}`:""}</option>`).join("")}</select></div>
+      <div class="ef-auth-field"><label for="efLoginPin">PIN ou senha</label><input id="efLoginPin" name="pin" type="password" minlength="4" maxlength="32" autocomplete="current-password" required></div><button class="ef-auth-submit" type="submit">Entrar no meu perfil</button></form>
+      ${accounts.length ? "" : "<p>Este é o primeiro acesso neste navegador. Selecione <b>Criar perfil</b> para começar.</p>"}
+      ${accounts.length ? `<div class="ef-auth-existing"><p>Perfis cadastrados</p>${accounts.map(a=>`<button type="button" data-ef-profile="${efSafeText(a.id)}"><span><b>${efSafeText(a.name)}</b><br><small>Nível ${efSafeText(a.level||"A2")}</small></span><span>Entrar →</span></button>`).join("")}</div>` : ""}`;
+    const form = root.querySelector("#efRegisterForm");
+    if (form) form.addEventListener("submit", async ev => {
+      ev.preventDefault(); const fd = new FormData(form); const name=String(fd.get("name")||"").trim(), email=String(fd.get("email")||"").trim(), pin=String(fd.get("pin")||""), level=String(fd.get("level")||"A2");
+      if(name.length<2){efSetAuthMessage("Informe um nome com pelo menos 2 caracteres.");return;}
+      if(pin.length<4){efSetAuthMessage("O PIN/senha precisa ter pelo menos 4 caracteres.");return;}
+      const all=efReadAccounts(); if(all.some(a=>a.name.trim().toLocaleLowerCase()===name.toLocaleLowerCase())){efSetAuthMessage("Já existe um perfil com esse nome. Escolha outro nome.");return;}
+      const id="ef_"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+      const account={id,name,email,level,pinHash:await efHashPin(pin),createdAt:new Date().toISOString()};
+      all.push(account); efWriteAccounts(all);
+      let user=cloneObject(DEFAULT_USER); user.id=id;user.name=name;user.email=email;user.level=level;user.module=1;user.lesson=1;
+      // Migra o progresso antigo apenas no primeiro perfil, se ele existir.
+      const legacy=localStorage.getItem(APP_CONFIG.storageKey);
+      if(all.length===1 && legacy){try{const old=JSON.parse(legacy);if(old && (old.completedLessons||[]).length){user=mergeObjects(user,old);user.id=id;user.name=name;user.email=email;user.level=level;}}catch(_){}}
+      localStorage.setItem(efAccountStorageKey(id),JSON.stringify(user));localStorage.setItem(EF_ACTIVE_KEY,id);EF_ACTIVE_ACCOUNT=account;root.remove();initializeCoreApp();efAddProfileButton();
+    });
+    const loginForm=root.querySelector("#efLoginForm");
+    if(loginForm) loginForm.addEventListener("submit",async ev=>{ev.preventDefault();const fd=new FormData(loginForm);await efLogin(String(fd.get("id")||""),String(fd.get("pin")||""));});
+    root.querySelectorAll("[data-ef-profile]").forEach(btn=>btn.addEventListener("click",()=>{const sel=root.querySelector("#efLoginName");if(sel)sel.value=btn.dataset.efProfile;const pin=root.querySelector("#efLoginPin");if(pin)pin.focus();}));
+  }
+  loginTab.addEventListener("click",()=>showMode("login"));registerTab.addEventListener("click",()=>showMode("register"));showMode("login");
+}
+function efSetAuthMessage(message){const el=document.getElementById("efAuthMessage");if(el)el.textContent=message;}
+async function efLogin(id,pin){const accounts=efReadAccounts(),account=accounts.find(a=>a.id===id);if(!account){efSetAuthMessage("Selecione um perfil válido.");return;}const hash=await efHashPin(pin);if(hash!==account.pinHash){efSetAuthMessage("PIN/senha incorreto. Tente novamente.");return;}localStorage.setItem(EF_ACTIVE_KEY,id);localStorage.removeItem(EF_PENDING_PROFILE_KEY);EF_ACTIVE_ACCOUNT=account;const root=document.getElementById("efAuthRoot");if(root)root.remove();initializeCoreApp();efAddProfileButton();}
+function efAddProfileButton(){let b=document.getElementById("efProfileButton");if(!b){b=document.createElement("button");b.id="efProfileButton";b.className="ef-profile-pill";b.type="button";document.body.appendChild(b);b.addEventListener("click",efOpenProfileMenu);}const account=EF_ACTIVE_ACCOUNT||efReadAccounts().find(a=>a.id===localStorage.getItem(EF_ACTIVE_KEY));b.textContent=`👤 ${account?.name||APP_STATE.user?.name||"Perfil"} ▾`;}
+function efOpenProfileMenu(){const accounts=efReadAccounts();const choice=prompt("Perfil atual: "+(EF_ACTIVE_ACCOUNT?.name||APP_STATE.user?.name)+"\n\nDigite o número do perfil para trocar:\n"+accounts.map((a,i)=>`${i+1}. ${a.name} (${a.level})`).join("\n")+"\n\nDigite 0 para sair do perfil atual.");if(choice===null)return;if(choice==="0"){localStorage.removeItem(EF_ACTIVE_KEY);location.reload();return;}const n=Number(choice);if(Number.isInteger(n)&&n>=1&&n<=accounts.length){const target=accounts[n-1];if(target.id===localStorage.getItem(EF_ACTIVE_KEY))return;localStorage.setItem(EF_PENDING_PROFILE_KEY,target.id);localStorage.removeItem(EF_ACTIVE_KEY);location.reload();}}
+function initializeApp(){
+  const accounts=efReadAccounts();const activeId=localStorage.getItem(EF_ACTIVE_KEY);EF_ACTIVE_ACCOUNT=accounts.find(a=>a.id===activeId)||null;
+  if(!EF_ACTIVE_ACCOUNT){efRenderAuth();return;}
+  initializeCoreApp();efAddProfileButton();
+}
+function loadUserData(){
+  try{const key=EF_ACTIVE_ACCOUNT?efAccountStorageKey(EF_ACTIVE_ACCOUNT.id):APP_CONFIG.storageKey;const raw=localStorage.getItem(key);if(raw){APP_STATE.user=mergeObjects(cloneObject(DEFAULT_USER),JSON.parse(raw));}else{APP_STATE.user=cloneObject(DEFAULT_USER);if(EF_ACTIVE_ACCOUNT){APP_STATE.user.id=EF_ACTIVE_ACCOUNT.id;APP_STATE.user.name=EF_ACTIVE_ACCOUNT.name;APP_STATE.user.email=EF_ACTIVE_ACCOUNT.email||"";APP_STATE.user.level=EF_ACTIVE_ACCOUNT.level||APP_CONFIG.defaultLevel;} }normalizeUserData();saveUserData();}
+  catch(error){console.error("Erro ao carregar perfil:",error);APP_STATE.user=cloneObject(DEFAULT_USER);}
+}
+function saveUserData(){if(!APP_STATE.user)return;try{APP_STATE.user.storageVersion=APP_CONFIG.storageVersion;const serialized=JSON.stringify(APP_STATE.user);localStorage.setItem(APP_CONFIG.storageKey,serialized);if(EF_ACTIVE_ACCOUNT)localStorage.setItem(efAccountStorageKey(EF_ACTIVE_ACCOUNT.id),serialized);}catch(error){console.error("Erro ao salvar progresso:",error);}}
+
+// A avaliação passa a ser interativa e usa questões reais do conteúdo pedagógico disponível.
+function startTest(lesson){
+  const level=String(lesson.id||"").split("-")[0]||APP_STATE.user.level;
+  const moduleMatch=String(lesson.id||"").match(/M(\d+)/);const moduleNumber=moduleMatch?Number(moduleMatch[1]):APP_STATE.user.module;
+  const lessonMatch=String(lesson.id||"").match(/L(\d+)/);const lessonNumber=lessonMatch?Number(lessonMatch[1]):APP_STATE.user.lesson;
+  const source=LESSON_CONTENT[level]?.[moduleNumber]?.lessons?.[lessonNumber-1];
+  const content=source?.content||source;
+  const pool=[...(content?.comprehension||[]),...(content?.grammarExercises||[])].filter(q=>Array.isArray(q.options)&&q.options.length>=2&&Number.isInteger(q.answer));
+  if(!pool.length){alert("Ainda não há questões suficientes para esta avaliação. Conclua as aulas do módulo e tente novamente.");return;}
+  const questions=pool.slice(0,Math.min(10,pool.length));let idx=0,correct=0,answered=false;
+  const old=document.getElementById("efPracticeOverlay");if(old)old.remove();const modal=document.createElement("div");modal.id="efPracticeOverlay";modal.style.cssText="position:fixed;inset:0;z-index:100001;background:#10251deF;display:grid;place-items:center;padding:18px;font-family:inherit;";
+  modal.innerHTML=`<section style="width:min(100%,680px);max-height:92vh;overflow:auto;background:white;color:#173b2b;border-radius:22px;padding:clamp(20px,4vw,34px);box-sizing:border-box"><p style="font-size:12px;font-weight:800;letter-spacing:.12em;color:#16804a">ENGLISH FAMILY · AVALIAÇÃO</p><h2 id="efTestTitle">${efSafeText(lesson.title||"Teste do módulo")}</h2><p id="efTestProgress"></p><div id="efTestQuestion" style="font-size:19px;font-weight:700;line-height:1.5;margin:22px 0"></div><div id="efTestOptions" style="display:grid;gap:10px"></div><p id="efTestFeedback" aria-live="polite"></p><button id="efTestNext" style="display:none;width:100%;padding:13px;border:0;border-radius:12px;background:#16804a;color:white;font-weight:800;margin-top:12px;cursor:pointer">Próxima questão</button><button id="efTestClose" style="margin-top:12px;border:0;background:transparent;padding:10px;cursor:pointer">Sair da avaliação</button></section>`;document.body.appendChild(modal);
+  const qEl=modal.querySelector("#efTestQuestion"),opts=modal.querySelector("#efTestOptions"),feedback=modal.querySelector("#efTestFeedback"),next=modal.querySelector("#efTestNext"),progress=modal.querySelector("#efTestProgress");
+  function show(){answered=false;const q=questions[idx];progress.textContent=`Questão ${idx+1} de ${questions.length}`;qEl.textContent=q.question;feedback.textContent="";next.style.display="none";opts.innerHTML="";q.options.forEach((opt,i)=>{const b=document.createElement("button");b.type="button";b.textContent=opt;b.style.cssText="text-align:left;padding:14px;border:1px solid #d5e5da;border-radius:12px;background:#f8fbf8;cursor:pointer;font:inherit;color:inherit";b.addEventListener("click",()=>{if(answered)return;answered=true;const ok=i===q.answer;if(ok)correct++;feedback.textContent=(ok?"Correto! ":"Ainda não. ")+(q.explanation||"");feedback.style.color=ok?"#16804a":"#a33b2d";Array.from(opts.children).forEach((el,j)=>{el.disabled=true;if(j===q.answer)el.style.border="2px solid #16804a";});next.textContent=idx===questions.length-1?"Ver resultado":"Próxima questão";next.style.display="block";});opts.appendChild(b);});}
+  next.addEventListener("click",()=>{if(!answered)return;if(idx<questions.length-1){idx++;show();return;}const score=Math.round(correct/questions.length*100);const passed=score>=70;progress.textContent=`Resultado: ${correct}/${questions.length} — ${score}%`;qEl.textContent=passed?"Avaliação concluída!":"Continue praticando e tente novamente.";opts.innerHTML="";feedback.textContent=passed?"Você atingiu a nota mínima de 70%.":"É necessário atingir 70% para aprovação. Revise as aulas e tente de novo.";next.style.display="none";if(passed){completeTest(lesson.id,score);const completed=APP_STATE.user.completedTests||[];if(!completed.some(t=>(typeof t==="string"?t:t.id)===lesson.id)){completed.push({id:lesson.id,score,date:getDateKey(new Date()),timestamp:new Date().toISOString()});APP_STATE.user.completedTests=completed;}APP_STATE.user.testsCompletedCount=completed.length;const nextModule=moduleNumber+1;if(nextModule<=(COURSE[level]?.modules||3)){APP_STATE.user.level=level;APP_STATE.user.module=nextModule;APP_STATE.user.lesson=1;}saveUserData();updateInterface();}else{next.style.display="block";next.textContent="Tentar novamente";next.onclick=()=>{idx=0;correct=0;next.onclick=null;show();};}const close=modal.querySelector("#efTestClose");close.textContent="Voltar ao curso";});
+  modal.querySelector("#efTestClose").addEventListener("click",()=>modal.remove());show();
+}
+
+// Revisões recuperam uma aula concluída para prática real em vez de apenas exibir um aviso.
+function startReview(){
+  const user=APP_STATE.user;const completed=(user.completedLessons||[]);let target=null;
+  for(const id of completed.slice().reverse()){const m=String(id).match(/^(A1|A2|B1|B2|C1)-M(\d+)-L(\d+)/);if(!m)continue;const level=m[1],mi=Number(m[2])-1,li=Number(m[3])-1;const item=LESSON_CONTENT[level]?.[mi+1]?.lessons?.[li];if(item){target=item;break;}}
+  if(!target){alert("Conclua pelo menos uma aula para iniciar revisões personalizadas.");return;}
+  startLesson(target);
+}
