@@ -8342,3 +8342,245 @@ function updateInterface() {
 
 })();
 
+
+
+/* =========================================================
+   ENGLISH FAMILY v1.6.0 — FIREBASE AUTH + CLOUD SYNC
+   Substitui o login local anterior mantendo compatibilidade
+   com os perfis e o progresso já armazenados neste navegador.
+   ========================================================= */
+const EF_CLOUD_DEBOUNCE_MS = 900;
+let EF_CLOUD_SAVE_TIMER = null;
+let EF_CLOUD_LOADING = false;
+let EF_CLOUD_LISTENER = null;
+let EF_CLOUD_LAST_REMOTE_UPDATE = 0;
+let EF_CLOUD_LAST_LOCAL_WRITE = 0;
+
+function efFirebaseAvailable() {
+  return Boolean(window.EF_FIREBASE_READY && window.EF_FIREBASE_AUTH && window.EF_FIREBASE_DB);
+}
+function efCloudUserRef(uid) {
+  return window.EF_FIREBASE_DB.collection("users").doc(uid);
+}
+function efCloudFriendlyError(error) {
+  const code = error?.code || "";
+  const map = {
+    "auth/email-already-in-use": "Este e-mail já possui uma conta. Use a opção Entrar.",
+    "auth/invalid-email": "O formato do e-mail é inválido.",
+    "auth/weak-password": "A senha precisa ter pelo menos 6 caracteres.",
+    "auth/user-not-found": "Não encontramos uma conta com esse e-mail.",
+    "auth/wrong-password": "E-mail ou senha incorretos.",
+    "auth/invalid-credential": "E-mail ou senha incorretos.",
+    "auth/too-many-requests": "Muitas tentativas. Aguarde um pouco e tente novamente.",
+    "auth/network-request-failed": "Falha de conexão. Verifique a internet e tente novamente.",
+    "permission-denied": "O Firestore recusou o acesso. Confira as regras publicadas.",
+    "unavailable": "O serviço está temporariamente indisponível. Tente novamente."
+  };
+  return map[code] || error?.message || "Ocorreu um erro. Tente novamente.";
+}
+function efRenderAuth(message = "", mode = "login") {
+  let root = document.getElementById("efAuthRoot");
+  if (!root) { root = document.createElement("div"); root.id = "efAuthRoot"; document.body.appendChild(root); }
+  const localAccounts = efReadAccounts();
+  root.innerHTML = `
+    <style>
+      #efAuthRoot{position:fixed;inset:0;z-index:100000;background:linear-gradient(145deg,#eaf8ee,#f5fbf6 55%,#d9f1df);display:grid;place-items:center;padding:18px;overflow:auto;color:#163b2b;font-family:inherit}
+      .ef-auth-card{width:min(100%,520px);background:#fff;border:1px solid #d9eadf;border-radius:24px;padding:clamp(22px,5vw,38px);box-shadow:0 24px 70px #1c56301c}
+      .ef-auth-logo{font-size:13px;font-weight:800;letter-spacing:.12em;color:#16804a}.ef-auth-card h1{font-size:clamp(26px,5vw,34px);margin:10px 0 8px}.ef-auth-card p{line-height:1.55;color:#5c7466}
+      .ef-auth-tabs{display:flex;gap:8px;margin:22px 0 18px}.ef-auth-tabs button,.ef-profile-switch{border:1px solid #cfe2d5;background:#f5faf6;border-radius:12px;padding:11px 14px;cursor:pointer;font-weight:700;color:#27563d}.ef-auth-tabs button.active{background:#177b46;color:#fff;border-color:#177b46}
+      .ef-auth-field{display:grid;gap:6px;margin:13px 0}.ef-auth-field label{font-size:13px;font-weight:700}.ef-auth-field input,.ef-auth-field select{width:100%;box-sizing:border-box;border:1px solid #ccddd1;border-radius:12px;padding:13px;font:inherit;background:#fff;color:#163b2b}
+      .ef-auth-submit{width:100%;border:0;border-radius:13px;background:#16804a;color:white;padding:14px;font:inherit;font-weight:800;cursor:pointer;margin-top:12px}.ef-auth-submit:disabled{opacity:.6;cursor:wait}
+      .ef-auth-msg{color:#a33b2d!important;font-weight:700;min-height:1.3em}.ef-auth-note{font-size:12px!important;background:#f4f8f4;border-radius:12px;padding:11px}.ef-auth-link{border:0;background:transparent;color:#167b45;text-decoration:underline;padding:10px 0;cursor:pointer;font:inherit}
+    </style>
+    <section class="ef-auth-card" aria-labelledby="efAuthTitle">
+      <div class="ef-auth-logo">ENGLISH FAMILY · CONTA ONLINE</div>
+      <h1 id="efAuthTitle">Seu inglês, no seu ritmo.</h1>
+      <p>Entre com seu e-mail para manter seu nível, aulas concluídas, pontos e revisões sincronizados entre dispositivos.</p>
+      <div class="ef-auth-tabs"><button type="button" id="efTabLogin" class="${mode==="login"?"active":""}">Entrar</button><button type="button" id="efTabRegister" class="${mode==="register"?"active":""}">Criar conta</button></div>
+      <div id="efAuthForm"></div><p class="ef-auth-msg" id="efAuthMessage">${efSafeText(message)}</p>
+      <p class="ef-auth-note">Use seu próprio e-mail e uma senha com pelo menos 6 caracteres. O progresso de cada conta é privado. Na primeira conta, você poderá importar um perfil que já existe neste navegador.</p>
+    </section>`;
+  const loginTab = root.querySelector("#efTabLogin");
+  const registerTab = root.querySelector("#efTabRegister");
+  function setMessage(text) { const el=root.querySelector("#efAuthMessage"); if(el) el.textContent=text; }
+  function render(modeNow) {
+    loginTab.classList.toggle("active",modeNow==="login");
+    registerTab.classList.toggle("active",modeNow==="register");
+    const formHost=root.querySelector("#efAuthForm");
+    if(modeNow==="register") {
+      formHost.innerHTML=`
+        <form id="efRegisterForm">
+          <div class="ef-auth-field"><label for="efName">Nome do familiar</label><input id="efName" name="name" maxlength="60" autocomplete="name" required placeholder="Ex.: Ana"></div>
+          <div class="ef-auth-field"><label for="efRegisterEmail">E-mail</label><input id="efRegisterEmail" name="email" type="email" maxlength="160" autocomplete="email" required placeholder="voce@exemplo.com"></div>
+          <div class="ef-auth-field"><label for="efRegisterPassword">Senha (mínimo 6 caracteres)</label><input id="efRegisterPassword" name="password" type="password" minlength="6" autocomplete="new-password" required></div>
+          <div class="ef-auth-field"><label for="efLevel">Nível inicial, se começar do zero</label><select id="efLevel" name="level"><option value="A1">A1 — Iniciante</option><option value="A2">A2 — Básico</option><option value="B1">B1 — Intermediário</option><option value="B2">B2 — Intermediário avançado</option><option value="C1">C1 — Avançado</option></select></div>
+          ${localAccounts.length?`<div class="ef-auth-field"><label for="efImportProfile">Importar progresso local (opcional)</label><select id="efImportProfile" name="importProfile"><option value="">Começar sem importar</option>${localAccounts.map(a=>`<option value="${efSafeText(a.id)}">${efSafeText(a.name)} — nível ${efSafeText(a.level||"A1")}</option>`).join("")}</select><small>Escolha somente o perfil que pertence a esta conta. Os dados locais não serão apagados.</small></div>`:""}
+          <button class="ef-auth-submit" type="submit">Criar conta e continuar</button>
+        </form>`;
+      formHost.querySelector("#efRegisterForm").addEventListener("submit",async ev=>{
+        ev.preventDefault();const form=ev.currentTarget;const button=form.querySelector("button[type=submit]");button.disabled=true;setMessage("Criando sua conta…");
+        const fd=new FormData(form);const name=String(fd.get("name")||"").trim();const email=String(fd.get("email")||"").trim();const password=String(fd.get("password")||"");const level=String(fd.get("level")||"A1");const importId=String(fd.get("importProfile")||"");
+        if(name.length<2){button.disabled=false;setMessage("Informe um nome com pelo menos 2 caracteres.");return;}
+        try {
+          const credential=await window.EF_FIREBASE_AUTH.createUserWithEmailAndPassword(email,password);
+          const uid=credential.user.uid;
+          let user=cloneObject(DEFAULT_USER);
+          if(importId) {
+            const raw=localStorage.getItem(efAccountStorageKey(importId));
+            if(raw) { try { user=mergeObjects(user,JSON.parse(raw)); } catch(_){} }
+            const sourceAccount=efReadAccounts().find(a=>a.id===importId);
+            if(sourceAccount) { user.level=user.level||sourceAccount.level||level; }
+          } else {
+            const legacy=localStorage.getItem(APP_CONFIG.storageKey);
+            if(legacy) { try { const old=JSON.parse(legacy); if(old&&(old.completedLessons||[]).length) user=mergeObjects(user,old); } catch(_){} }
+            user.level=level;
+          }
+          user.id=uid;user.name=name;user.email=credential.user.email||email;user.level=user.level||level;
+          user.storageVersion=APP_CONFIG.storageVersion;
+          await efCloudUserRef(uid).set({displayName:name,email:user.email,level:user.level,progress:user,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+          localStorage.setItem(efAccountStorageKey(uid),JSON.stringify(user));
+          localStorage.setItem(EF_ACTIVE_KEY,uid);
+          EF_ACTIVE_ACCOUNT={id:uid,name,email:user.email,level:user.level,cloud:true};
+          setMessage("Conta criada. Carregando seu progresso…");
+          await efActivateCloudUser(credential.user,user,true);
+        } catch(error) { button.disabled=false;setMessage(efCloudFriendlyError(error)); }
+      });
+    } else {
+      formHost.innerHTML=`
+        <form id="efLoginForm">
+          <div class="ef-auth-field"><label for="efLoginEmail">E-mail</label><input id="efLoginEmail" name="email" type="email" autocomplete="email" required placeholder="voce@exemplo.com"></div>
+          <div class="ef-auth-field"><label for="efLoginPassword">Senha</label><input id="efLoginPassword" name="password" type="password" autocomplete="current-password" required></div>
+          <button class="ef-auth-submit" type="submit">Entrar e sincronizar</button>
+          <button class="ef-auth-link" type="button" id="efResetPassword">Esqueci minha senha</button>
+        </form>`;
+      formHost.querySelector("#efLoginForm").addEventListener("submit",async ev=>{
+        ev.preventDefault();const form=ev.currentTarget;const button=form.querySelector("button[type=submit]");button.disabled=true;setMessage("Entrando e carregando o progresso…");
+        const fd=new FormData(form);
+        try { await window.EF_FIREBASE_AUTH.signInWithEmailAndPassword(String(fd.get("email")||"").trim(),String(fd.get("password")||"")); }
+        catch(error) { button.disabled=false;setMessage(efCloudFriendlyError(error)); }
+      });
+      formHost.querySelector("#efResetPassword").addEventListener("click",async()=>{
+        const email=String(formHost.querySelector("#efLoginEmail").value||"").trim();
+        if(!email){setMessage("Digite seu e-mail acima e clique novamente em “Esqueci minha senha”.");return;}
+        try{await window.EF_FIREBASE_AUTH.sendPasswordResetEmail(email);setMessage("Se houver uma conta com esse e-mail, enviaremos as instruções para redefinir a senha.");}
+        catch(error){setMessage(efCloudFriendlyError(error));}
+      });
+    }
+  }
+  loginTab.addEventListener("click",()=>render("login"));
+  registerTab.addEventListener("click",()=>render("register"));
+  render(mode);
+}
+async function efActivateCloudUser(firebaseUser, knownProgress = null, alreadySaved = false) {
+  if(!firebaseUser || !efFirebaseAvailable()) return;
+  if(EF_CLOUD_LISTENER){EF_CLOUD_LISTENER();EF_CLOUD_LISTENER=null;}
+  EF_CLOUD_LOADING=true;
+  try {
+    const ref=efCloudUserRef(firebaseUser.uid);
+    const snap=await ref.get();
+    let progress;
+    if(snap.exists && snap.data()?.progress) {
+      // A nuvem é a fonte da verdade para uma conta já existente.
+      progress=mergeObjects(cloneObject(DEFAULT_USER),snap.data().progress);
+    } else {
+      progress=knownProgress||cloneObject(DEFAULT_USER);
+      progress.id=firebaseUser.uid;
+      progress.name=snap.data()?.displayName||firebaseUser.displayName||progress.name||"Aluno";
+      progress.email=firebaseUser.email||"";
+      progress.storageVersion=APP_CONFIG.storageVersion;
+      await ref.set({displayName:progress.name,email:progress.email,level:progress.level||"A1",progress,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+    }
+    progress.id=firebaseUser.uid;progress.email=firebaseUser.email||progress.email||"";
+    const displayName=snap.exists?(snap.data().displayName||progress.name):progress.name;
+    progress.name=displayName||"Aluno";
+    localStorage.setItem(efAccountStorageKey(firebaseUser.uid),JSON.stringify(progress));
+    localStorage.setItem(EF_ACTIVE_KEY,firebaseUser.uid);
+    EF_ACTIVE_ACCOUNT={id:firebaseUser.uid,name:progress.name,email:progress.email,level:progress.level||"A1",cloud:true};
+    APP_STATE.user=mergeObjects(cloneObject(DEFAULT_USER),progress);
+    normalizeUserData();
+    const root=document.getElementById("efAuthRoot");if(root)root.remove();
+    initializeCoreApp();
+    efAddProfileButton();
+    efInstallCloudSync(firebaseUser.uid);
+  } catch(error) {
+    console.error("[English Family] Erro ao carregar a nuvem:",error);
+    efRenderAuth("Não foi possível carregar o progresso: "+efCloudFriendlyError(error),"login");
+  } finally { EF_CLOUD_LOADING=false; }
+}
+function efInstallCloudSync(uid) {
+  if(EF_CLOUD_LISTENER){EF_CLOUD_LISTENER();EF_CLOUD_LISTENER=null;}
+  EF_CLOUD_LISTENER=efCloudUserRef(uid).onSnapshot(snap=>{
+    if(!snap.exists||!snap.data()?.progress||EF_CLOUD_LOADING)return;
+    const data=snap.data();const remoteMs=data.updatedAt?.toMillis?.()||0;
+    if(remoteMs<=EF_CLOUD_LAST_REMOTE_UPDATE)return;
+    // Ignora o eco do próprio salvamento e não troca dados enquanto há alterações pendentes.
+    if(EF_CLOUD_SAVE_TIMER)return;
+    EF_CLOUD_LAST_REMOTE_UPDATE=remoteMs;
+    const incoming=mergeObjects(cloneObject(DEFAULT_USER),data.progress);
+    incoming.id=uid;incoming.email=window.EF_FIREBASE_AUTH.currentUser?.email||incoming.email||"";
+    localStorage.setItem(efAccountStorageKey(uid),JSON.stringify(incoming));
+    localStorage.setItem(APP_CONFIG.storageKey,JSON.stringify(incoming));
+    APP_STATE.user=incoming;normalizeUserData();updateInterface();
+  },error=>console.warn("[English Family] Sincronização em tempo real pausada:",error));
+}
+function efQueueCloudSave() {
+  if(!efFirebaseAvailable()||!window.EF_FIREBASE_AUTH.currentUser||!APP_STATE.user||EF_CLOUD_LOADING)return;
+  if(EF_CLOUD_SAVE_TIMER)clearTimeout(EF_CLOUD_SAVE_TIMER);
+  EF_CLOUD_SAVE_TIMER=setTimeout(async()=>{
+    EF_CLOUD_SAVE_TIMER=null;
+    const user=window.EF_FIREBASE_AUTH.currentUser;
+    if(!user||!APP_STATE.user)return;
+    const progress=cloneObject(APP_STATE.user);
+    progress.id=user.uid;progress.email=user.email||progress.email||"";
+    EF_CLOUD_LAST_LOCAL_WRITE=Date.now();
+    try {
+      await efCloudUserRef(user.uid).set({displayName:progress.name||user.displayName||"Aluno",email:user.email||"",level:progress.level||"A1",progress,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+    } catch(error) { console.error("[English Family] Falha ao sincronizar progresso:",error); }
+  },EF_CLOUD_DEBOUNCE_MS);
+}
+function efAddProfileButton() {
+  let b=document.getElementById("efProfileButton");
+  if(!b){b=document.createElement("button");b.id="efProfileButton";b.className="ef-profile-pill";b.type="button";document.body.appendChild(b);}
+  b.textContent=`👤 ${EF_ACTIVE_ACCOUNT?.name||APP_STATE.user?.name||"Perfil"} · Sair`;
+  b.title="Sair da conta";
+  b.onclick=async()=>{
+    if(!confirm("Deseja sair da sua conta? O progresso salvo será mantido."))return;
+    try{if(EF_CLOUD_LISTENER){EF_CLOUD_LISTENER();EF_CLOUD_LISTENER=null;}if(EF_CLOUD_SAVE_TIMER){clearTimeout(EF_CLOUD_SAVE_TIMER);EF_CLOUD_SAVE_TIMER=null;await efQueueCloudSave();}await window.EF_FIREBASE_AUTH.signOut();}
+    catch(error){alert("Não foi possível sair: "+efCloudFriendlyError(error));}
+  };
+}
+function initializeApp() {
+  if(!efFirebaseAvailable()) {
+    efRenderAuth("O serviço de login não carregou. Atualize a página; se persistir, verifique a conexão.","login");
+    return;
+  }
+  efRenderAuth("Verificando sua sessão…","login");
+  window.EF_FIREBASE_AUTH.onAuthStateChanged(async user=>{
+    if(user) { await efActivateCloudUser(user); }
+    else {
+      if(EF_CLOUD_LISTENER){EF_CLOUD_LISTENER();EF_CLOUD_LISTENER=null;}
+      EF_ACTIVE_ACCOUNT=null;
+      const b=document.getElementById("efProfileButton");if(b)b.remove();
+      efRenderAuth("Entre com sua conta ou crie uma nova.","login");
+    }
+  });
+}
+function loadUserData() {
+  try {
+    const key=EF_ACTIVE_ACCOUNT?efAccountStorageKey(EF_ACTIVE_ACCOUNT.id):APP_CONFIG.storageKey;
+    const raw=localStorage.getItem(key);
+    if(raw) APP_STATE.user=mergeObjects(cloneObject(DEFAULT_USER),JSON.parse(raw));
+    else APP_STATE.user=cloneObject(DEFAULT_USER);
+    normalizeUserData();
+  } catch(error) { console.error("[English Family] Erro ao carregar dados locais:",error);APP_STATE.user=cloneObject(DEFAULT_USER); }
+}
+function saveUserData() {
+  if(!APP_STATE.user)return;
+  try {
+    APP_STATE.user.storageVersion=APP_CONFIG.storageVersion;
+    const serialized=JSON.stringify(APP_STATE.user);
+    localStorage.setItem(APP_CONFIG.storageKey,serialized);
+    if(EF_ACTIVE_ACCOUNT)localStorage.setItem(efAccountStorageKey(EF_ACTIVE_ACCOUNT.id),serialized);
+  } catch(error) { console.error("[English Family] Erro ao salvar progresso local:",error); }
+  efQueueCloudSave();
+}
