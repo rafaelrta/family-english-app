@@ -8355,6 +8355,7 @@ let EF_CLOUD_LOADING = false;
 let EF_CLOUD_LISTENER = null;
 let EF_CLOUD_LAST_REMOTE_UPDATE = 0;
 let EF_CLOUD_LAST_LOCAL_WRITE = 0;
+let EF_AUTH_BOOTSTRAP_IN_PROGRESS = false;
 
 function efFirebaseAvailable() {
   return Boolean(window.EF_FIREBASE_READY && window.EF_FIREBASE_AUTH && window.EF_FIREBASE_DB);
@@ -8422,6 +8423,7 @@ function efRenderAuth(message = "", mode = "login") {
         const fd=new FormData(form);const name=String(fd.get("name")||"").trim();const email=String(fd.get("email")||"").trim();const password=String(fd.get("password")||"");const level=String(fd.get("level")||"A1");const importId=String(fd.get("importProfile")||"");
         if(name.length<2){button.disabled=false;setMessage("Informe um nome com pelo menos 2 caracteres.");return;}
         try {
+          EF_AUTH_BOOTSTRAP_IN_PROGRESS=true;
           const credential=await window.EF_FIREBASE_AUTH.createUserWithEmailAndPassword(email,password);
           const uid=credential.user.uid;
           let user=cloneObject(DEFAULT_USER);
@@ -8442,8 +8444,9 @@ function efRenderAuth(message = "", mode = "login") {
           localStorage.setItem(EF_ACTIVE_KEY,uid);
           EF_ACTIVE_ACCOUNT={id:uid,name,email:user.email,level:user.level,cloud:true};
           setMessage("Conta criada. Carregando seu progresso…");
+          EF_AUTH_BOOTSTRAP_IN_PROGRESS=false;
           await efActivateCloudUser(credential.user,user,true);
-        } catch(error) { button.disabled=false;setMessage(efCloudFriendlyError(error)); }
+        } catch(error) { EF_AUTH_BOOTSTRAP_IN_PROGRESS=false;button.disabled=false;setMessage(efCloudFriendlyError(error)); }
       });
     } else {
       formHost.innerHTML=`
@@ -8556,6 +8559,7 @@ function initializeApp() {
   }
   efRenderAuth("Verificando sua sessão…","login");
   window.EF_FIREBASE_AUTH.onAuthStateChanged(async user=>{
+    if(EF_AUTH_BOOTSTRAP_IN_PROGRESS) return;
     if(user) { await efActivateCloudUser(user); }
     else {
       if(EF_CLOUD_LISTENER){EF_CLOUD_LISTENER();EF_CLOUD_LISTENER=null;}
